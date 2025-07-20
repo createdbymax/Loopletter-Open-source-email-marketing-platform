@@ -1,71 +1,106 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-const transparentGif = Buffer.from(
-  'R0lGODlhAQABAPAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==',
-  'base64'
-);
-
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const fan_id = searchParams.get('fan_id');
-  const campaign_id = searchParams.get('campaign_id');
-  
-  if (fan_id && campaign_id) {
-    try {
-      // Check if campaign has tracking enabled
-      const { data: campaign } = await supabase
-        .from('campaigns')
-        .select('settings')
-        .eq('id', campaign_id)
-        .single();
-      
-      if (campaign?.settings?.track_opens) {
-        // Check if this is the first open (for unique opens tracking)
-        const { data: existingOpen } = await supabase
-          .from('emails_sent')
-          .select('opened_at')
-          .eq('fan_id', fan_id)
-          .eq('campaign_id', campaign_id)
-          .single();
-        
-        const isFirstOpen = !existingOpen?.opened_at;
-        
-        // Update the email record with open timestamp
-        await supabase
-          .from('emails_sent')
-          .update({ 
-            opened_at: new Date().toISOString()
-          })
-          .eq('fan_id', fan_id)
-          .eq('campaign_id', campaign_id);
-        
-        // Update campaign stats
-        if (isFirstOpen) {
-          await supabase.rpc('increment_campaign_stat', {
-            campaign_id: campaign_id,
-            stat_name: 'unique_opens'
-          });
-        }
-        
-        await supabase.rpc('increment_campaign_stat', {
-          campaign_id: campaign_id,
-          stat_name: 'opens'
-        });
-      }
-    } catch (error) {
-      console.error('Error tracking email open:', error);
+// This endpoint serves a 1x1 transparent pixel and tracks email opens
+export async function GET(request: NextRequest) {
+  try {
+    // Get tracking parameters from query string
+    const { searchParams } = new URL(request.url);
+    const messageId = searchParams.get('mid');
+    const campaignId = searchParams.get('cid');
+    const fanId = searchParams.get('fid');
+    
+    if (messageId && campaignId && fanId) {
+      // Record the open event asynchronously (don't await)
+      recordOpenEvent(messageId, campaignId, fanId, request).catch(error => {
+        console.error('Error recording open event:', error);
+      });
     }
+    
+    // Return a 1x1 transparent pixel
+    const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+    
+    return new NextResponse(pixel, {
+      headers: {
+        'Content-Type': 'image/gif',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+  } catch (error) {
+    console.error('Error in tracking pixel:', error);
+    
+    // Still return the pixel even if there's an error
+    const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+    
+    return new NextResponse(pixel, {
+      headers: {
+        'Content-Type': 'image/gif',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
   }
-  
-  return new NextResponse(transparentGif, {
-    status: 200,
-    headers: {
-      'Content-Type': 'image/gif',
-      'Content-Length': transparentGif.length.toString(),
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-    },
-  });
-} 
+}
+
+async function recordOpenEvent(messageId: string, campaignId: string, fanId: string, request: NextRequest) {
+  try {
+    // Get client information
+    const userAgent = request.headers.get('user-agent') || '';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
+    
+    // Check if this open has already been recorded
+    const { data: existingOpen } = await supabase
+      .from('email_opens')
+      .select('id')
+      .eq('message_id', messageId)
+      .eq('fan_id', fanId)
+      .limit(1);
+    
+    if (existingOpen && existingOpen.length > 0) {
+      // Update the existing open record with a new timestamp
+      await supabase
+        .from('email_opens')
+        .update({
+          opened_at: new Date().toISOString(),
+          user_agent: userAgent,
+          ip_address: ip,
+          open_count: supabase.sql`open_count + 1`
+        })
+        .eq('id', existingOpen[0].id);
+    } else {
+      // Create a new open record
+      await supabase
+        .from('email_opens')
+        .insert({
+          message_id: messageId,
+          campaign_id: campaignId,
+          fan_id: fanId,
+          opened_at: new Date().toISOString(),
+          user_agent: userAgent,
+          ip_address: ip,
+          open_count: 1
+        });
+      
+      // Update the email_sent record
+      await supabase
+        .from('email_sent')
+        .update({
+          opened_at: new Date().toISOString(),
+          status: 'opened'
+        })
+        .eq('message_id', messageId)
+        .eq('fan_id', fanId);
+      
+      // Update campaign stats
+      await supabase.rpc('increment_campaign_opens', {
+        p_campaign_id: campaignId
+      });
+    }
+  } catch (error) {
+    console.error('Error recording open event:', error);
+    throw error;
+  }
+}

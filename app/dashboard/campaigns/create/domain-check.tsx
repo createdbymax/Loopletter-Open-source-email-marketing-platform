@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { getOrCreateArtistByClerkId } from "@/lib/db";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Shield, CheckCircle, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardDescription } from '@/components/ui/card';
+import { AlertTriangle, Shield, CheckCircle, ArrowRight, Lock } from "lucide-react";
 import Link from "next/link";
 import type { Artist } from "@/lib/types";
+import { canAccessFeature } from "@/lib/subscription";
 
 interface DomainCheckProps {
   onValidationComplete: (isValid: boolean) => void;
@@ -50,6 +51,9 @@ export function DomainCheck({ onValidationComplete }: DomainCheckProps) {
   }
 
   if (!artist?.ses_domain) {
+    // Check if user has access to custom domain feature
+    const hasCustomDomainAccess = artist ? canAccessFeature(artist, 'customSignupDomain') : false;
+    
     return (
       <Alert>
         <AlertTriangle className="h-4 w-4" />
@@ -58,13 +62,31 @@ export function DomainCheck({ onValidationComplete }: DomainCheckProps) {
             <p>
               <strong>Domain Setup Required:</strong> You need to configure a sending domain before creating campaigns.
             </p>
-            <Link href="/dashboard/domain">
-              <Button size="sm">
-                <Shield className="w-4 h-4 mr-2" />
-                Set Up Domain
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+            {hasCustomDomainAccess ? (
+              <Link href="/dashboard/domain">
+                <Button size="sm">
+                  <Shield className="w-4 h-4 mr-2" />
+                  Set Up Domain
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mt-2">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lock className="h-4 w-4 text-blue-600" />
+                  <h4 className="text-sm font-medium text-blue-800">Custom Domain Feature</h4>
+                </div>
+                <p className="text-xs text-blue-700 mb-3">
+                  Custom domain setup is available on the Independent and Label plans.
+                  Upgrade to use your own domain for better deliverability and branding.
+                </p>
+                <Link href="/dashboard/settings?tab=subscription&feature=customSignupDomain">
+                  <Button size="sm" variant="default">
+                    Upgrade Plan
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </AlertDescription>
       </Alert>
@@ -78,7 +100,7 @@ export function DomainCheck({ onValidationComplete }: DomainCheckProps) {
         <AlertDescription>
           <div className="space-y-3">
             <p>
-              <strong>Domain Verification Pending:</strong> Your domain "{artist.ses_domain}" needs to be verified before you can send campaigns.
+              <strong>Domain Verification Pending:</strong> Your domain &quot;{artist.ses_domain}&quot; needs to be verified before you can send campaigns.
             </p>
             <div className="flex gap-2">
               <Link href="/dashboard/domain">

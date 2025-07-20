@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 
 function StatusBadge({ status }: { status: string | null }) {
   let color = "bg-muted text-foreground";
-  let label = status || "-";
+  const label = status || "-";
   if (status === "pending") color = "bg-yellow-200 text-yellow-900";
   if (status === "verified" || status === "Success") color = "bg-green-200 text-green-900";
   if (status === "failed") color = "bg-red-200 text-red-900";

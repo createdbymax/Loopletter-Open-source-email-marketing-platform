@@ -5,23 +5,57 @@ import type {
   CampaignFormData, FanFormData, SegmentFormData
 } from './types';
 
+// Helper function to map database fields to expected structure
+function mapArtistFields(artist: any): Artist {
+  // Handle null or undefined artist
+  if (!artist) {
+    console.error('mapArtistFields called with null or undefined artist');
+    return artist;
+  }
+  
+  // Create a subscription object from the individual fields
+  const hasSubscriptionData = artist.subscription_plan || artist.stripe_subscription_id;
+  const subscription = hasSubscriptionData ? {
+    plan: artist.subscription_plan || 'starter',
+    status: artist.subscription_status || 'active',
+    stripe_customer_id: artist.stripe_customer_id,
+    stripe_subscription_id: artist.stripe_subscription_id,
+    current_period_end: artist.subscription_current_period_end,
+    cancel_at_period_end: artist.subscription_cancel_at_period_end,
+    metadata: artist.subscription_metadata || {}
+  } : undefined;
+
+  // Return the artist with the mapped subscription
+  return {
+    ...artist,
+    subscription
+  };
+}
+
 // ARTISTS
 export async function getArtistById(id: string) {
   const { data, error } = await supabase.from('artists').select('*').eq('id', id).single();
   if (error) throw error;
-  return data as Artist;
+  return mapArtistFields(data) as Artist;
 }
 
 export async function getArtistBySlug(slug: string) {
   const { data, error } = await supabase.from('artists').select('*').eq('slug', slug).single();
   if (error) throw error;
-  return data as Artist;
+  return mapArtistFields(data) as Artist;
 }
 
 export async function updateArtist(id: string, updates: Partial<Artist>) {
   const { data, error } = await supabase.from('artists').update(updates).eq('id', id).single();
   if (error) throw error;
-  return data as Artist;
+  
+  // If no data was returned, fetch the artist to get the updated data
+  if (!data) {
+    console.log('No data returned from update, fetching artist');
+    return await getArtistById(id);
+  }
+  
+  return mapArtistFields(data) as Artist;
 }
 
 // Helper function to create a safe slug
@@ -94,7 +128,7 @@ async function createNewArtist(clerkUserId: string, email: string, name: string)
       
       if (existingArtist) {
         console.log('Found existing artist, returning it');
-        return existingArtist;
+        return mapArtistFields(existingArtist);
       }
     }
     
@@ -106,7 +140,7 @@ async function createNewArtist(clerkUserId: string, email: string, name: string)
     throw new Error(`Failed to create artist: ${error.message || JSON.stringify(error)}`);
   }
   
-  return newArtist;
+  return mapArtistFields(newArtist);
 }
 
 export async function getOrCreateArtistByClerkId(clerkUserId: string, email: string, name: string, clerkToken?: string) {
@@ -132,10 +166,12 @@ export async function getOrCreateArtistByClerkId(clerkUserId: string, email: str
         .single();
       
       if (!updateError && updatedArtist) {
-        return updatedArtist;
+        // Map database fields to expected structure
+        return mapArtistFields(updatedArtist);
       }
     }
-    return artist;
+    // Map database fields to expected structure
+    return mapArtistFields(artist);
   }
   
   // If artist doesn't exist, create one
@@ -150,7 +186,7 @@ export async function getOrCreateArtistByClerkId(clerkUserId: string, email: str
     throw fetchError;
   }
   
-  return artist;
+  return mapArtistFields(artist);
 }
 
 // FANS
@@ -494,6 +530,16 @@ export async function getTeamMembersByArtist(artist_id: string) {
   return data as TeamMember[];
 }
 
+export async function getTeamMemberByClerkId(clerk_id: string, artist_id: string) {
+  // Since we don't have a direct clerk_id field in the team_members table,
+  // we need to modify the domain/reputation/route.ts approach instead
+  
+  // For now, let's implement a simple version that returns null
+  // This will allow the artist owner to access the reputation data
+  // but team members will need to be handled differently
+  return null;
+}
+
 // INTEGRATIONS
 export async function createIntegration(integration: Omit<Integration, 'id' | 'created_at'>) {
   const { data, error } = await supabase
@@ -831,4 +877,4 @@ export async function createCampaignWithDefaults(campaignData: CampaignFormData,
   };
   
   return createCampaign(campaign);
-} 
+}

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, X, Upload, ArrowLeft } from "lucide-react";
+import { Plus, X, Save, Eye, Send, Download } from 'lucide-react';
 import { 
   MusicReleaseTemplateProps, 
   ShowAnnouncementTemplateProps, 

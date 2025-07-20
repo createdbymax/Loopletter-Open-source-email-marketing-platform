@@ -1,145 +1,154 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
-import { getOrCreateArtistByClerkId, getArtistAnalytics, getCampaignsByArtist, getFansByArtist } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area
-} from 'recharts';
-import { 
-  TrendingUp, 
-  Users, 
-  Mail, 
-  MousePointer, 
-  Eye,
-  AlertTriangle,
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import {
+  BarChart3,
+  Users,
+  Mail,
+  MousePointerClick,
   Download,
-  Calendar,
-  Target,
-  Zap,
-  Globe
-} from "lucide-react";
-import type { AnalyticsData, Campaign, Fan } from "@/lib/types";
+  RefreshCw,
+  TrendingUp,
+  TrendingDown,
+  Eye
+} from 'lucide-react';
+import {
+  ResponsiveContainer,
+  LineChart as RechartsLineChart,
+  Line,
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from 'recharts';
+import { format, parseISO } from 'date-fns';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+interface AnalyticsData {
+  overview: {
+    totalCampaigns: number;
+    totalSent: number;
+    totalOpens: number;
+    totalClicks: number;
+    totalSubscribers: number;
+    totalUnsubscribes: number;
+    avgOpenRate: number;
+    avgClickRate: number;
+    newSubscribers: number;
+  };
+  campaignPerformance: Array<{
+    id: string;
+    title: string;
+    subject: string;
+    sendDate: string;
+    totalSent: number;
+    opens: number;
+    clicks: number;
+    openRate: number;
+    clickRate: number;
+  }>;
+  timeSeriesData: Array<{
+    label: string;
+    sent: number;
+    opens: number;
+    clicks: number;
+    date: string;
+  }>;
+}
 
 export function AnalyticsDashboard() {
-  const { user, isLoaded } = useUser();
-  const [artist, setArtist] = useState<any>(null);
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [fans, setFans] = useState<Fan[]>([]);
+  const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'year' | 'all'>('month');
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month' | 'year'>('month');
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<AnalyticsData | null>(null);
+
+  const fetchAnalyticsData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/analytics/overview?period=${period}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics data');
+      }
+      
+      const analyticsData = await response.json();
+      setData(analyticsData);
+    } catch (error) {
+      console.error('Error fetching analytics data:', error);
+      setError('Could not load analytics data');
+    } finally {
+      setLoading(false);
+    }
+  }, [period]);
 
   useEffect(() => {
-    async function fetchData() {
-      if (!user) return;
-      setLoading(true);
-      try {
-        const a = await getOrCreateArtistByClerkId(
-          user.id,
-          user.primaryEmailAddress?.emailAddress || '',
-          user.fullName || user.username || "Artist"
-        );
-        setArtist(a);
-        
-        const [analyticsData, campaignsData, fansData] = await Promise.all([
-          getArtistAnalytics(a.id, timeRange),
-          getCampaignsByArtist(a.id),
-          getFansByArtist(a.id)
-        ]);
-        
-        setAnalytics(analyticsData);
-        setCampaigns(campaignsData);
-        setFans(fansData);
-      } catch (error) {
-        console.error('Error fetching analytics:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    if (isLoaded) fetchData();
-  }, [user, isLoaded, timeRange]);
+    fetchAnalyticsData();
+  }, [fetchAnalyticsData]);
 
-  const exportData = () => {
-    if (!analytics) return;
-    
-    const csvData = [
-      ['Metric', 'Value'],
-      ['Campaigns Sent', analytics.metrics.campaigns_sent],
-      ['Emails Delivered', analytics.metrics.emails_delivered],
-      ['Total Opens', analytics.metrics.total_opens],
-      ['Total Clicks', analytics.metrics.total_clicks],
-      ['New Subscribers', analytics.metrics.new_subscribers],
-      ['Unsubscribes', analytics.metrics.unsubscribes],
-    ];
-    
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `analytics-${timeRange}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleRefresh = () => {
+    fetchAnalyticsData();
   };
 
-  // Calculate engagement metrics
-  const openRate = analytics?.metrics.emails_delivered > 0 
-    ? (analytics.metrics.total_opens / analytics.metrics.emails_delivered * 100).toFixed(1)
-    : '0';
-  
-  const clickRate = analytics?.metrics.emails_delivered > 0 
-    ? (analytics.metrics.total_clicks / analytics.metrics.emails_delivered * 100).toFixed(1)
-    : '0';
+  const handleExport = () => {
+    if (!data) return;
+    
+    // Create CSV content
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    
+    // Add headers
+    csvContent += 'Campaign,Send Date,Total Sent,Opens,Clicks,Open Rate,Click Rate\n';
+    
+    // Add data rows
+    data.campaignPerformance.forEach(campaign => {
+      const row = [
+        `"${campaign.title}"`,
+        format(parseISO(campaign.sendDate), 'yyyy-MM-dd'),
+        campaign.totalSent,
+        campaign.opens,
+        campaign.clicks,
+        `${(campaign.openRate * 100).toFixed(1)}%`,
+        `${(campaign.clickRate * 100).toFixed(1)}%`
+      ];
+      csvContent += row.join(',') + '\n';
+    });
+    
+    // Create download link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `campaign-analytics-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-  // Use real trend data from analytics
-  const trendData = analytics?.trends?.map(trend => ({
-    date: trend.date,
-    opens: trend.value,
-    clicks: Math.floor(trend.value * 0.15), // Approximate click rate
-    subscribers: fans.length, // Current subscriber count
-    revenue: 0, // Would need e-commerce integration
-  })) || [];
-
-  // Device data - would need user agent tracking for real data
-  // For now, use industry averages based on total opens
-  const totalOpens = analytics?.metrics.total_opens || 0;
-  const deviceData = [
-    { name: 'Mobile', value: Math.round(totalOpens * 0.55), color: '#00C49F' },
-    { name: 'Desktop', value: Math.round(totalOpens * 0.35), color: '#0088FE' },
-    { name: 'Tablet', value: Math.round(totalOpens * 0.10), color: '#FFBB28' },
-  ];
-
-  const locationData = [
-    { country: 'United States', subscribers: Math.floor(fans.length * 0.4), percentage: 40 },
-    { country: 'United Kingdom', subscribers: Math.floor(fans.length * 0.15), percentage: 15 },
-    { country: 'Canada', subscribers: Math.floor(fans.length * 0.12), percentage: 12 },
-    { country: 'Australia', subscribers: Math.floor(fans.length * 0.08), percentage: 8 },
-    { country: 'Germany', subscribers: Math.floor(fans.length * 0.07), percentage: 7 },
-  ];
-
-  if (loading) {
+  if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
+        {error}
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="text-center py-12">
+        <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+        <h3 className="text-lg font-medium mb-2">No Analytics Data</h3>
+        <p className="text-gray-600 mb-4">Send your first campaign to start collecting analytics</p>
       </div>
     );
   }
@@ -148,80 +157,21 @@ export function AnalyticsDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Analytics Dashboard</h1>
-          <p className="text-gray-600">Track your email marketing performance</p>
+          <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
+          <p className="text-gray-600 mt-2">
+            Track your email campaign performance and audience engagement
+          </p>
         </div>
-        <div className="flex gap-2">
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(e.target.value as unknown)}
-            className="border rounded px-3 py-2"
-          >
-            <option value="day">Last 24 hours</option>
-            <option value="week">Last 7 days</option>
-            <option value="month">Last 30 days</option>
-            <option value="year">Last year</option>
-          </select>
-          <Button variant="outline" onClick={exportData}>
-            <Download className="w-4 h-4 mr-2" />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleRefresh}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
         </div>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Subscribers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{fans.length.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+{analytics?.metrics.new_subscribers || 0}</span> this {timeRange}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Rate</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openRate}%</div>
-            <p className="text-xs text-muted-foreground">
-              Industry avg: 21.3%
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Click Rate</CardTitle>
-            <MousePointer className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{clickRate}%</div>
-            <p className="text-xs text-muted-foreground">
-              Industry avg: 2.6%
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Campaigns Sent</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{analytics?.metrics.campaigns_sent || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.metrics.emails_delivered || 0} emails delivered
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
@@ -229,292 +179,437 @@ export function AnalyticsDashboard() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
           <TabsTrigger value="audience">Audience</TabsTrigger>
-          <TabsTrigger value="engagement">Engagement</TabsTrigger>
-          <TabsTrigger value="revenue">Revenue</TabsTrigger>
         </TabsList>
 
+        <div className="flex items-center justify-end mb-4">
+          <div className="bg-gray-100 rounded-lg p-1 flex">
+            <Button
+              variant={period === 'day' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setPeriod('day')}
+              className="text-xs"
+            >
+              Day
+            </Button>
+            <Button
+              variant={period === 'week' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setPeriod('week')}
+              className="text-xs"
+            >
+              Week
+            </Button>
+            <Button
+              variant={period === 'month' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setPeriod('month')}
+              className="text-xs"
+            >
+              Month
+            </Button>
+            <Button
+              variant={period === 'year' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setPeriod('year')}
+              className="text-xs"
+            >
+              Year
+            </Button>
+            <Button
+              variant={period === 'all' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setPeriod('all')}
+              className="text-xs"
+            >
+              All Time
+            </Button>
+          </div>
+        </div>
+
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Key Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Performance Trends
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Open Rate
                 </CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={trendData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="opens" stackId="1" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                    <Area type="monotone" dataKey="clicks" stackId="1" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <div className="text-2xl font-bold">
+                  {(data.overview.avgOpenRate * 100).toFixed(1)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {data.overview.avgOpenRate > 0.25 ? (
+                    <span className="text-green-600 flex items-center">
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      Above industry average
+                    </span>
+                  ) : (
+                    <span className="text-amber-600 flex items-center">
+                      <TrendingDown className="h-3 w-3 mr-1" />
+                      Below industry average
+                    </span>
+                  )}
+                </p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5" />
-                  Device Breakdown
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Click Rate
                 </CardTitle>
+                <MousePointerClick className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={deviceData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {deviceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="text-2xl font-bold">
+                  {(data.overview.avgClickRate * 100).toFixed(1)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {data.overview.avgClickRate > 0.03 ? (
+                    <span className="text-green-600 flex items-center">
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      Above industry average
+                    </span>
+                  ) : (
+                    <span className="text-amber-600 flex items-center">
+                      <TrendingDown className="h-3 w-3 mr-1" />
+                      Below industry average
+                    </span>
+                  )}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Subscribers
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {data.overview.totalSubscribers.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-600 flex items-center">
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                    {data.overview.newSubscribers} new this month
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Campaigns
+                </CardTitle>
+                <Mail className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {data.overview.totalCampaigns.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {data.overview.totalSent.toLocaleString()} emails sent
+                </p>
               </CardContent>
             </Card>
           </div>
 
+          {/* Engagement Chart */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Subscriber Growth
-              </CardTitle>
+              <CardTitle>Engagement Over Time</CardTitle>
+              <CardDescription>
+                Track opens and clicks across your campaigns
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={trendData}>
+            <CardContent className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart
+                  data={data.timeSeriesData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
+                  <XAxis dataKey="label" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="subscribers" stroke="#8884d8" strokeWidth={2} />
-                </LineChart>
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="opens"
+                    stroke="#3b82f6"
+                    activeDot={{ r: 8 }}
+                    name="Opens"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="clicks"
+                    stroke="#10b981"
+                    name="Clicks"
+                  />
+                </RechartsLineChart>
               </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Campaign Performance */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Campaign Performance</CardTitle>
+              <CardDescription>
+                Your last 5 campaigns
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-8">
+                {data.campaignPerformance.slice(0, 5).map((campaign) => (
+                  <div key={campaign.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">{campaign.title}</h4>
+                        <p className="text-sm text-gray-500">
+                          Sent {format(parseISO(campaign.sendDate), 'MMM d, yyyy')}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{campaign.totalSent.toLocaleString()} sent</p>
+                        <p className="text-sm text-gray-500">
+                          {(campaign.openRate * 100).toFixed(1)}% open rate
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span>Opens</span>
+                        <span>{campaign.opens.toLocaleString()} ({(campaign.openRate * 100).toFixed(1)}%)</span>
+                      </div>
+                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full"
+                          style={{ width: `${campaign.openRate * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span>Clicks</span>
+                        <span>{campaign.clicks.toLocaleString()} ({(campaign.clickRate * 100).toFixed(1)}%)</span>
+                      </div>
+                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-green-500 rounded-full"
+                          style={{ width: `${campaign.clickRate * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="campaigns" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Campaign Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {campaigns.slice(0, 5).map((campaign) => (
-                    <div key={campaign.id} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <h4 className="font-medium">{campaign.title}</h4>
-                        <p className="text-sm text-gray-600">
-                          {new Date(campaign.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium">
-                          {campaign.stats.open_rate.toFixed(1)}% open
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {campaign.stats.total_sent} sent
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {campaigns.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      No campaigns yet. Create your first campaign to see performance data.
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Campaign Metrics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={campaigns.slice(0, 6).map(c => ({
-                    name: c.title.substring(0, 10) + '...',
-                    sent: c.stats.total_sent,
-                    opened: c.stats.opens,
-                    clicked: c.stats.clicks,
-                  }))}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="sent" fill="#8884d8" name="Sent" />
-                    <Bar dataKey="opened" fill="#82ca9d" name="Opened" />
-                    <Bar dataKey="clicked" fill="#ffc658" name="Clicked" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="audience" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="w-5 h-5" />
-                  Top Locations
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {locationData.map((location, index) => (
-                    <div key={location.country} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-medium">
-                          {index + 1}
-                        </div>
-                        <span>{location.country}</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">{location.subscribers.toLocaleString()}</div>
-                        <div className="text-sm text-gray-600">{location.percentage}%</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Subscriber Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      Active Subscribers
-                    </span>
-                    <span className="font-medium">
-                      {fans.filter(f => f.status === 'subscribed').length.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      Unsubscribed
-                    </span>
-                    <span className="font-medium">
-                      {fans.filter(f => f.status === 'unsubscribed').length.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      Bounced
-                    </span>
-                    <span className="font-medium">
-                      {fans.filter(f => f.status === 'bounced').length.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                      Pending
-                    </span>
-                    <span className="font-medium">
-                      {fans.filter(f => f.status === 'pending').length.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="engagement" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
-                  Engagement Over Time
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={trendData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="opens" stroke="#8884d8" name="Opens" />
-                    <Line type="monotone" dataKey="clicks" stroke="#82ca9d" name="Clicks" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Best Performing Times</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Tuesday 10:00 AM</span>
-                    <span className="font-medium text-green-600">32.1% open rate</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Thursday 2:00 PM</span>
-                    <span className="font-medium text-green-600">29.8% open rate</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Wednesday 11:00 AM</span>
-                    <span className="font-medium text-green-600">28.5% open rate</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Friday 9:00 AM</span>
-                    <span className="font-medium text-green-600">27.2% open rate</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="revenue" className="space-y-4">
+          {/* Campaign Comparison Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>Revenue Attribution</CardTitle>
+              <CardTitle>Campaign Comparison</CardTitle>
+              <CardDescription>
+                Compare open and click rates across campaigns
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsBarChart
+                  data={data.campaignPerformance.slice(0, 10)}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 60,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="title" 
+                    angle={-45} 
+                    textAnchor="end"
+                    height={70}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar 
+                    dataKey="openRate" 
+                    fill="#3b82f6" 
+                    name="Open Rate"
+                    formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
+                  />
+                  <Bar 
+                    dataKey="clickRate" 
+                    fill="#10b981" 
+                    name="Click Rate"
+                    formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
+                  />
+                </RechartsBarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Campaign Details Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Campaign Details</CardTitle>
+              <CardDescription>
+                Detailed performance metrics for all campaigns
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12">
-                <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">Revenue Tracking</h3>
-                <p className="text-gray-600 mb-4">
-                  Connect your e-commerce platform to track revenue from email campaigns
-                </p>
-                <Button>
-                  Connect Integration
-                </Button>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 px-4">Campaign</th>
+                      <th className="text-left py-3 px-4">Send Date</th>
+                      <th className="text-right py-3 px-4">Sent</th>
+                      <th className="text-right py-3 px-4">Opens</th>
+                      <th className="text-right py-3 px-4">Clicks</th>
+                      <th className="text-right py-3 px-4">Open Rate</th>
+                      <th className="text-right py-3 px-4">Click Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.campaignPerformance.map((campaign) => (
+                      <tr key={campaign.id} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4 font-medium">{campaign.title}</td>
+                        <td className="py-3 px-4">{format(parseISO(campaign.sendDate), 'MMM d, yyyy')}</td>
+                        <td className="py-3 px-4 text-right">{campaign.totalSent.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-right">{campaign.opens.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-right">{campaign.clicks.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-right">{(campaign.openRate * 100).toFixed(1)}%</td>
+                        <td className="py-3 px-4 text-right">{(campaign.clickRate * 100).toFixed(1)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="audience" className="space-y-4">
+          {/* Audience Growth Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Audience Growth</CardTitle>
+              <CardDescription>
+                Track your subscriber growth over time
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart
+                  data={data.timeSeriesData.map((item, index, array) => {
+                    // Calculate cumulative subscribers (this is simplified - in a real app you'd use actual data)
+                    const baseSubscribers = data.overview.totalSubscribers - data.overview.newSubscribers;
+                    const growthPerPeriod = data.overview.newSubscribers / array.length;
+                    return {
+                      ...item,
+                      subscribers: Math.round(baseSubscribers + (growthPerPeriod * index))
+                    };
+                  })}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="label" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="subscribers"
+                    stroke="#8884d8"
+                    activeDot={{ r: 8 }}
+                    name="Subscribers"
+                  />
+                </RechartsLineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Audience Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Subscribers
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {data.overview.totalSubscribers.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Active subscribers
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  New Subscribers
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {data.overview.newSubscribers.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  In the last 30 days
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Unsubscribes
+                </CardTitle>
+                <TrendingDown className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {data.overview.totalUnsubscribes.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {data.overview.totalSubscribers > 0 
+                    ? `${((data.overview.totalUnsubscribes / (data.overview.totalSubscribers + data.overview.totalUnsubscribes)) * 100).toFixed(1)}% unsubscribe rate`
+                    : '0% unsubscribe rate'
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

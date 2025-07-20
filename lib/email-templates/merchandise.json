@@ -1,0 +1,603 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "logo",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1633409361618-c73427e4e206?q=80&w=200&auto=format&fit=crop",
+        "alt": "Brand Logo",
+        "title": "Brand Logo",
+        "maily-component": "logo",
+        "size": "md",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "lg"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 1,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "NEW MERCH COLLECTION"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "italic"
+            }
+          ],
+          "text": "Just Dropped: Limited Edition Items"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop",
+        "alt": "Merchandise Collection",
+        "title": "New Merch Collection",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#6aa84f"
+              }
+            }
+          ],
+          "text": "SUMMER 2025 COLLECTION"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We're excited to announce our brand new merchandise collection! These limited edition items are available now while supplies last."
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "sm"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#6aa84f"
+              }
+            },
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "20% OFF for the first 48 hours!"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Use code "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "SUMMER25"
+        },
+        {
+          "type": "text",
+          "text": " at checkout"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "SHOP NOW",
+        "url": "https://shop.com",
+        "alignment": "center",
+        "variant": "filled",
+        "borderRadius": "round",
+        "buttonColor": "#6aa84f",
+        "textColor": "#FFFFFF"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "lg"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "FEATURED ITEMS"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "columns",
+      "attrs": {
+        "cols": 2
+      },
+      "content": [
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=300&auto=format&fit=crop",
+                "alt": "T-Shirt",
+                "title": "Limited Edition T-Shirt",
+                "width": "100%",
+                "alignment": "center"
+              }
+            },
+            {
+              "type": "heading",
+              "attrs": {
+                "level": 4,
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Limited Edition T-Shirt"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "$25.00"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "attrs": {
+                "text": "Shop Now",
+                "url": "https://shop.com/tshirt",
+                "alignment": "center",
+                "variant": "outline",
+                "borderRadius": "round"
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1603048588665-791ca91d0e98?q=80&w=300&auto=format&fit=crop",
+                "alt": "Vinyl Record",
+                "title": "Limited Edition Vinyl",
+                "width": "100%",
+                "alignment": "center"
+              }
+            },
+            {
+              "type": "heading",
+              "attrs": {
+                "level": 4,
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Vinyl Record"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "$35.00"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "attrs": {
+                "text": "Shop Now",
+                "url": "https://shop.com/vinyl",
+                "alignment": "center",
+                "variant": "outline",
+                "borderRadius": "round"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "columns",
+      "attrs": {
+        "cols": 2
+      },
+      "content": [
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1622560480654-d96214fdc887?q=80&w=300&auto=format&fit=crop",
+                "alt": "Tote Bag",
+                "title": "Canvas Tote Bag",
+                "width": "100%",
+                "alignment": "center"
+              }
+            },
+            {
+              "type": "heading",
+              "attrs": {
+                "level": 4,
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Tote Bag"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "$15.00"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "attrs": {
+                "text": "Shop Now",
+                "url": "https://shop.com/tote",
+                "alignment": "center",
+                "variant": "outline",
+                "borderRadius": "round"
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?q=80&w=300&auto=format&fit=crop",
+                "alt": "Bundle",
+                "title": "Bundle Deal",
+                "width": "100%",
+                "alignment": "center"
+              }
+            },
+            {
+              "type": "heading",
+              "attrs": {
+                "level": 4,
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Bundle & Save"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "$65.00"
+                },
+                {
+                  "type": "text",
+                  "text": " (Save $10)"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "attrs": {
+                "text": "Shop Bundle",
+                "url": "https://shop.com/bundle",
+                "alignment": "center",
+                "variant": "outline",
+                "borderRadius": "round"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "lg"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Shipping worldwide. Orders typically ship within 3-5 business days."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Questions about your order? Email us at "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "mailto:shop@artistname.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "shop@artistname.com"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Follow us on social media for more updates:"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://instagram.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Instagram"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://twitter.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Twitter"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://facebook.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Facebook"
+        }
+      ]
+    }
+  ]
+}

@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         sent_at: new Date().toISOString(),
       });
       sent++;
-    } catch (e) {
+    } catch {
       // Log/send error, but continue
       continue;
     }

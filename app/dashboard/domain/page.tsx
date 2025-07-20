@@ -730,8 +730,8 @@ export default function DomainPage() {
             </Card>
           )}
 
-          {/* AWS SES Status */}
-          {reputationData && (
+          {/* AWS SES Status - Only visible to admin users
+          {reputationData && reputationData.sesStatus && (reputationData.userRole === "owner" || reputationData.userRole === "admin") && (
             <Card>
               <CardHeader>
                 <CardTitle>AWS SES Account Status</CardTitle>
@@ -787,7 +787,7 @@ export default function DomainPage() {
                 </div>
               </CardContent>
             </Card>
-          )}
+          )} */}
 
           {/* Dedicated IP Management */}
           {reputationData && (
@@ -900,7 +900,7 @@ export default function DomainPage() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>) /* Advanced Settings */}/* Advanced Settings */
+            </Card>) /* Advanced Settings */}
 
           {/* Advanced Settings */}
           <Card>

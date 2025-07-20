@@ -71,7 +71,11 @@ export async function POST(req: NextRequest) {
       status: 'pending',
     });
     return NextResponse.json({ dns: records });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'SES error' }, { status: 500 });
+  } catch (e: unknown) {
+    let message = 'SES error';
+    if (e && typeof e === 'object' && 'message' in e && typeof (e as { message?: string }).message === 'string') {
+      message = (e as { message: string }).message;
+    }
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 } 

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getOrCreateArtistByClerkId } from "@/lib/db";
-import { 
-  SESClient, 
+import {
+  SESClient,
   GetIdentityVerificationAttributesCommand,
   GetIdentityDkimAttributesCommand,
   GetSendStatisticsCommand,
@@ -18,7 +18,7 @@ const ses = new SESClient({
   },
 });
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -26,7 +26,29 @@ export async function GET(request: NextRequest) {
     }
 
     const artist = await getOrCreateArtistByClerkId(userId, "", "");
-    
+
+    const userRole = "owner"; // Default for artist owner
+
+    // If not the artist owner, check team member role
+    if (userId !== artist.clerk_user_id) {
+      // For now, let's simplify and just allow the artist owner to access reputation data
+      // In a real implementation, you would need to fetch the user's email from Clerk
+      // and match it with team members
+      return NextResponse.json({ error: "Only the artist owner can view reputation data" }, { status: 403 });
+
+      /* 
+      // This would be the proper implementation if we had a way to get the user's email:
+      const teamMembers = await getTeamMembersByArtist(artist.id);
+      const userEmail = "user@example.com"; // Need to get this from Clerk somehow
+      const teamMember = teamMembers.find(member => member.email === userEmail);
+      
+      if (!teamMember) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      userRole = teamMember.role;
+      */
+    }
+
     if (!artist.ses_domain) {
       return NextResponse.json({ error: "No domain configured" }, { status: 400 });
     }
@@ -73,16 +95,16 @@ export async function GET(request: NextRequest) {
     let domainReputation = 100;
     if (bounceRate > 5) domainReputation -= 20;
     else if (bounceRate > 3) domainReputation -= 10;
-    
+
     if (complaintRate > 0.5) domainReputation -= 30;
     else if (complaintRate > 0.1) domainReputation -= 15;
-    
+
     if (rejectRate > 2) domainReputation -= 15;
-    
+
     if (!verificationAttributes || verificationAttributes.VerificationStatus !== 'Success') {
       domainReputation -= 25;
     }
-    
+
     if (!dkimAttributes?.DkimEnabled) {
       domainReputation -= 10;
     }
@@ -95,7 +117,7 @@ export async function GET(request: NextRequest) {
     // Real blacklist checking would require external APIs
     // For now, we'll simulate based on reputation scores
     const blacklistCount = domainReputation < 60 ? Math.floor(Math.random() * 3) : 0;
-    
+
     const blacklists = [
       'Spamhaus SBL', 'Spamhaus CSS', 'Spamhaus PBL', 'SURBL', 'URIBL',
       'Barracuda', 'SpamCop', 'PSBL', 'Invaluement', 'DNSWL', 'Reputation Authority',
@@ -120,19 +142,23 @@ export async function GET(request: NextRequest) {
     const openRate = Math.round((20 + Math.random() * 15) * 10) / 10; // 20-35%
     const clickRate = Math.round((2 + Math.random() * 4) * 10) / 10; // 2-6%
 
-    return NextResponse.json({
+    // Determine if user should see admin-only information
+    const isAdminUser = userRole === "owner" || userRole === "admin";
+
+    // Create response object
+    const responseData = {
       domain: artist.ses_domain,
       domainReputation: {
         score: Math.round(domainReputation),
-        status: domainReputation >= 90 ? 'excellent' : 
-                domainReputation >= 75 ? 'good' : 
-                domainReputation >= 60 ? 'fair' : 'poor'
+        status: domainReputation >= 90 ? 'excellent' :
+          domainReputation >= 75 ? 'good' :
+            domainReputation >= 60 ? 'fair' : 'poor'
       },
       ipReputation: {
         score: Math.round(ipReputation),
-        status: ipReputation >= 90 ? 'excellent' : 
-                ipReputation >= 75 ? 'good' : 
-                ipReputation >= 60 ? 'fair' : 'poor',
+        status: ipReputation >= 90 ? 'excellent' :
+          ipReputation >= 75 ? 'good' :
+            ipReputation >= 60 ? 'fair' : 'poor',
         address: 'AWS SES Shared Pool', // Real dedicated IPs would be configured separately
         type: 'shared'
       },
@@ -155,29 +181,35 @@ export async function GET(request: NextRequest) {
       },
       ispFeedback,
       authentication: {
-        spf: { 
-          verified: verificationAttributes?.VerificationStatus === 'Success', 
-          record: `v=spf1 include:amazonses.com ~all` 
+        spf: {
+          verified: verificationAttributes?.VerificationStatus === 'Success',
+          record: `v=spf1 include:amazonses.com ~all`
         },
-        dkim: { 
-          verified: dkimAttributes?.DkimVerificationStatus === 'Success', 
+        dkim: {
+          verified: dkimAttributes?.DkimVerificationStatus === 'Success',
           selector: 'amazonses',
           enabled: dkimAttributes?.DkimEnabled || false
         },
-        dmarc: { 
+        dmarc: {
           verified: false, // Would need separate DMARC checking
           policy: 'none',
           record: `v=DMARC1; p=none; rua=mailto:dmarc@${artist.ses_domain}`
         }
       },
-      sesStatus: {
-        sendingEnabled: sendingEnabledResult.Enabled,
-        sendQuota: quotaResult.Max24HourSend,
-        sendRate: quotaResult.MaxSendRate,
-        sentLast24Hours: quotaResult.SentLast24Hours
-      },
-      lastUpdated: new Date().toISOString()
-    });
+      // Only include AWS SES account status for admin users
+      ...(isAdminUser && {
+        sesStatus: {
+          sendingEnabled: sendingEnabledResult.Enabled,
+          sendQuota: quotaResult.Max24HourSend,
+          sendRate: quotaResult.MaxSendRate,
+          sentLast24Hours: quotaResult.SentLast24Hours
+        }
+      }),
+      lastUpdated: new Date().toISOString(),
+      userRole: userRole // Include user role for frontend permission checks
+    };
+
+    return NextResponse.json(responseData);
 
   } catch (error) {
     console.error("Error fetching reputation data:", error);

@@ -53,10 +53,14 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(response);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error checking domain status:', error);
+    let message = 'Failed to check domain status';
+    if (error && typeof error === 'object' && 'message' in error && typeof (error as { message?: unknown }).message === 'string') {
+      message = (error as { message: string }).message;
+    }
     return NextResponse.json(
-      { error: error.message || 'Failed to check domain status' },
+      { error: message },
       { status: 500 }
     );
   }

@@ -1,0 +1,583 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 1,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Live in Concert"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=600&auto=format&fit=crop",
+        "alt": "Concert Image",
+        "title": "Concert Announcement",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Artist Name"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "World Tour 2025"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We're thrilled to announce our upcoming show in your city! Join us for an unforgettable night of music and memories."
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Show Details"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Date: "
+        },
+        {
+          "type": "text",
+          "text": "Saturday, August 15, 2025"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Time: "
+        },
+        {
+          "type": "text",
+          "text": "Doors at 7:00 PM, Show at 8:00 PM"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Venue: "
+        },
+        {
+          "type": "text",
+          "text": "The Music Hall"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Address: "
+        },
+        {
+          "type": "text",
+          "text": "123 Main Street, City, State"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://maps.google.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "View Map"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Special Guests: "
+        },
+        {
+          "type": "text",
+          "text": "Opening Act Name"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Ticket Information"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Tickets go on sale this Friday at 10:00 AM local time."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "General Admission: "
+        },
+        {
+          "type": "text",
+          "text": "$35"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "VIP Package: "
+        },
+        {
+          "type": "text",
+          "text": "$75 (includes early entry, exclusive merch, and meet & greet)"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#cc0000"
+              }
+            }
+          ],
+          "text": "Fan club members get early access starting Thursday at 10:00 AM!"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "Get Tickets",
+        "url": "https://tickets.com",
+        "alignment": "center",
+        "variant": "filled",
+        "borderRadius": "round",
+        "buttonColor": "#4A5568",
+        "textColor": "#FFFFFF"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "More Tour Dates"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Aug 12"
+        },
+        {
+          "type": "text",
+          "text": " - Chicago, IL - Metro"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Aug 15"
+        },
+        {
+          "type": "text",
+          "text": " - Your City, ST - The Music Hall"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Aug 18"
+        },
+        {
+          "type": "text",
+          "text": " - Denver, CO - Bluebird Theater"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Aug 20"
+        },
+        {
+          "type": "text",
+          "text": " - Seattle, WA - The Crocodile"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "See All Tour Dates",
+        "url": "https://artistwebsite.com/tour",
+        "alignment": "center",
+        "variant": "outline",
+        "borderRadius": "round"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We can't wait to see you at the show!"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Follow us on social media for more updates:"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://instagram.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Instagram"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://twitter.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Twitter"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://facebook.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Facebook"
+        }
+      ]
+    }
+  ]
+}

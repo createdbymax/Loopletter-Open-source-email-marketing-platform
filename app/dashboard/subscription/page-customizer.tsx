@@ -2,143 +2,32 @@
 
 import { useState } from 'react';
 import { Artist } from '@/lib/types';
-import { 
-  Palette, 
-  Type, 
-  Layout, 
-  Image as ImageIcon,
-  Settings,
-  Eye,
-  Save,
-  RotateCcw,
-  Sparkles,
-  Heart,
-  Star,
-  Music,
-  Users,
-  Zap
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RefreshCw, Save, X } from 'lucide-react';
 
 interface PageCustomizerProps {
   artist: Artist;
-  onSave: (settings: any) => void;
+  onSave: (settings: any) => Promise<void>;
 }
 
-// Predefined themes and styles
-const THEMES = {
-  gradient: {
-    name: 'Gradient',
-    preview: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    colors: { primary: '#3b82f6', secondary: '#1d4ed8', accent: '#8b5cf6' }
-  },
-  solid: {
-    name: 'Solid',
-    preview: '#1f2937',
-    colors: { primary: '#1f2937', secondary: '#374151', accent: '#6b7280' }
-  },
-  vibrant: {
-    name: 'Vibrant',
-    preview: 'linear-gradient(135deg, #ec4899, #f59e0b)',
-    colors: { primary: '#ec4899', secondary: '#f59e0b', accent: '#8b5cf6' }
-  },
-  purple: {
-    name: 'Purple',
-    preview: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
-    colors: { primary: '#8b5cf6', secondary: '#3b82f6', accent: '#ec4899' }
-  },
-  green: {
-    name: 'Green',
-    preview: 'linear-gradient(135deg, #10b981, #059669)',
-    colors: { primary: '#10b981', secondary: '#059669', accent: '#3b82f6' }
-  },
-  orange: {
-    name: 'Orange',
-    preview: 'linear-gradient(135deg, #f59e0b, #d97706)',
-    colors: { primary: '#f59e0b', secondary: '#d97706', accent: '#ec4899' }
-  },
-  red: {
-    name: 'Red',
-    preview: 'linear-gradient(135deg, #ef4444, #dc2626)',
-    colors: { primary: '#ef4444', secondary: '#dc2626', accent: '#8b5cf6' }
-  },
-  teal: {
-    name: 'Teal',
-    preview: 'linear-gradient(135deg, #14b8a6, #0d9488)',
-    colors: { primary: '#14b8a6', secondary: '#0d9488', accent: '#3b82f6' }
-  },
-  pink: {
-    name: 'Pink',
-    preview: 'linear-gradient(135deg, #ec4899, #be185d)',
-    colors: { primary: '#ec4899', secondary: '#be185d', accent: '#8b5cf6' }
-  },
-  dark: {
-    name: 'Dark',
-    preview: 'linear-gradient(135deg, #1f2937, #111827)',
-    colors: { primary: '#1f2937', secondary: '#111827', accent: '#3b82f6' }
-  }
-};
-
-const LAYOUTS = {
-  default: { name: 'Default', description: 'Classic centered layout' },
-  minimal: { name: 'Minimal', description: 'Clean and simple' },
-  full: { name: 'Full Width', description: 'Edge-to-edge design' },
-  card: { name: 'Card', description: 'Floating card style' }
-};
-
-const BUTTON_STYLES = {
-  gradient: { name: 'Gradient', preview: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' },
-  solid: { name: 'Solid', preview: '#3b82f6' },
-  outline: { name: 'Outline', preview: 'transparent' },
-  rounded: { name: 'Rounded', preview: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }
-};
-
-const HEADER_TITLES = [
-  "Join {artist_name}'s Inner Circle",
-  "Join {artist_name}'s Family",
-  "Subscribe to {artist_name}",
-  "Get VIP Access",
-  "Join the Movement",
-  "Stay Connected",
-  "Join My List",
-  "Get Exclusive Updates",
-  "Be Part of the Journey",
-  "Join the Community"
-];
-
-const BUTTON_TEXTS = [
-  "Join the Family",
-  "Subscribe Now",
-  "Get VIP Access",
-  "Join Now",
-  "Count Me In",
-  "Sign Me Up",
-  "Let's Go",
-  "I'm In",
-  "Subscribe",
-  "Join the Movement"
-];
-
-const DEFAULT_BENEFITS = [
-  "Early access to new releases",
-  "Exclusive behind-the-scenes content",
-  "Personal updates and stories", 
-  "Tour announcements and presale access",
-  "Monthly voice messages",
-  "Studio session videos",
-  "Exclusive merchandise drops",
-  "Live stream notifications",
-  "Fan-only contests and giveaways",
-  "Direct messages from the artist"
-];
-
 export default function PageCustomizer({ artist, onSave }: PageCustomizerProps) {
-  const [activeTab, setActiveTab] = useState<'theme' | 'content' | 'layout' | 'preview'>('theme');
-  const [settings, setSettings] = useState({
+  // Default settings if none are saved
+  const DEFAULT_SETTINGS = {
     theme: 'gradient',
-    colors: THEMES.gradient.colors,
+    colors: {
+      primary: artist.settings?.brand_colors?.primary || '#3b82f6',
+      secondary: artist.settings?.brand_colors?.secondary || '#1d4ed8',
+      accent: '#8b5cf6'
+    },
     layout: 'default',
     header: {
-      title: "Join {artist_name}'s Inner Circle",
+      title: `Join ${artist.name}'s Inner Circle`,
       subtitle: "Get exclusive updates, early access to new music, and personal messages",
       show_social_links: true,
       show_artist_image: false,
@@ -153,406 +42,366 @@ export default function PageCustomizer({ artist, onSave }: PageCustomizerProps) 
     },
     benefits: {
       show_benefits: true,
-      custom_benefits: DEFAULT_BENEFITS.slice(0, 4)
+      custom_benefits: [
+        "Early access to new releases",
+        "Exclusive behind-the-scenes content",
+        "Personal updates and stories",
+        "Tour announcements and presale access"
+      ]
     },
     success_message: {
       title: "Welcome to the family! 🎉",
-      message: "You're now part of {artist_name}'s inner circle. Get ready for exclusive content, early access to new music, and behind-the-scenes updates."
+      message: `You're now part of ${artist.name}'s inner circle. Get ready for exclusive content, early access to new music, and behind-the-scenes updates.`
     }
-  });
+  };
 
-  const updateSettings = (path: string, value: any) => {
+  // Get existing settings or use defaults
+  const [settings, setSettings] = useState(artist.settings?.subscription_page_settings || DEFAULT_SETTINGS);
+  const [activeTab, setActiveTab] = useState('header');
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Helper function to update nested settings
+  const updateSettings = (path: string[], value: any) => {
     setSettings(prev => {
       const newSettings = { ...prev };
-      const keys = path.split('.');
       let current = newSettings;
       
-      for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+      // Navigate to the nested property
+      for (let i = 0; i < path.length - 1; i++) {
+        current = current[path[i]];
       }
       
-      current[keys[keys.length - 1]] = value;
+      // Update the value
+      current[path[path.length - 1]] = value;
       return newSettings;
     });
   };
-
-  const handleSave = () => {
-    onSave(settings);
-  };
-
-  const resetToDefaults = () => {
-    setSettings({
-      theme: 'gradient',
-      colors: THEMES.gradient.colors,
-      layout: 'default',
-      header: {
-        title: "Join {artist_name}'s Inner Circle",
-        subtitle: "Get exclusive updates, early access to new music, and personal messages",
-        show_social_links: true,
-        show_artist_image: false,
-        artist_image_url: null
-      },
-      form: {
-        button_text: "Join the Family",
-        button_style: "gradient",
-        show_name_field: true,
-        placeholder_email: "your@email.com",
-        placeholder_name: "Your first name"
-      },
-      benefits: {
-        show_benefits: true,
-        custom_benefits: DEFAULT_BENEFITS.slice(0, 4)
-      },
-      success_message: {
-        title: "Welcome to the family! 🎉",
-        message: "You're now part of {artist_name}'s inner circle. Get ready for exclusive content, early access to new music, and behind-the-scenes updates."
-      }
+  
+  // Helper function to update benefits array
+  const updateBenefit = (index: number, value: string) => {
+    setSettings(prev => {
+      const newSettings = { ...prev };
+      const benefits = [...newSettings.benefits.custom_benefits];
+      benefits[index] = value;
+      newSettings.benefits.custom_benefits = benefits;
+      return newSettings;
     });
   };
-
+  
+  // Helper function to add a new benefit
+  const addBenefit = () => {
+    setSettings(prev => {
+      const newSettings = { ...prev };
+      newSettings.benefits.custom_benefits = [...newSettings.benefits.custom_benefits, ''];
+      return newSettings;
+    });
+  };
+  
+  // Helper function to remove a benefit
+  const removeBenefit = (index: number) => {
+    setSettings(prev => {
+      const newSettings = { ...prev };
+      const benefits = [...newSettings.benefits.custom_benefits];
+      benefits.splice(index, 1);
+      newSettings.benefits.custom_benefits = benefits;
+      return newSettings;
+    });
+  };
+  
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onSave(settings);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Palette className="w-5 h-5 text-purple-600" />
+    <Card>
+      <CardHeader>
+        <CardTitle>Customize Subscription Page</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="header">Header</TabsTrigger>
+            <TabsTrigger value="form">Form</TabsTrigger>
+            <TabsTrigger value="benefits">Benefits</TabsTrigger>
+            <TabsTrigger value="success">Success Message</TabsTrigger>
+            <TabsTrigger value="colors">Colors</TabsTrigger>
+          </TabsList>
+          
+          {/* Header Tab */}
+          <TabsContent value="header" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="header-title">Header Title</Label>
+              <Input 
+                id="header-title" 
+                value={settings.header.title}
+                onChange={(e) => updateSettings(['header', 'title'], e.target.value)}
+                placeholder="Join the Inner Circle"
+              />
+              <p className="text-xs text-gray-500">
+                Use {'{artist_name}'} to include your artist name
+              </p>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Customize Subscription Page</h2>
-              <p className="text-gray-600">Personalize your fan signup experience</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={resetToDefaults}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Reset
-            </button>
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <Save className="w-4 h-4" />
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <div className="flex">
-          {[
-            { id: 'theme', label: 'Theme & Colors', icon: Palette },
-            { id: 'content', label: 'Content', icon: Type },
-            { id: 'layout', label: 'Layout', icon: Layout },
-            { id: 'preview', label: 'Preview', icon: Eye }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-purple-500 text-purple-600 bg-purple-50'
-                  : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="p-6">
-        {activeTab === 'theme' && (
-          <div className="space-y-8">
-            {/* Theme Selection */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Choose a Theme</h3>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {Object.entries(THEMES).map(([key, theme]) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      updateSettings('theme', key);
-                      updateSettings('colors', theme.colors);
-                    }}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      settings.theme === key
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div 
-                      className="w-full h-12 rounded-lg mb-2"
-                      style={{ background: theme.preview }}
-                    />
-                    <div className="text-sm font-medium text-gray-900">{theme.name}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Custom Colors */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Custom Colors</h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={settings.colors.primary}
-                      onChange={(e) => updateSettings('colors.primary', e.target.value)}
-                      className="w-12 h-10 rounded-lg border border-gray-300"
-                    />
-                    <input
-                      type="text"
-                      value={settings.colors.primary}
-                      onChange={(e) => updateSettings('colors.primary', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={settings.colors.secondary}
-                      onChange={(e) => updateSettings('colors.secondary', e.target.value)}
-                      className="w-12 h-10 rounded-lg border border-gray-300"
-                    />
-                    <input
-                      type="text"
-                      value={settings.colors.secondary}
-                      onChange={(e) => updateSettings('colors.secondary', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Accent Color</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={settings.colors.accent}
-                      onChange={(e) => updateSettings('colors.accent', e.target.value)}
-                      className="w-12 h-10 rounded-lg border border-gray-300"
-                    />
-                    <input
-                      type="text"
-                      value={settings.colors.accent}
-                      onChange={(e) => updateSettings('colors.accent', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'content' && (
-          <div className="space-y-8">
-            {/* Header Content */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Header Content</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                  <select
-                    value={settings.header.title}
-                    onChange={(e) => updateSettings('header.title', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  >
-                    {HEADER_TITLES.map(title => (
-                      <option key={title} value={title}>{title.replace('{artist_name}', artist.name)}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
-                  <textarea
-                    value={settings.header.subtitle}
-                    onChange={(e) => updateSettings('header.subtitle', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    rows={2}
-                  />
-                </div>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={settings.header.show_social_links}
-                      onChange={(e) => updateSettings('header.show_social_links', e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-sm text-gray-700">Show social links</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={settings.header.show_artist_image}
-                      onChange={(e) => updateSettings('header.show_artist_image', e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-sm text-gray-700">Show artist image</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Form Content */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Form Settings</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
-                  <select
-                    value={settings.form.button_text}
-                    onChange={(e) => updateSettings('form.button_text', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  >
-                    {BUTTON_TEXTS.map(text => (
-                      <option key={text} value={text}>{text}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Button Style</label>
-                  <div className="grid grid-cols-4 gap-3">
-                    {Object.entries(BUTTON_STYLES).map(([key, style]) => (
-                      <button
-                        key={key}
-                        onClick={() => updateSettings('form.button_style', key)}
-                        className={`p-3 rounded-lg border-2 transition-all ${
-                          settings.form.button_style === key
-                            ? 'border-purple-500 bg-purple-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <div 
-                          className="w-full h-8 rounded mb-2"
-                          style={{ background: style.preview }}
-                        />
-                        <div className="text-xs font-medium text-gray-900">{style.name}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={settings.form.show_name_field}
-                      onChange={(e) => updateSettings('form.show_name_field', e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-sm text-gray-700">Show name field</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Benefits */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Benefits Section</h3>
-              <div className="space-y-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={settings.benefits.show_benefits}
-                    onChange={(e) => updateSettings('benefits.show_benefits', e.target.checked)}
-                    className="rounded"
-                  />
-                  <span className="text-sm text-gray-700">Show benefits section</span>
-                </label>
-                {settings.benefits.show_benefits && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Benefits (Choose 4)</label>
-                    <div className="grid md:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
-                      {DEFAULT_BENEFITS.map(benefit => (
-                        <label key={benefit} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded">
-                          <input
-                            type="checkbox"
-                            checked={settings.benefits.custom_benefits.includes(benefit)}
-                            onChange={(e) => {
-                              const current = settings.benefits.custom_benefits;
-                              if (e.target.checked && current.length < 4) {
-                                updateSettings('benefits.custom_benefits', [...current, benefit]);
-                              } else if (!e.target.checked) {
-                                updateSettings('benefits.custom_benefits', current.filter(b => b !== benefit));
-                              }
-                            }}
-                            disabled={!settings.benefits.custom_benefits.includes(benefit) && settings.benefits.custom_benefits.length >= 4}
-                            className="rounded"
-                          />
-                          <span className="text-sm text-gray-700">{benefit}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'layout' && (
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Page Layout</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {Object.entries(LAYOUTS).map(([key, layout]) => (
-                  <button
-                    key={key}
-                    onClick={() => updateSettings('layout', key)}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
-                      settings.layout === key
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="font-medium text-gray-900 mb-1">{layout.name}</div>
-                    <div className="text-sm text-gray-600">{layout.description}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'preview' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Live Preview</h3>
-              <a
-                href={`/${artist.slug}/subscribe`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Eye className="w-4 h-4" />
-                Open Full Page
-              </a>
-            </div>
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <iframe
-                src={`/${artist.slug}/subscribe?preview=true`}
-                className="w-full h-96"
-                title="Subscription Page Preview"
+            
+            <div className="space-y-2">
+              <Label htmlFor="header-subtitle">Header Subtitle</Label>
+              <Textarea 
+                id="header-subtitle" 
+                value={settings.header.subtitle}
+                onChange={(e) => updateSettings(['header', 'subtitle'], e.target.value)}
+                placeholder="Get exclusive updates and early access"
+                rows={2}
               />
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-social-links"
+                checked={settings.header.show_social_links}
+                onCheckedChange={(checked) => updateSettings(['header', 'show_social_links'], checked)}
+              />
+              <Label htmlFor="show-social-links">Show Social Links</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-artist-image"
+                checked={settings.header.show_artist_image}
+                onCheckedChange={(checked) => updateSettings(['header', 'show_artist_image'], checked)}
+              />
+              <Label htmlFor="show-artist-image">Show Artist Image</Label>
+            </div>
+            
+            {settings.header.show_artist_image && (
+              <div className="space-y-2">
+                <Label htmlFor="artist-image-url">Artist Image URL</Label>
+                <Input 
+                  id="artist-image-url" 
+                  value={settings.header.artist_image_url || ''}
+                  onChange={(e) => updateSettings(['header', 'artist_image_url'], e.target.value)}
+                  placeholder="https://example.com/your-image.jpg"
+                />
+              </div>
+            )}
+          </TabsContent>
+          
+          {/* Form Tab */}
+          <TabsContent value="form" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="button-text">Button Text</Label>
+              <Input 
+                id="button-text" 
+                value={settings.form.button_text}
+                onChange={(e) => updateSettings(['form', 'button_text'], e.target.value)}
+                placeholder="Join Now"
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-name-field"
+                checked={settings.form.show_name_field}
+                onCheckedChange={(checked) => updateSettings(['form', 'show_name_field'], checked)}
+              />
+              <Label htmlFor="show-name-field">Show Name Field</Label>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="placeholder-email">Email Placeholder</Label>
+              <Input 
+                id="placeholder-email" 
+                value={settings.form.placeholder_email}
+                onChange={(e) => updateSettings(['form', 'placeholder_email'], e.target.value)}
+                placeholder="your@email.com"
+              />
+            </div>
+            
+            {settings.form.show_name_field && (
+              <div className="space-y-2">
+                <Label htmlFor="placeholder-name">Name Placeholder</Label>
+                <Input 
+                  id="placeholder-name" 
+                  value={settings.form.placeholder_name}
+                  onChange={(e) => updateSettings(['form', 'placeholder_name'], e.target.value)}
+                  placeholder="Your first name"
+                />
+              </div>
+            )}
+          </TabsContent>
+          
+          {/* Benefits Tab */}
+          <TabsContent value="benefits" className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-benefits"
+                checked={settings.benefits.show_benefits}
+                onCheckedChange={(checked) => updateSettings(['benefits', 'show_benefits'], checked)}
+              />
+              <Label htmlFor="show-benefits">Show Benefits Section</Label>
+            </div>
+            
+            {settings.benefits.show_benefits && (
+              <div className="space-y-4">
+                <Label>Custom Benefits</Label>
+                {settings.benefits.custom_benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input 
+                      value={benefit}
+                      onChange={(e) => updateBenefit(index, e.target.value)}
+                      placeholder={`Benefit ${index + 1}`}
+                    />
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => removeBenefit(index)}
+                      disabled={settings.benefits.custom_benefits.length <= 1}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                <Button 
+                  variant="outline" 
+                  onClick={addBenefit}
+                  className="w-full"
+                >
+                  Add Benefit
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+          
+          {/* Success Message Tab */}
+          <TabsContent value="success" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="success-title">Success Title</Label>
+              <Input 
+                id="success-title" 
+                value={settings.success_message.title}
+                onChange={(e) => updateSettings(['success_message', 'title'], e.target.value)}
+                placeholder="Welcome to the family! 🎉"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="success-message">Success Message</Label>
+              <Textarea 
+                id="success-message" 
+                value={settings.success_message.message}
+                onChange={(e) => updateSettings(['success_message', 'message'], e.target.value)}
+                placeholder="You're now part of our inner circle..."
+                rows={3}
+              />
+              <p className="text-xs text-gray-500">
+                Use {'{artist_name}'} to include your artist name
+              </p>
+            </div>
+          </TabsContent>
+          
+          {/* Colors Tab */}
+          <TabsContent value="colors" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="primary-color">Primary Color</Label>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="color" 
+                    id="primary-color"
+                    value={settings.colors.primary}
+                    onChange={(e) => updateSettings(['colors', 'primary'], e.target.value)}
+                    className="w-10 h-10 rounded-md border border-gray-300"
+                  />
+                  <Input 
+                    value={settings.colors.primary}
+                    onChange={(e) => updateSettings(['colors', 'primary'], e.target.value)}
+                    className="font-mono"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="secondary-color">Secondary Color</Label>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="color" 
+                    id="secondary-color"
+                    value={settings.colors.secondary}
+                    onChange={(e) => updateSettings(['colors', 'secondary'], e.target.value)}
+                    className="w-10 h-10 rounded-md border border-gray-300"
+                  />
+                  <Input 
+                    value={settings.colors.secondary}
+                    onChange={(e) => updateSettings(['colors', 'secondary'], e.target.value)}
+                    className="font-mono"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="accent-color">Accent Color</Label>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="color" 
+                    id="accent-color"
+                    value={settings.colors.accent}
+                    onChange={(e) => updateSettings(['colors', 'accent'], e.target.value)}
+                    className="w-10 h-10 rounded-md border border-gray-300"
+                  />
+                  <Input 
+                    value={settings.colors.accent}
+                    onChange={(e) => updateSettings(['colors', 'accent'], e.target.value)}
+                    className="font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-4 rounded-lg" style={{
+              background: `linear-gradient(135deg, ${settings.colors.primary}, ${settings.colors.secondary})`,
+              color: 'white'
+            }}>
+              <h3 className="font-semibold mb-2">Preview</h3>
+              <p>This is how your gradient will look</p>
+              <div className="mt-4 flex justify-center">
+                <Button 
+                  className="bg-white text-gray-900 hover:bg-gray-100"
+                  style={{
+                    boxShadow: `0 0 0 2px ${settings.colors.accent}`,
+                  }}
+                >
+                  Button Preview
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+        
+        <div className="flex justify-end mt-6 gap-2">
+          <Button variant="outline" onClick={() => setSettings(DEFAULT_SETTINGS)}>
+            Reset to Default
+          </Button>
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

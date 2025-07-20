@@ -1,0 +1,441 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 1,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "New Music Release"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "italic"
+            }
+          ],
+          "text": "Available now on all streaming platforms"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600&auto=format&fit=crop",
+        "alt": "Album Cover",
+        "title": "Album Cover",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Artist Name - Album Title"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We're excited to announce the release of our new album. This collection of songs represents our journey over the past year and we can't wait for you to hear it."
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Featured Tracks:"
+        }
+      ]
+    },
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "Track 1"
+                },
+                {
+                  "type": "text",
+                  "text": " - Our lead single with an upbeat rhythm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "Track 2"
+                },
+                {
+                  "type": "text",
+                  "text": " - A melodic journey through sound"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "Track 3"
+                },
+                {
+                  "type": "text",
+                  "text": " - Our personal favorite from the album"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Listen now on your favorite platform:"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "sm"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "Listen on Spotify",
+        "url": "https://spotify.com",
+        "alignment": "center",
+        "variant": "filled",
+        "borderRadius": "round",
+        "buttonColor": "#1DB954",
+        "textColor": "#FFFFFF"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "sm"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "Listen on Apple Music",
+        "url": "https://music.apple.com",
+        "alignment": "center",
+        "variant": "filled",
+        "borderRadius": "round",
+        "buttonColor": "#FA243C",
+        "textColor": "#FFFFFF"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Tour Dates"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We're hitting the road to celebrate this release! Come see us live at these upcoming shows:"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "June 15"
+        },
+        {
+          "type": "text",
+          "text": " - New York, NY - Mercury Lounge"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "June 18"
+        },
+        {
+          "type": "text",
+          "text": " - Boston, MA - Paradise Rock Club"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "June 22"
+        },
+        {
+          "type": "text",
+          "text": " - Philadelphia, PA - Union Transfer"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "Get Tickets",
+        "url": "https://tickets.com",
+        "alignment": "center",
+        "variant": "filled",
+        "borderRadius": "round",
+        "buttonColor": "#4A5568",
+        "textColor": "#FFFFFF"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Follow us on social media for more updates:"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://instagram.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Instagram"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://twitter.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Twitter"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://facebook.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Facebook"
+        }
+      ]
+    }
+  ]
+}

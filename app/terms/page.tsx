@@ -24,9 +24,7 @@ export default function TermsPage() {
         <div className="space-y-16">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Agreement to Terms</h2>
-            <p>
-              By accessing or using LoopLetter (the "Service"), provided by LOST HILLS LLC, you agree to be bound by these Terms of Service (the "Terms"). If you do not agree, you may not use the Service.
-            </p>
+            <p className="text-gray-600 mb-6">Last updated: December 1, 2024. These terms govern your use of &quot;LoopLetter&quot; (the &quot;Service&quot;) provided by LoopLetter Inc. (&quot;Company&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). By accessing or using our Service, you agree to be bound by these Terms.</p>
           </section>
 
           <section>

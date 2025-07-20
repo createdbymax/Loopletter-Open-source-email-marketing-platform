@@ -1,5 +1,4 @@
 // Background job processing for email campaigns
-import { Campaign, Fan, Artist } from './types';
 import { sendCampaignEmail } from './email-sender';
 import { getCampaignById, getFansByArtist, getArtistById, updateCampaign } from './db';
 

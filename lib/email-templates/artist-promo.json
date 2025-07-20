@@ -1,0 +1,314 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://image.e.warnerrecords.com/lib/fe9712737764027d72/m/1/d72caa3c-bfa0-4853-a3d4-7af7fd71bda9.jpg",
+        "alt": "Main Banner",
+        "title": "Artist Banner",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://image.e.warnerrecords.com/lib/fe9712737764027d72/m/1/f57d2bd6-a7a9-47a2-868b-f25006464646.jpg",
+        "alt": "Artist Logo",
+        "title": "Artist Logo",
+        "width": "70%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://image.e.warnerrecords.com/lib/fe9712737764027d72/m/1/aceaf2cf-be8b-478a-b91b-d4db56266cea.gif",
+        "alt": "Promo GIF",
+        "title": "Animated Promo",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://image.e.warnerrecords.com/lib/fe9712737764027d72/m/1/76bd4f79-04ac-4ed5-bd59-4654a06bc856.jpg",
+        "alt": "Shop Now",
+        "title": "Shop Now",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Follow on social media:"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://instagram.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Instagram"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://tiktok.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "TikTok"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://youtube.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "YouTube"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://twitter.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Twitter"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://facebook.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Facebook"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://spotify.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Spotify"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://music.apple.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Apple Music"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "© Artist Name"
+        },
+        {
+          "type": "text",
+          "text": " 2025 Record Label"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "You received this email because you're a valued subscriber."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "#",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            },
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "TERMS OF USE"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "#",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            },
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "PRIVACY POLICY"
+        }
+      ]
+    }
+  ]
+}

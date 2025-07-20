@@ -12,8 +12,10 @@ import { ArrowLeft, ArrowRight, Upload, Plus, X } from "lucide-react";
 import { 
   MusicReleaseTemplateProps, 
   ShowAnnouncementTemplateProps, 
-  MerchandiseTemplateProps 
+  MerchandiseTemplateProps,
+  ArtistPromoTemplateProps
 } from "@/app/dashboard/email-templates";
+import { ArtistPromoForm } from "./artist-promo-form";
 
 interface TemplateFormProps {
   templateId: string;
@@ -29,6 +31,8 @@ export function TemplateForm({ templateId, onBack, onContinue }: TemplateFormPro
       return <ShowAnnouncementForm onBack={onBack} onContinue={onContinue} />;
     case 'merchandise':
       return <MerchandiseForm onBack={onBack} onContinue={onContinue} />;
+    case 'artist-promo':
+      return <ArtistPromoForm onBack={onBack} onContinue={onContinue} />;
     default:
       return <div>Template not found</div>;
   }

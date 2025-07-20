@@ -57,10 +57,14 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json(response);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error adding domain to SES:', error);
+    let message = 'Failed to add domain';
+    if (error instanceof Error) {
+      message = error.message;
+    }
     return NextResponse.json(
-      { error: error.message || 'Failed to add domain' },
+      { error: message },
       { status: 500 }
     );
   }

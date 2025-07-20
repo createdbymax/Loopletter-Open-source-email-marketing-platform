@@ -38,10 +38,14 @@ export async function POST(request: NextRequest) {
       verified,
       status: attributes?.VerificationStatus || 'NotStarted',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error checking domain verification:', error);
+    let message = 'Failed to check domain verification';
+    if (error && typeof error === 'object' && 'message' in error && typeof (error as { message?: string }).message === 'string') {
+      message = (error as { message: string }).message;
+    }
     return NextResponse.json(
-      { error: error.message || 'Failed to check domain verification' },
+      { error: message },
       { status: 500 }
     );
   }

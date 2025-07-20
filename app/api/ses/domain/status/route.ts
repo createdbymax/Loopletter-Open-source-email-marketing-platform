@@ -83,7 +83,13 @@ export async function GET(req: NextRequest) {
       tlsMode: 'opportunistic', // or 'enforced'
     };
     return NextResponse.json({ records, config });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'SES error' }, { status: 500 });
+  } catch (e: unknown) {
+    let errorMessage = 'SES error';
+    if (e instanceof Error) {
+      errorMessage = e.message;
+    } else if (typeof e === 'string') {
+      errorMessage = e;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 } 

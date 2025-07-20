@@ -13,6 +13,14 @@ export type Artist = {
   created_at: string;
   updated_at: string;
   settings?: ArtistSettings;
+  subscription?: {
+    plan: 'starter' | 'independent' | 'label';
+    status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
+    current_period_end?: string;
+    stripe_customer_id?: string;
+    stripe_subscription_id?: string;
+    metadata?: Record<string, string | number | boolean>;
+  };
 };
 
 export type ArtistSettings = {
@@ -30,6 +38,37 @@ export type ArtistSettings = {
     twitter?: string;
     spotify?: string;
   };
+  subscription_page_settings?: {
+    theme: string;
+    colors: {
+      primary: string;
+      secondary: string;
+      accent: string;
+    };
+    layout: string;
+    header: {
+      title: string;
+      subtitle: string;
+      show_social_links: boolean;
+      show_artist_image: boolean;
+      artist_image_url: string | null;
+    };
+    form: {
+      button_text: string;
+      button_style: string;
+      show_name_field: boolean;
+      placeholder_email: string;
+      placeholder_name: string;
+    };
+    benefits: {
+      show_benefits: boolean;
+      custom_benefits: string[];
+    };
+    success_message: {
+      title: string;
+      message: string;
+    };
+  };
 };
 
 export type Fan = {
@@ -38,7 +77,7 @@ export type Fan = {
   artist_id: string;
   name?: string | null;
   tags?: string[] | null;
-  custom_fields?: Record<string, any>;
+  custom_fields?: Record<string, string | number | boolean>;
   status: 'subscribed' | 'unsubscribed' | 'bounced' | 'pending';
   source: string; // 'manual', 'import', 'signup', 'api'
   location?: {
@@ -71,7 +110,7 @@ export type Campaign = {
   status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'cancelled';
   artist_id: string;
   template_id?: string | null;
-  template_data?: any | null;
+  template_data?: Record<string, unknown> | null;
   segment_id?: string | null;
   ab_test_id?: string | null;
   settings: CampaignSettings;
@@ -133,7 +172,7 @@ export type Segment = {
 export type SegmentCondition = {
   field: string;
   operator: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than' | 'in' | 'not_in';
-  value: any;
+  value: string | number | boolean | string[];
   logic?: 'and' | 'or';
 };
 
@@ -156,7 +195,7 @@ export type Automation = {
 
 export type AutomationTrigger = {
   type: 'fan_subscribed' | 'fan_tagged' | 'campaign_opened' | 'campaign_clicked' | 'date_based' | 'custom_field_changed';
-  conditions: Record<string, any>;
+  conditions: Record<string, string | number | boolean>;
   delay?: {
     amount: number;
     unit: 'minutes' | 'hours' | 'days' | 'weeks';
@@ -165,7 +204,7 @@ export type AutomationTrigger = {
 
 export type AutomationAction = {
   type: 'send_email' | 'add_tag' | 'remove_tag' | 'update_field' | 'webhook' | 'wait';
-  config: Record<string, any>;
+  config: Record<string, string | number | boolean>;
   delay?: {
     amount: number;
     unit: 'minutes' | 'hours' | 'days' | 'weeks';
@@ -191,7 +230,7 @@ export type ABTest = {
 export type ABTestVariant = {
   id: string;
   name: string;
-  content: Record<string, any>;
+  content: Record<string, string | number | boolean>;
   stats: CampaignStats;
 };
 
@@ -213,7 +252,7 @@ export type TemplateVariable = {
   name: string;
   type: 'text' | 'image' | 'url' | 'color' | 'number' | 'boolean';
   label: string;
-  default_value?: any;
+  default_value?: string | number | boolean;
   required: boolean;
 };
 
@@ -246,7 +285,7 @@ export type Integration = {
   artist_id: string;
   type: 'shopify' | 'woocommerce' | 'stripe' | 'spotify' | 'instagram' | 'twitter' | 'zapier';
   name: string;
-  config: Record<string, any>;
+  config: Record<string, string | number | boolean>;
   status: 'connected' | 'disconnected' | 'error';
   last_sync_at?: string;
   created_at: string;
@@ -254,7 +293,7 @@ export type Integration = {
 
 export type TemplateData = {
   templateId: string;
-  data: any;
+  data: Record<string, unknown>;
 };
 
 // Analytics types
@@ -281,7 +320,7 @@ export type CampaignFormData = {
   subject: string;
   message: string;
   template_id?: string;
-  template_data?: any;
+  template_data?: Record<string, unknown>;
   segment_id?: string;
   send_date?: string;
   settings: CampaignSettings;

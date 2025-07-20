@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Mail, MessageSquare, Phone, MapPin, Clock, HelpCircle } from "lucide-react";
+import { Mail, MessageSquare, Clock, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact Us - LoopLetter",
-  description: "Get in touch with the LoopLetter team. We're here to help with questions, support, and feedback.",
+  description: "Get in touch with the LoopLetter team. We&apos;d love to hear from you with questions, support, and feedback.",
 };
 
 export default function ContactPage() {
@@ -15,7 +15,7 @@ export default function ContactPage() {
         <div className="max-w-4xl mx-auto px-6 py-16">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
           <p className="text-xl text-gray-600">
-            We're here to help. Reach out with questions, feedback, or just to say hello.
+            We&apos;re here to help. Reach out with questions, feedback, or just to say hello.
           </p>
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function ContactPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">General Support</h3>
               <p className="text-gray-600 mb-6">
-                Questions about your account, billing, or how to use LoopLetter? We're here to help.
+                Questions about your account, billing, or how to use LoopLetter? We&apos;re here to help.
               </p>
               <div className="space-y-2">
                 <p className="font-medium text-gray-900">support@loopletter.com</p>
@@ -50,7 +50,7 @@ export default function ContactPage() {
               </p>
               <div className="space-y-2">
                 <p className="font-medium text-gray-900">sales@loopletter.com</p>
-                <p className="text-sm text-gray-600">Let's talk about your needs</p>
+                <p className="text-sm text-gray-600">Let&apos;s talk about your needs</p>
               </div>
             </div>
 

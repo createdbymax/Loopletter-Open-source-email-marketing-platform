@@ -1,0 +1,785 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "logo",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200&auto=format&fit=crop",
+        "alt": "Artist Logo",
+        "title": "Artist Logo",
+        "maily-component": "logo",
+        "size": "md",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 1,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "ARTIST NEWSLETTER"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "italic"
+            }
+          ],
+          "text": "Monthly Update - July 2025"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop",
+        "alt": "Artist Photo",
+        "title": "Artist Newsletter",
+        "width": "100%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Hello Friends!"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We hope this newsletter finds you well! It's been an exciting month for us, and we wanted to share some updates with our amazing fans."
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "WHAT'S NEW"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We've been busy in the studio working on our next album. We're about halfway through the recording process and can't wait to share these new songs with you. The new material explores themes of connection, growth, and resilience - topics that have been important to us over the past year."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We're aiming for a fall release, so stay tuned for more details in the coming months!"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "RECENT HIGHLIGHTS"
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "attrs": {
+        "cols": 2
+      },
+      "content": [
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=300&auto=format&fit=crop",
+                "alt": "Festival Performance",
+                "title": "Festival Performance",
+                "width": "100%",
+                "alignment": "center"
+              }
+            },
+            {
+              "type": "heading",
+              "attrs": {
+                "level": 4,
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Festival Performance"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "We had an amazing time performing at Summer Sound Festival last month. Thank you to everyone who came out to see us!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1589903308904-1010c2294adc?q=80&w=300&auto=format&fit=crop",
+                "alt": "Radio Interview",
+                "title": "Radio Interview",
+                "width": "100%",
+                "alignment": "center"
+              }
+            },
+            {
+              "type": "heading",
+              "attrs": {
+                "level": 4,
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Radio Interview"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "center"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "We were guests on Music Matters podcast discussing our creative process. "
+                },
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://podcast.com/episode",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow"
+                      }
+                    }
+                  ],
+                  "text": "Listen here"
+                },
+                {
+                  "type": "text",
+                  "text": "."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "left"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "FAN SPOTLIGHT"
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "attrs": {
+        "cols": 2
+      },
+      "content": [
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "image",
+              "attrs": {
+                "src": "https://images.unsplash.com/photo-1522536421511-14c9073df899?q=80&w=300&auto=format&fit=crop",
+                "alt": "Fan Cover",
+                "title": "Fan Cover",
+                "width": "100%",
+                "alignment": "center"
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "left"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "This month's fan spotlight goes to Sarah from Portland, who created an amazing cover of our song \"Midnight Dreams.\" We were blown away by her interpretation! Check out her version "
+                },
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "link",
+                      "attrs": {
+                        "href": "https://youtube.com",
+                        "target": "_blank",
+                        "rel": "noopener noreferrer nofollow"
+                      }
+                    }
+                  ],
+                  "text": "here"
+                },
+                {
+                  "type": "text",
+                  "text": "."
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "left"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Want to be featured in our next newsletter? Tag us in your covers, artwork, or other creative projects inspired by our music!"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "UPCOMING SHOWS"
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "attrs": {
+        "cols": 2
+      },
+      "content": [
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "left"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "July 15"
+                },
+                {
+                  "type": "text",
+                  "text": " - The Echo, Los Angeles, CA"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "left"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "July 18"
+                },
+                {
+                  "type": "text",
+                  "text": " - The Independent, San Francisco, CA"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "attrs": {},
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "left"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "July 22"
+                },
+                {
+                  "type": "text",
+                  "text": " - Wonder Ballroom, Portland, OR"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "attrs": {
+                "textAlign": "left"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "marks": [
+                    {
+                      "type": "bold"
+                    }
+                  ],
+                  "text": "July 24"
+                },
+                {
+                  "type": "text",
+                  "text": " - The Crocodile, Seattle, WA"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "button",
+      "attrs": {
+        "text": "Get Tickets",
+        "url": "https://tickets.com",
+        "alignment": "center",
+        "variant": "filled",
+        "borderRadius": "round",
+        "buttonColor": "#4a86e8",
+        "textColor": "#FFFFFF"
+      }
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 3,
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "textStyle",
+              "attrs": {
+                "color": "#4a86e8"
+              }
+            }
+          ],
+          "text": "PLAYLIST OF THE MONTH"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "attrs": {
+        "src": "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?q=80&w=600&auto=format&fit=crop",
+        "alt": "Playlist",
+        "title": "Playlist of the Month",
+        "width": "60%",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "We've curated a special summer playlist featuring songs that inspire us, including tracks from artists we've been touring with and some of our personal favorites. "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://spotify.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Listen on Spotify"
+        },
+        {
+          "type": "text",
+          "text": "."
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "horizontalRule"
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Thank you for your continued support! We're so grateful to have such amazing fans."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "With love,"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "bold"
+            }
+          ],
+          "text": "Artist Name"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "attrs": {
+        "height": "md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Follow us on social media for more updates:"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "attrs": {
+        "textAlign": "center"
+      },
+      "content": [
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://instagram.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Instagram"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://twitter.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Twitter"
+        },
+        {
+          "type": "text",
+          "text": " | "
+        },
+        {
+          "type": "text",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://facebook.com",
+                "target": "_blank",
+                "rel": "noopener noreferrer nofollow"
+              }
+            }
+          ],
+          "text": "Facebook"
+        }
+      ]
+    }
+  ]
+}

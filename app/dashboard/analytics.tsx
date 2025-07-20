@@ -6,11 +6,11 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 
 export function Analytics() {
   const { user, isLoaded } = useUser();
-  const [campaigns, setCampaigns] = React.useState<any[]>([]);
-  const [fans, setFans] = React.useState<any[]>([]);
-  const [emailsSent, setEmailsSent] = React.useState<Record<string, any[]>>({});
+  const [campaigns, setCampaigns] = React.useState<any[]>([]); // TODO: Replace 'any' with Campaign[] if possible
+  const [fans, setFans] = React.useState<any[]>([]); // TODO: Replace 'any' with Fan[] if possible
+  const [emailsSent, setEmailsSent] = React.useState<Record<string, any[]>>({}); // TODO: Replace 'any' with a specific email type if possible
   const [loading, setLoading] = React.useState(true);
-  const [artist, setArtist] = React.useState<any>(null);
+  const [artist, setArtist] = React.useState<any>(null); // TODO: Replace 'any' with Artist if possible
 
   React.useEffect(() => {
     async function fetchData() {

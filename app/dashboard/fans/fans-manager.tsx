@@ -16,6 +16,8 @@ import {
 import { useEffect, useState } from "react";
 import { Plus, Users, Mail, Download, Upload } from "lucide-react";
 import { Fan, Artist } from "@/lib/types";
+import { SubscriberLimitWarning } from "@/components/ui/limit-warning";
+import { hasReachedSubscriberLimit } from "@/lib/subscription";
 
 export function FansManager() {
   const { user, isLoaded } = useUser();
@@ -87,20 +89,30 @@ export function FansManager() {
           <p className="text-gray-600">Manage your email subscribers</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Upload className="w-4 h-4 mr-2" />
-            Import CSV
+          <Button variant="outline" size="sm" asChild>
+            <a href="/dashboard/fans/import">
+              <Upload className="w-4 h-4 mr-2" />
+              Import CSV
+            </a>
           </Button>
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          <Button onClick={() => setShowAddForm(true)}>
+          <Button 
+            onClick={() => setShowAddForm(true)}
+            disabled={artist && hasReachedSubscriberLimit(artist, fans.length)}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Fan
           </Button>
         </div>
       </div>
+      
+      {/* Subscriber Limit Warning */}
+      {artist && (
+        <SubscriberLimitWarning artist={artist} currentCount={fans.length} />
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

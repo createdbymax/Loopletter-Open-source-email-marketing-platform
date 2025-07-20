@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Send, Save, Eye } from "lucide-react";
+import { Save, Send, ArrowLeft, Users, Mail, Calendar, BarChart3 } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { getOrCreateArtistByClerkId, getFansByArtist } from "@/lib/db";
@@ -37,7 +37,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
   useEffect(() => {
     fetchCampaign();
     fetchFanCount();
-  }, [campaignId, user, isLoaded]);
+  }, [campaignId, user, isLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchFanCount = async () => {
     if (!user || !isLoaded) return;
@@ -134,7 +134,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
     }
   };
 
-  const updateTemplateData = (newData: any) => {
+  const updateTemplateData = (newData: unknown) => {
     if (campaign) {
       setCampaign({
         ...campaign,

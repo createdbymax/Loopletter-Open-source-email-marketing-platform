@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IntegrationsManager } from "./integrations";
+import SubscriptionSettings from "./subscription";
+import Usage from "./usage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +35,107 @@ import {
 } from "lucide-react";
 import { getOrCreateArtistByClerkId, updateArtist } from "@/lib/db";
 import type { Artist, ArtistSettings } from "@/lib/types";
+
+// Main settings page component
+export default function SettingsPage() {
+  const { user } = useUser();
+  const [artist, setArtist] = useState<Artist | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("profile");
+  
+  // Get the tab parameter from the URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, []);
+
+  useEffect(() => {
+    async function fetchArtist() {
+      if (!user) return;
+      try {
+        const a = await getOrCreateArtistByClerkId(
+          user.id,
+          user.primaryEmailAddress?.emailAddress || "",
+          user.fullName || user.username || "Artist"
+        );
+        setArtist(a);
+      } catch (error) {
+        console.error("Error fetching artist:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchArtist();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 w-full">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+        <p className="text-gray-600 mt-2">
+          Manage your account and application preferences
+        </p>
+      </div>
+
+      <Tabs value={activeTab} defaultValue="profile" className="space-y-4" onValueChange={(value) => {
+        setActiveTab(value);
+        // Update URL without page reload
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', value);
+        window.history.pushState({}, '', url);
+      }}>
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="branding">Branding</TabsTrigger>
+          <TabsTrigger value="subscription">Subscription</TabsTrigger>
+          <TabsTrigger value="usage">Usage</TabsTrigger>
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile">
+          <ProfileSettings />
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <NotificationSettings />
+        </TabsContent>
+
+        <TabsContent value="branding">
+          <BrandingSettings />
+        </TabsContent>
+
+        <TabsContent value="subscription">
+          {artist && <SubscriptionSettings artist={artist} />}
+        </TabsContent>
+
+        <TabsContent value="usage">
+          {artist && <Usage artist={artist} />}
+        </TabsContent>
+
+        <TabsContent value="integrations">
+          <IntegrationsManager />
+        </TabsContent>
+
+        <TabsContent value="security">
+          <SecuritySettings />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
 
 function ProfileSettings() {
   const { user } = useUser();
@@ -673,7 +776,7 @@ function BrandingSettings() {
         );
         setArtist(a);
 
-        const settings = a.settings as any;
+        const settings = a.settings as unknown;
         setBranding({
           brand_colors: {
             primary: settings?.brand_colors?.primary || "#3b82f6",
@@ -750,7 +853,7 @@ function BrandingSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       {saveStatus === "success" && (
         <Alert>
           <CheckCircle className="h-4 w-4" />
@@ -934,7 +1037,7 @@ function BrandingSettings() {
                 id="spotify"
                 value={branding.social_links.spotify}
                 onChange={(e) => updateSocialLink("spotify", e.target.value)}
-                placeholder="https://open.spotify.com/artist/your-artist-id"
+                placeholder="https://open.spotify.com/artist/your-id"
               />
             </div>
             <div>
@@ -943,7 +1046,7 @@ function BrandingSettings() {
                 id="youtube"
                 value={branding.social_links.youtube}
                 onChange={(e) => updateSocialLink("youtube", e.target.value)}
-                placeholder="https://youtube.com/@your_artist_name"
+                placeholder="https://youtube.com/@your_channel"
               />
             </div>
           </div>
@@ -968,57 +1071,8 @@ function BrandingSettings() {
 }
 
 function SecuritySettings() {
-  const { user } = useUser();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            API Keys
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Shield className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              API Keys Coming Soon
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Secure API key management for integrating with external services
-              will be available soon.
-            </p>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-              <h4 className="font-medium text-blue-900 mb-2">
-                Planned Features:
-              </h4>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Generate secure API keys for third-party integrations</li>
-                <li>• Manage key permissions and scopes</li>
-                <li>• Monitor API usage and activity logs</li>
-                <li>• Revoke and rotate keys as needed</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -1027,107 +1081,61 @@ function SecuritySettings() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <Label className="text-base">Two-Factor Authentication</Label>
-              <p className="text-sm text-gray-600">
-                Add an extra layer of security to your account
-              </p>
-            </div>
-            <Button variant="outline" disabled>
-              Coming Soon
+          <div>
+            <h3 className="text-lg font-medium mb-2">Password & Authentication</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Manage your password and authentication settings through your Clerk account.
+            </p>
+            <Button variant="outline">
+              Manage Account Security
             </Button>
           </div>
 
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <Label className="text-base">Login Activity</Label>
-              <p className="text-sm text-gray-600">
-                Monitor recent login attempts and active sessions
-              </p>
-            </div>
-            <Button variant="outline" disabled>
-              Coming Soon
+          <div className="pt-4 border-t">
+            <h3 className="text-lg font-medium mb-2">API Keys</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Create and manage API keys for programmatic access to your account.
+            </p>
+            <Button variant="outline">
+              Manage API Keys
             </Button>
           </div>
 
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <Label className="text-base">Data Export</Label>
+          <div className="pt-4 border-t">
+            <h3 className="text-lg font-medium mb-2">Login History</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              View your recent login activity.
+            </p>
+            <div className="bg-gray-50 rounded-md p-4">
               <p className="text-sm text-gray-600">
-                Download your account data and campaign history
+                Login history is available through your Clerk account settings.
               </p>
             </div>
-            <Button variant="outline" disabled>
-              Coming Soon
-            </Button>
           </div>
         </CardContent>
       </Card>
+
       <Card>
         <CardHeader>
-          <CardTitle className="text-red-600">Danger Zone</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-red-600">
+            <AlertTriangle className="w-5 h-5" />
+            Danger Zone
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Delete Account</Label>
-            <p className="text-sm text-gray-600 mb-3">
-              Permanently delete your account and all associated data. This
-              action cannot be undone.
-            </p>
-            <Button variant="destructive" disabled>
-              Delete Account (Coming Soon)
-            </Button>
-            <p className="text-xs text-gray-500 mt-2">
-              Account deletion functionality will be available in a future
-              update with proper data handling and confirmation workflows.
-            </p>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 border border-red-200 rounded-md">
+              <h3 className="text-lg font-medium text-red-600 mb-2">Delete Account</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Permanently delete your account and all associated data. This action cannot be undone.
+              </p>
+              <Button variant="destructive">
+                Delete Account
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-export default function SettingsPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-gray-600">
-          Manage your account and application preferences
-        </p>
-      </div>
-
-      <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="branding">Branding</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile">
-          <ProfileSettings />
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <NotificationSettings />
-        </TabsContent>
-
-        <TabsContent value="branding">
-          <BrandingSettings />
-        </TabsContent>
-
-        <TabsContent value="integrations">
-          <IntegrationsManager />
-        </TabsContent>
-
-        <TabsContent value="security">
-          <SecuritySettings />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }

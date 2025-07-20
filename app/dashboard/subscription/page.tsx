@@ -9,7 +9,7 @@ export const metadata = generateDashboardMetadata(
 );
 
 export default async function SubscriptionPage() {
-  const { userId } = await auth();
+  const { userId } = auth();
 
   if (!userId) {
     redirect("/sign-in");

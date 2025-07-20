@@ -1,58 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { 
-  getAutomationsByArtist, 
-  createAutomation, 
-  getOrCreateArtistByClerkId 
-} from '@/lib/db';
+import { withFeatureAccess } from '@/app/api/middleware/feature-access';
+import { createAutomation, getAutomationsByArtist } from '@/lib/db';
+import { Artist } from '@/lib/types';
 
-export async function GET(request: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+// Handler for automations
+async function handler(req: NextRequest, artist: Artist) {
+  // GET - Fetch automations
+  if (req.method === 'GET') {
+    try {
+      const automations = await getAutomationsByArtist(artist.id);
+      return NextResponse.json(automations);
+    } catch (error) {
+      console.error('Error fetching automations:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch automations' },
+        { status: 500 }
+      );
     }
-
-    const artist = await getOrCreateArtistByClerkId(userId, '', '');
-    const automations = await getAutomationsByArtist(artist.id);
-
-    return NextResponse.json(automations);
-  } catch (error) {
-    console.error('Failed to fetch automations:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch automations' },
-      { status: 500 }
-    );
   }
+
+  // POST - Create new automation
+  if (req.method === 'POST') {
+    try {
+      const data = await req.json();
+
+      const automation = await createAutomation({
+        name: data.name,
+        description: data.description || '',
+        artist_id: artist.id,
+        trigger: data.trigger,
+        actions: data.actions || [],
+        status: 'draft',
+      });
+
+      return NextResponse.json(automation);
+    } catch (error) {
+      console.error('Error creating automation:', error);
+      return NextResponse.json(
+        { error: 'Failed to create automation' },
+        { status: 500 }
+      );
+    }
+  }
+
+  // Method not allowed
+  return NextResponse.json(
+    { error: 'Method not allowed' },
+    { status: 405 }
+  );
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { name, description, trigger, actions, status } = body;
-
-    const artist = await getOrCreateArtistByClerkId(userId, '', '');
-
-    const automation = await createAutomation({
-      name,
-      description,
-      trigger,
-      actions,
-      status: status || 'draft',
-      artist_id: artist.id,
-    });
-
-    return NextResponse.json(automation);
-  } catch (error) {
-    console.error('Failed to create automation:', error);
-    return NextResponse.json(
-      { error: 'Failed to create automation' },
-      { status: 500 }
-    );
-  }
-}
+// Wrap the handler with feature access middleware
+export const GET = withFeatureAccess('automations', handler);
+export const POST = withFeatureAccess('automations', handler);

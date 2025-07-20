@@ -61,9 +61,7 @@ export default function UnsubscribePage() {
           <CardContent className="text-center py-12">
             <Mail className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h1 className="text-xl font-semibold mb-2">Unsubscribe Failed</h1>
-            <p className="text-gray-600">
-              We couldn't process your unsubscribe request. Please try again or contact support.
-            </p>
+            <p className="text-gray-600">We&apos;re sorry to see you go! You&apos;ve been unsubscribed from future emails. Please try again or contact support.</p>
           </CardContent>
         </Card>
       </div>
@@ -78,9 +76,7 @@ export default function UnsubscribePage() {
           <CardTitle className="text-xl">Successfully Unsubscribed</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
-            {fanEmail} has been removed from this mailing list.
-          </p>
+          <p className="text-gray-600">You&apos;ve been successfully unsubscribed from all future emails. {fanEmail} has been removed from this mailing list.</p>
           
           <div className="bg-blue-50 p-4 rounded-lg">
             <h3 className="font-medium mb-2">Want more control?</h3>

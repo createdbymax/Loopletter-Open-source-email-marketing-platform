@@ -29,8 +29,6 @@ import {
   Mail,
   Users,
   ArrowRight,
-  Play,
-  Heart,
   Music,
   Send,
   CheckCircle,
@@ -39,24 +37,11 @@ import {
   Zap,
   Target,
   TrendingUp,
-  Calendar,
-  MessageSquare,
-  Globe,
   Shield,
-  Clock,
-  Award,
   Sparkles,
-  ChevronRight,
   Headphones,
   Mic,
-  Radio,
-  Volume2,
   Eye,
-  Plus,
-  Settings,
-  FileText,
-  Monitor,
-  Smartphone,
 } from "lucide-react";
 
 export default function Home() {
@@ -65,13 +50,16 @@ export default function Home() {
       {/* Navigation */}
       <nav className="flex items-center justify-between px-6 lg:px-12 py-6 bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
         <div className="flex items-center gap-8">
-          <Image
-            src="/loopletterlogo.svg"
-            alt="LoopLetter"
-            width={140}
-            height={36}
-            className="flex-shrink-0"
-          />
+          <div className="relative group cursor-pointer">
+            <Image
+              src="/newlogo.svg"
+              alt="LoopLetter"
+              width={140}
+              height={36}
+              className="flex-shrink-0"
+            />
+            <Send className="absolute -bottom-1 -right-1 w-3 h-3 text-blue-500 opacity-70 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:translate-x-2 group-hover:-translate-y-2 group-hover:rotate-12 group-hover:scale-110" />
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -158,12 +146,12 @@ export default function Home() {
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </SignedIn>
-                <button className="text-gray-600 hover:text-gray-900 font-medium text-lg transition-colors flex items-center gap-3 group">
+                {/* <button className="text-gray-600 hover:text-gray-900 font-medium text-lg transition-colors flex items-center gap-3 group">
                   <div className="w-12 h-12 bg-white group-hover:bg-gray-50 rounded-full flex items-center justify-center transition-all shadow-sm border border-gray-200 group-hover:shadow-md group-hover:scale-105">
                     <Play className="w-5 h-5 ml-0.5 group-hover:scale-110 transition-transform" />
                   </div>
                   Watch Demo
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -196,7 +184,8 @@ export default function Home() {
                       Welcome back, Luna!
                     </h2>
                     <p className="text-gray-600">
-                      Here's what's happening with your email marketing
+                      Here&apos;s what&apos;s happening with your email
+                      marketing
                     </p>
                   </div>
 
@@ -237,7 +226,7 @@ export default function Home() {
                           <div className="w-3 h-3 rounded-full bg-green-500 mr-3"></div>
                           <div>
                             <h4 className="font-medium">
-                              🎵 "Midnight Dreams" is here!
+                              🎵 &quot;Midnight Dreams&quot; is here!
                             </h4>
                             <p className="text-sm text-gray-600">
                               Sent 2 days ago
@@ -321,9 +310,9 @@ export default function Home() {
               <span className="text-gray-400">problem</span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto">
-              You're building your career on rented land. Spotify playlists
+              You&apos;re building your career on rented land. Spotify playlists
               disappear. TikTok trends fade. Instagram reach drops. But your
-              fans? They're forever—if you can reach them.
+              fans? They&apos;re forever—if you can reach them.
             </p>
           </div>
 
@@ -350,7 +339,7 @@ export default function Home() {
               </h3>
               <p className="text-gray-600">
                 Millions of streams but no way to talk to your listeners. You
-                don't own your audience.
+                don&apos;t own your audience.
               </p>
             </div>
 
@@ -487,9 +476,9 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                "LoopLetter helped me turn casual listeners into real fans. My
-                last release got 3x more streams because I could reach my
-                audience directly."
+                &quot; &quot;LoopLetter helped me turn casual listeners into real
+                fans. My last release got 3x more streams because I could reach
+                my audience directly.&quot;&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -515,8 +504,8 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                "I sold out my first tour by emailing my LoopLetter fans first.
-                The personal connection makes all the difference.&quot;
+                &quot;I sold out my first tour by emailing my LoopLetter fans
+                first. The personal connection makes all the difference.&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -588,132 +577,236 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="px-6 lg:px-12 py-28 bg-gradient-to-b from-white to-gray-50">
-  <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-20">
-      <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-        Flexible pricing for artists
-        <br />
-        <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-          at every stage
-        </span>
-      </h2>
-      <p className="text-lg text-gray-600 mt-6 max-w-2xl mx-auto">
-        Start for free. Upgrade as you grow. No contracts, no hidden fees.
-      </p>
-    </div>
+      <section
+        id="pricing"
+        className="px-6 lg:px-12 py-28 bg-gradient-to-b from-white to-gray-50"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+              Flexible pricing for artists
+              <br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                at every stage
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600 mt-6 max-w-2xl mx-auto">
+              Start for free. Upgrade as you grow. No contracts, no hidden fees.
+            </p>
+          </div>
 
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-      {/* STARTER PLAN */}
-      <div className="rounded-2xl p-8 shadow-md border bg-white border-gray-200 hover:shadow-xl flex flex-col justify-between transition-all duration-300">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-4">🔓</div>
-          <h3 className="text-2xl font-bold mb-2">Starter</h3>
-          <p className="text-xl font-semibold">
-            $0<span className="text-base font-normal ml-1">/month</span>
-          </p>
-          <p className="mt-2 text-sm opacity-70">Perfect for new artists and hobbyists</p>
-        </div>
-        <ul className="space-y-3 text-sm mb-8">
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />1,000 fan limit</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />3,000 emails/month</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />Manual campaigns</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />Hosted signup page</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />Welcome auto-responder</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />Basic analytics</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />Fan tagging</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />LoopLetter branding</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-green-600" />Community support</li>
-        </ul>
-        <div className="mt-auto">
-          <SignedOut>
-            <SignUpButton>
-              <button className="w-full py-3 rounded-lg bg-gray-900 text-white font-medium hover:bg-black transition">
-                Start Free Forever
-              </button>
-            </SignUpButton>
-          </SignedOut>
-          <SignedIn>
-            <Link href="/dashboard" className="block text-center py-3 rounded-lg bg-gray-900 text-white font-medium hover:bg-black transition">
-              Go to Dashboard
-            </Link>
-          </SignedIn>
-        </div>
-      </div>
-
-      {/* INDEPENDENT PLAN */}
-      <div className="rounded-2xl p-8 shadow-xl border text-white bg-gradient-to-br from-gray-900 to-black border-transparent scale-105 relative flex flex-col justify-between">
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="px-4 py-1 text-xs rounded-full font-medium shadow-sm bg-blue-600 text-white">Most Popular</span>
-        </div>
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-4">🚀</div>
-          <h3 className="text-2xl font-bold mb-2">Independent</h3>
-          <p className="text-5xl font-semibold">$29<span className="text-base font-normal ml-2 text-gray-300">/month</span></p>
-          <p className="mt-2 text-sm text-gray-300">Ideal for growing artists and indie labels</p>
-        </div>
-        <ul className="space-y-3 text-sm mb-8">
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />10,000 fan limit</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Email scheduling</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Advanced analytics</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Segmentation</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Unlimited automations</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Remove branding</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Custom signup domain</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Custom email design</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-400" />Premium support</li>
-        </ul>
-        <Link
-  href="/dashboard"
-  className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow hover:shadow-lg"
->
-  Start 14-Day Free Trial
-</Link>
-      </div>
-
-      {/* LABEL/AGENCY PLAN */}
-      <div className="rounded-2xl p-8 shadow-md border bg-white border-gray-200 hover:shadow-xl flex flex-col justify-between transition-all duration-300">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-4">👥</div>
-          <h3 className="text-2xl font-bold mb-2">Label/Agency</h3>
-          <p className="text-xl font-semibold">
-            $99<span className="text-base font-normal ml-1">/month</span>
-          </p>
-          <p className="mt-2 text-sm opacity-70">Built for teams managing multiple artists</p>
-        </div>
-        <ul className="space-y-3 text-sm mb-8">
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />50,000 fan limit</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />Manage multiple artists</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />Multi-user access</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />White-labeling</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />Priority support</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />Onboarding help</li>
-          <li className="flex items-center gap-3"><CheckCircle className="w-5 h-5 text-blue-600" />Monetization tools</li>
-        </ul>
-        <a href="#contact" className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
-          Contact for Team Plan
-        </a>
-      </div>
-    </div>
-
-    <div className="text-center mt-24">
-      <h4 className="text-2xl font-bold text-gray-900 mb-4">Optional Add-ons</h4>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-        {["Extra user seats & monetization tools", "SMS campaigns ($10/month)", "API/Zapier integrations"]
-          .map((item) => (
-            <div key={item} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
-              <CheckCircle className="w-5 h-5 text-blue-600 mb-2" />
-              <p className="text-gray-700 text-sm text-center">{item}</p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {/* STARTER PLAN */}
+            <div className="rounded-2xl p-8 shadow-md border bg-white border-gray-200 hover:shadow-xl flex flex-col justify-between transition-all duration-300">
+              <div className="text-center mb-8">
+                <div className="text-4xl mb-4">🔓</div>
+                <h3 className="text-2xl font-bold mb-2">Starter</h3>
+                <p className="text-xl font-semibold">
+                  $0<span className="text-base font-normal ml-1">/month</span>
+                </p>
+                <p className="mt-2 text-sm opacity-70">
+                  Perfect for new artists and hobbyists
+                </p>
+              </div>
+              <ul className="space-y-3 text-sm mb-8">
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  1,000 fan limit
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  3,000 emails/month
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Manual campaigns
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Hosted signup page
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Welcome auto-responder
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Basic analytics
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Fan tagging
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  LoopLetter branding
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  Community support
+                </li>
+              </ul>
+              <div className="mt-auto">
+                <SignedOut>
+                  <SignUpButton>
+                    <button className="w-full py-3 rounded-lg bg-gray-900 text-white font-medium hover:bg-black transition">
+                      Start Free Forever
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link
+                    href="/dashboard"
+                    className="block text-center py-3 rounded-lg bg-gray-900 text-white font-medium hover:bg-black transition"
+                  >
+                    Go to Dashboard
+                  </Link>
+                </SignedIn>
+              </div>
             </div>
-        ))}
-      </div>
-      <button className="mt-8 px-6 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-black transition inline-flex items-center gap-2">
-        Contact us for custom pricing <ArrowRight className="w-4 h-4" />
-      </button>
-    </div>
-  </div>
-</section>
 
+            {/* INDEPENDENT PLAN */}
+            <div className="rounded-2xl p-8 shadow-xl border text-white bg-gradient-to-br from-gray-900 to-black border-transparent scale-105 relative flex flex-col justify-between">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="px-4 py-1 text-xs rounded-full font-medium shadow-sm bg-blue-600 text-white">
+                  Most Popular
+                </span>
+              </div>
+              <div className="text-center mb-8">
+                <div className="text-4xl mb-4">🚀</div>
+                <h3 className="text-2xl font-bold mb-2">Independent</h3>
+                <p className="text-5xl font-semibold">
+                  $29
+                  <span className="text-base font-normal ml-2 text-gray-300">
+                    /month
+                  </span>
+                </p>
+                <p className="mt-2 text-sm text-gray-300">
+                  Ideal for growing artists and indie labels
+                </p>
+              </div>
+              <ul className="space-y-3 text-sm mb-8">
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  10,000 fan limit
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Email scheduling
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Advanced analytics
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Segmentation
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Unlimited automations
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Remove branding
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Custom signup domain
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Custom email design
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
+                  Premium support
+                </li>
+              </ul>
+              <Link
+                href="/dashboard"
+                className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow hover:shadow-lg"
+              >
+                Start 14-Day Free Trial
+              </Link>
+            </div>
+
+            {/* LABEL/AGENCY PLAN */}
+            <div className="rounded-2xl p-8 shadow-md border bg-white border-gray-200 hover:shadow-xl flex flex-col justify-between transition-all duration-300">
+              <div className="text-center mb-8">
+                <div className="text-4xl mb-4">👥</div>
+                <h3 className="text-2xl font-bold mb-2">Label/Agency</h3>
+                <p className="text-xl font-semibold">
+                  $99<span className="text-base font-normal ml-1">/month</span>
+                </p>
+                <p className="mt-2 text-sm opacity-70">
+                  Built for teams managing multiple artists
+                </p>
+              </div>
+              <ul className="space-y-3 text-sm mb-8">
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  50,000 fan limit
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  Manage multiple artists
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  Multi-user access
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  White-labeling
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  Priority support
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  Onboarding help
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                  Monetization tools
+                </li>
+              </ul>
+              <a
+                href="#contact"
+                className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+              >
+                Contact for Team Plan
+              </a>
+            </div>
+          </div>
+
+          <div className="text-center mt-24">
+            <h4 className="text-2xl font-bold text-gray-900 mb-4">
+              Optional Add-ons
+            </h4>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {[
+                "Extra user seats & monetization tools",
+                "SMS campaigns ($10/month)",
+                "API/Zapier integrations",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition"
+                >
+                  <CheckCircle className="w-5 h-5 text-blue-600 mb-2" />
+                  <p className="text-gray-700 text-sm text-center">{item}</p>
+                </div>
+              ))}
+            </div>
+            <button className="mt-8 px-6 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-black transition inline-flex items-center gap-2">
+              Contact us for custom pricing <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Final CTA Section */}
       <section className="px-6 py-32 bg-neutral-100 text-black">

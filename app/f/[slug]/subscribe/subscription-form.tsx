@@ -54,7 +54,33 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
   const [error, setError] = useState('');
   
   // Get customization settings from artist data or use defaults
-  const settings = (artist as unknown).subscription_page_settings || DEFAULT_SETTINGS;
+  const settings = artist.settings?.subscription_page_settings || DEFAULT_SETTINGS;
+  
+  // Make sure all required settings are present by merging with defaults
+  const mergedSettings = {
+    ...DEFAULT_SETTINGS,
+    ...settings,
+    colors: {
+      ...DEFAULT_SETTINGS.colors,
+      ...(settings?.colors || {}),
+    },
+    header: {
+      ...DEFAULT_SETTINGS.header,
+      ...(settings?.header || {}),
+    },
+    form: {
+      ...DEFAULT_SETTINGS.form,
+      ...(settings?.form || {}),
+    },
+    benefits: {
+      ...DEFAULT_SETTINGS.benefits,
+      custom_benefits: settings?.benefits?.custom_benefits || DEFAULT_SETTINGS.benefits.custom_benefits,
+    },
+    success_message: {
+      ...DEFAULT_SETTINGS.success_message,
+      ...(settings?.success_message || {}),
+    },
+  };
   
   // Replace placeholders in text with artist name
   const replaceArtistName = (text: string) => {
@@ -101,10 +127,10 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          {replaceArtistName(settings.success_message.title)}
+          {replaceArtistName(mergedSettings.success_message.title)}
         </h2>
         <p className="text-gray-600 mb-6">
-          {replaceArtistName(settings.success_message.message)}
+          {replaceArtistName(mergedSettings.success_message.message)}
         </p>
         <div className="bg-gray-50 rounded-xl p-4">
           <p className="text-sm text-gray-500">
@@ -121,15 +147,15 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
       <div 
         className="p-8 text-white text-center"
         style={{
-          background: settings.colors?.primary 
-            ? `linear-gradient(135deg, ${settings.colors.primary}, ${settings.colors.secondary || settings.colors.primary})`
+          background: mergedSettings.colors.primary 
+            ? `linear-gradient(135deg, ${mergedSettings.colors.primary}, ${mergedSettings.colors.secondary || mergedSettings.colors.primary})`
             : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
         }}
       >
-        {settings.header.show_artist_image && settings.header.artist_image_url ? (
+        {mergedSettings.header.show_artist_image && mergedSettings.header.artist_image_url ? (
           <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 border-4 border-white/20">
             <img 
-              src={settings.header.artist_image_url} 
+              src={mergedSettings.header.artist_image_url} 
               alt={artist.name}
               className="w-full h-full object-cover"
             />
@@ -139,13 +165,13 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
             <Music className="w-10 h-10" />
           </div>
         )}
-        <h1 className="text-3xl font-bold mb-2">{replaceArtistName(settings.header.title)}</h1>
+        <h1 className="text-3xl font-bold mb-2">{replaceArtistName(mergedSettings.header.title)}</h1>
         <p className="text-white/90">
-          {replaceArtistName(settings.header.subtitle)}
+          {replaceArtistName(mergedSettings.header.subtitle)}
         </p>
         
         {/* Social Links */}
-        {settings.header.show_social_links && artist.settings?.social_links && (
+        {mergedSettings.header.show_social_links && artist.settings?.social_links && (
           <div className="flex justify-center gap-4 mt-6">
             {artist.settings.social_links.spotify && (
               <a 
@@ -208,12 +234,12 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
                 e.target.style.borderColor = '#d1d5db';
                 e.target.style.boxShadow = 'none';
               }}
-                placeholder={settings.form.placeholder_email}
+                placeholder={mergedSettings.form.placeholder_email}
               />
             </div>
           </div>
 
-          {settings.form.show_name_field && (
+          {mergedSettings.form.show_name_field && (
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 First Name (optional)
@@ -224,10 +250,10 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-transparent outline-none transition-all"
-                placeholder={settings.form.placeholder_name}
+                placeholder={mergedSettings.form.placeholder_name}
                 onFocus={(e) => {
-                  e.target.style.borderColor = settings.colors?.primary || '#8b5cf6';
-                  e.target.style.boxShadow = `0 0 0 3px ${settings.colors?.primary || '#8b5cf6'}20`;
+                  e.target.style.borderColor = mergedSettings.colors.primary || '#8b5cf6';
+                  e.target.style.boxShadow = `0 0 0 3px ${mergedSettings.colors.primary || '#8b5cf6'}20`;
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#d1d5db';
@@ -248,8 +274,8 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
             disabled={isLoading || !email}
             className="w-full text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              background: settings.colors?.primary 
-                ? `linear-gradient(135deg, ${settings.colors.primary}, ${settings.colors.secondary || settings.colors.primary})`
+              background: mergedSettings.colors.primary 
+                ? `linear-gradient(135deg, ${mergedSettings.colors.primary}, ${mergedSettings.colors.secondary || mergedSettings.colors.primary})`
                 : 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
               filter: isLoading || !email ? 'brightness(0.7)' : 'brightness(1)',
             }}
@@ -272,18 +298,18 @@ export default function SubscriptionForm({ artist }: SubscriptionFormProps) {
             ) : (
               <>
                 <Heart className="w-5 h-5" />
-                {settings.form.button_text}
+                {mergedSettings.form.button_text}
               </>
             )}
           </button>
         </form>
 
         {/* Benefits */}
-        {settings.benefits.show_benefits && (
+        {mergedSettings.benefits.show_benefits && (
           <div className="mt-8 pt-8 border-t border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">What you&apos;ll get:</h3>
             <div className="space-y-3">
-              {settings.benefits.custom_benefits.map((benefit, index) => (
+              {mergedSettings.benefits.custom_benefits.map((benefit, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <Star className="w-5 h-5 text-yellow-500" />
                   <span className="text-gray-700">{benefit}</span>

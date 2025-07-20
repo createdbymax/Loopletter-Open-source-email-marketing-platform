@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Music, Mic, ShoppingBag, FileText, ArrowRight } from "lucide-react";
+import { ArrowLeft, Music, Mic, ShoppingBag, FileText, ArrowRight, Mail, Image } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { emailTemplates } from "@/lib/email-templates";
+import { TemplateContentPreview } from "@/components/email-builder/template-content-preview";
 
 interface Template {
   id: string;
@@ -13,46 +15,52 @@ interface Template {
   description: string;
   category: string;
   icon: React.ReactNode;
-  preview: string;
-  fields: string[];
+  preview?: string;
 }
 
+// Map the email templates to the format needed for the template selector
 const templates: Template[] = [
+  {
+    id: 'blank',
+    name: 'Blank Template',
+    description: 'Start with a clean slate and design your email from scratch',
+    category: 'Basic',
+    icon: <FileText className="w-6 h-6" />
+  },
   {
     id: 'music-release',
     name: 'Music Release',
-    description: 'Perfect for announcing new singles, EPs, or albums with streaming links and artwork',
+    description: 'Announce your new single, EP, or album with streaming links and artwork',
     category: 'Music',
-    icon: <Music className="w-6 h-6" />,
-    preview: '/api/template-preview/music-release',
-    fields: ['Artist Name', 'Release Title', 'Release Type', 'Artwork', 'Streaming Links', 'Description']
+    icon: <Music className="w-6 h-6" />
   },
   {
     id: 'show-announcement',
     name: 'Show Announcement',
-    description: 'Promote your upcoming concerts and live performances with venue details and ticket links',
+    description: 'Promote your upcoming concerts and live performances with venue details',
     category: 'Events',
-    icon: <Mic className="w-6 h-6" />,
-    preview: '/api/template-preview/show-announcement',
-    fields: ['Artist Name', 'Show Title', 'Venue', 'Date & Time', 'Ticket Link', 'Event Details']
+    icon: <Mic className="w-6 h-6" />
   },
   {
     id: 'merchandise',
     name: 'Merchandise',
-    description: 'Showcase your latest merch drops with product images, pricing, and discount codes',
+    description: 'Showcase your latest merch drops with product images and pricing',
     category: 'Commerce',
-    icon: <ShoppingBag className="w-6 h-6" />,
-    preview: '/api/template-preview/merchandise',
-    fields: ['Artist Name', 'Collection Name', 'Products', 'Shop Link', 'Discount Code', 'Description']
+    icon: <ShoppingBag className="w-6 h-6" />
   },
   {
-    id: 'blank',
-    name: 'Start from Scratch',
-    description: 'Build your email from the ground up with our drag-and-drop editor',
-    category: 'Custom',
-    icon: <FileText className="w-6 h-6" />,
-    preview: '/api/template-preview/blank',
-    fields: ['Complete creative freedom']
+    id: 'newsletter',
+    name: 'Artist Newsletter',
+    description: 'Keep your fans updated with news, tour dates, and more',
+    category: 'Updates',
+    icon: <Mail className="w-6 h-6" />
+  },
+  {
+    id: 'artist-promo',
+    name: 'Artist Promo',
+    description: 'Promote your artist with a visually striking, image-focused email',
+    category: 'Promo',
+    icon: <Image className="w-6 h-6" />
   }
 ];
 
@@ -107,9 +115,12 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
         <div className="mb-8">
           <div className="flex gap-2 mb-6">
             <Badge variant="secondary">All Templates</Badge>
+            <Badge variant="outline">Basic</Badge>
             <Badge variant="outline">Music</Badge>
             <Badge variant="outline">Events</Badge>
             <Badge variant="outline">Commerce</Badge>
+            <Badge variant="outline">Updates</Badge>
+            <Badge variant="outline">Promo</Badge>
           </div>
         </div>
 
@@ -159,29 +170,23 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
                 </CardDescription>
                 
                 {/* Template Preview */}
-                <div className="bg-gray-100 rounded-lg p-4 min-h-[120px] flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="w-16 h-16 bg-white rounded-lg shadow-sm mx-auto mb-2 flex items-center justify-center">
-                      {template.icon}
-                    </div>
-                    <p className="text-xs">Template Preview</p>
-                  </div>
+                <div className="rounded-lg overflow-hidden min-h-[200px]">
+                  <TemplateContentPreview templateId={template.id} height={200} />
                 </div>
                 
-                {/* Template Fields */}
+                {/* Template Features */}
                 <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2">Includes:</p>
+                  <p className="text-xs font-medium text-gray-700 mb-2">Features:</p>
                   <div className="flex flex-wrap gap-1">
-                    {template.fields.slice(0, 3).map((field, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {field}
-                      </Badge>
-                    ))}
-                    {template.fields.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{template.fields.length - 3} more
-                      </Badge>
-                    )}
+                    <Badge variant="secondary" className="text-xs">
+                      Ready to Use
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Fully Customizable
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Mobile Responsive
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -192,29 +197,60 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
         {/* Selected Template Details */}
         {selectedTemplate && (
           <div className="mt-8 bg-white rounded-lg border p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {templates.find(t => t.id === selectedTemplate)?.name}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {templates.find(t => t.id === selectedTemplate)?.description}
-                </p>
-                <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">This template includes:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {templates.find(t => t.id === selectedTemplate)?.fields.map((field, index) => (
-                      <Badge key={index} variant="outline" className="text-sm">
-                        {field}
-                      </Badge>
-                    ))}
-                  </div>
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Template Preview */}
+              <div className="w-full md:w-1/2 lg:w-2/5">
+                <div className="rounded-lg overflow-hidden border border-gray-200 h-[400px]">
+                  <TemplateContentPreview templateId={selectedTemplate} height={400} />
                 </div>
               </div>
-              <Button onClick={handleContinue} className="flex items-center gap-2">
-                Use This Template
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              
+              {/* Template Details */}
+              <div className="w-full md:w-1/2 lg:w-3/5">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">
+                      {templates.find(t => t.id === selectedTemplate)?.name}
+                    </h3>
+                    <p className="text-gray-600">
+                      {templates.find(t => t.id === selectedTemplate)?.description}
+                    </p>
+                  </div>
+                  <Button onClick={handleContinue} className="flex items-center gap-2">
+                    Use This Template
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="mt-6">
+                  <p className="text-sm font-medium text-gray-700 mb-2">This template includes:</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="text-sm">
+                      Pre-designed Layout
+                    </Badge>
+                    <Badge variant="outline" className="text-sm">
+                      Sample Content
+                    </Badge>
+                    <Badge variant="outline" className="text-sm">
+                      Responsive Design
+                    </Badge>
+                    <Badge variant="outline" className="text-sm">
+                      Easy Customization
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="mt-6">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Perfect for:</p>
+                  <p className="text-sm text-gray-600">
+                    {selectedTemplate === 'blank' && 'Creating custom emails from scratch with complete design freedom.'}
+                    {selectedTemplate === 'music-release' && 'Announcing new singles, EPs, or albums with streaming links and artwork.'}
+                    {selectedTemplate === 'show-announcement' && 'Promoting upcoming concerts and live performances with venue details and ticket links.'}
+                    {selectedTemplate === 'merchandise' && 'Showcasing your latest merch drops with product images, descriptions, and pricing.'}
+                    {selectedTemplate === 'newsletter' && 'Keeping your fans updated with news, tour dates, releases, and more in a comprehensive format.'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
