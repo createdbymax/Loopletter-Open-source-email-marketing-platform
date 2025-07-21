@@ -1,4 +1,4 @@
--- Initial database schema for LoopLetter
+-- Initial database schema for Loopletter
 
 -- Artists table
 CREATE TABLE IF NOT EXISTS artists (

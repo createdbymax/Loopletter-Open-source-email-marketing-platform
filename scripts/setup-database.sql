@@ -1,4 +1,4 @@
--- LoopLetter Database Schema Setup
+-- Loopletter Database Schema Setup
 -- Run this in your Supabase SQL editor
 
 -- Enable UUID extension

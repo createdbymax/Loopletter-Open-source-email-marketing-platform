@@ -131,7 +131,7 @@ function AcceptInvitationContent() {
           <CardTitle>Team Invitation</CardTitle>
           <CardDescription>
             You&apos;ve been invited to join {invitation.artistName}&apos;s team
-            on LoopLetter
+            on Loopletter
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -139,7 +139,7 @@ function AcceptInvitationContent() {
             <p>
               You&apos;ve been invited to collaborate as a{" "}
               <strong>{invitation.role}</strong> on {invitation.artistName}
-              &apos;s LoopLetter account.
+              &apos;s Loopletter account.
             </p>
 
             {!isLoaded ? (

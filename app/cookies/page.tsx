@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy - LoopLetter",
-  description: "Learn about how LoopLetter uses cookies and similar technologies.",
+  title: "Cookie Policy - Loopletter",
+  description: "Learn about how Loopletter uses cookies and similar technologies.",
 };
 
 export default function CookiesPage() {

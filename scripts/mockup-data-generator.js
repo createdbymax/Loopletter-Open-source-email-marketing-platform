@@ -1,6 +1,6 @@
-// LoopLetter Dashboard Mockup Data Generator
+// Loopletter Dashboard Mockup Data Generator
 // This script adds realistic data to your existing dashboard for screenshots
-console.log('🎵 LoopLetter Mockup Data Generator Starting...');
+console.log('🎵 Loopletter Mockup Data Generator Starting...');
 
 // Mockup data that matches your dashboard structure
 const mockupData = {
@@ -205,4 +205,4 @@ window.LoopLetterMockup = {
   }
 };
 
-console.log('📸 LoopLetter mockup ready! Use LoopLetterMockup.refresh() if data doesn\'t appear.');
+console.log('📸 Loopletter mockup ready! Use LoopLetterMockup.refresh() if data doesn\'t appear.');

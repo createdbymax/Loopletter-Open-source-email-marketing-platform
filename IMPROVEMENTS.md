@@ -1,4 +1,4 @@
-# LoopLetter Improvements
+# Loopletter Improvements
 
 ## Completed Improvements
 

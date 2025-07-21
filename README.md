@@ -1,4 +1,4 @@
-# LoopLetter - Full-Fledged Email Marketing Platform
+# Loopletter - Full-Fledged Email Marketing Platform
 
 A comprehensive email marketing platform built for artists and creators, featuring advanced automation, analytics, segmentation, and deliverability optimization.
 
@@ -424,4 +424,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**LoopLetter** - Empowering artists and creators with professional email marketing tools. 🎵📧
+**Loopletter** - Empowering artists and creators with professional email marketing tools. 🎵📧

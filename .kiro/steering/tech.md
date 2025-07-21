@@ -1,4 +1,4 @@
-# LoopLetter Technical Stack
+# Loopletter Technical Stack
 
 ## Core Technologies
 

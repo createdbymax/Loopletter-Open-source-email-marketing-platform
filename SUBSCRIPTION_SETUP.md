@@ -1,6 +1,6 @@
-# LoopLetter Subscription System Setup Guide
+# Loopletter Subscription System Setup Guide
 
-This guide will help you set up the subscription system for LoopLetter using Stripe.
+This guide will help you set up the subscription system for Loopletter using Stripe.
 
 ## 1. Database Setup
 

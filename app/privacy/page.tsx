@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - LoopLetter",
-  description: "Learn how LoopLetter protects your privacy and handles your data.",
+  title: "Privacy Policy - Loopletter",
+  description: "Learn how Loopletter protects your privacy and handles your data.",
 };
 
 export default function PrivacyPage() {
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
             <p>
-              This Privacy Policy applies to LoopLetter, a service provided by Lost Hills LLC ("Company," "we," "us," or "our"). We respect your privacy and are committed to protecting your personal information.
+              This Privacy Policy applies to Loopletter, a service provided by Lost Hills LLC ("Company," "we," "us," or "our"). We respect your privacy and are committed to protecting your personal information.
             </p>
           </section>
 
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">4. How We Use Your Information</h2>
             <ul className="list-disc pl-6 space-y-1">
-              <li>Operate, maintain, and improve LoopLetter</li>
+              <li>Operate, maintain, and improve Loopletter</li>
               <li>Send transactional or service-related communications</li>
               <li>Facilitate payments and billing</li>
               <li>Provide customer support</li>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">5. Campaign & Subscriber Analytics</h2>
             <p className="mb-2">
-              When sending emails through LoopLetter, we collect:
+              When sending emails through Loopletter, we collect:
             </p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Delivery, open, click, unsubscribe, and bounce metrics</li>

@@ -3,7 +3,7 @@ import { DashboardOverview } from "./dashboard-overview";
 
 export const metadata = generateDashboardMetadata(
   "Dashboard",
-  "Your LoopLetter dashboard. Manage campaigns, track fans, analyze performance, and grow your music career with email marketing."
+  "Your Loopletter dashboard. Manage campaigns, track fans, analyze performance, and grow your music career with email marketing."
 );
 
 import { getOrCreateArtistByClerkId, getCampaignsByArtist, getFansByArtist } from "@/lib/db";

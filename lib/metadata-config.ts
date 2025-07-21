@@ -5,7 +5,7 @@ import { generateDashboardMetadata, generateMarketingMetadata } from './metadata
 export const dashboardMetadataConfig = {
   overview: generateDashboardMetadata(
     'Dashboard',
-    'Your LoopLetter dashboard. Manage campaigns, track fans, analyze performance, and grow your music career with email marketing.'
+    'Your Loopletter dashboard. Manage campaigns, track fans, analyze performance, and grow your music career with email marketing.'
   ),
   
   campaigns: generateDashboardMetadata(
@@ -55,14 +55,14 @@ export const dashboardMetadataConfig = {
   
   settings: generateDashboardMetadata(
     'Settings',
-    'Configure your account settings, branding, integrations, and email preferences for your LoopLetter account.'
+    'Configure your account settings, branding, integrations, and email preferences for your Loopletter account.'
   ),
 };
 
 // Marketing page metadata configurations
 export const marketingMetadataConfig = {
   home: generateMarketingMetadata(
-    'LoopLetter - Email Marketing for Independent Artists',
+    'Loopletter - Email Marketing for Independent Artists',
     'Stop depending on algorithms. Build direct relationships with your fans through email marketing that actually works. Free for up to 500 fans.',
     '/',
     [
@@ -80,7 +80,7 @@ export const marketingMetadataConfig = {
   ),
   
   pricing: generateMarketingMetadata(
-    'Pricing - LoopLetter',
+    'Pricing - Loopletter',
     'Simple, transparent pricing for independent artists. Start free with up to 500 fans, then scale as you grow. No hidden fees.',
     '/pricing',
     [
@@ -93,7 +93,7 @@ export const marketingMetadataConfig = {
   ),
   
   features: generateMarketingMetadata(
-    'Features - LoopLetter',
+    'Features - Loopletter',
     'Discover all the features built specifically for independent artists. Email campaigns, fan management, analytics, and more.',
     '/features',
     [
@@ -106,7 +106,7 @@ export const marketingMetadataConfig = {
   ),
   
   templates: generateMarketingMetadata(
-    'Email Templates - LoopLetter',
+    'Email Templates - Loopletter',
     'Professional email templates designed for musicians. Album releases, tour announcements, merchandise, and more.',
     '/templates',
     [
@@ -119,8 +119,8 @@ export const marketingMetadataConfig = {
   ),
   
   about: generateMarketingMetadata(
-    'About - LoopLetter',
-    'Learn about LoopLetter and our mission to help independent artists build direct relationships with their fans through email.',
+    'About - Loopletter',
+    'Learn about Loopletter and our mission to help independent artists build direct relationships with their fans through email.',
     '/about',
     [
       'about loopletter',
@@ -131,8 +131,8 @@ export const marketingMetadataConfig = {
   ),
   
   contact: generateMarketingMetadata(
-    'Contact - LoopLetter',
-    'Get in touch with the LoopLetter team. We\'re here to help independent artists succeed with email marketing.',
+    'Contact - Loopletter',
+    'Get in touch with the Loopletter team. We\'re here to help independent artists succeed with email marketing.',
     '/contact',
     [
       'contact loopletter',
@@ -143,8 +143,8 @@ export const marketingMetadataConfig = {
   ),
   
   blog: generateMarketingMetadata(
-    'Blog - LoopLetter',
-    'Email marketing tips, music industry insights, and success stories from independent artists using LoopLetter.',
+    'Blog - Loopletter',
+    'Email marketing tips, music industry insights, and success stories from independent artists using Loopletter.',
     '/blog',
     [
       'music marketing blog',
@@ -159,7 +159,7 @@ export const marketingMetadataConfig = {
 // Utility page metadata
 export const utilityMetadataConfig = {
   unsubscribe: {
-    title: 'Unsubscribe - LoopLetter',
+    title: 'Unsubscribe - Loopletter',
     description: 'Unsubscribe from email updates. We\'re sorry to see you go, but you can always resubscribe later.',
     robots: {
       index: false,
@@ -168,7 +168,7 @@ export const utilityMetadataConfig = {
   } as Metadata,
   
   preferences: {
-    title: 'Email Preferences - LoopLetter',
+    title: 'Email Preferences - Loopletter',
     description: 'Manage your email preferences and subscription settings. Control what emails you receive and how often.',
     robots: {
       index: false,
@@ -177,8 +177,8 @@ export const utilityMetadataConfig = {
   } as Metadata,
   
   'sign-in': {
-    title: 'Sign In - LoopLetter',
-    description: 'Sign in to your LoopLetter account. Access your dashboard, manage campaigns, and connect with your fans.',
+    title: 'Sign In - Loopletter',
+    description: 'Sign in to your Loopletter account. Access your dashboard, manage campaigns, and connect with your fans.',
     robots: {
       index: false,
       follow: false,
@@ -186,8 +186,8 @@ export const utilityMetadataConfig = {
   } as Metadata,
   
   'sign-up': {
-    title: 'Sign Up - LoopLetter',
-    description: 'Create your free LoopLetter account. Start building direct relationships with your fans through email marketing.',
+    title: 'Sign Up - Loopletter',
+    description: 'Create your free Loopletter account. Start building direct relationships with your fans through email marketing.',
     robots: {
       index: true,
       follow: true,
@@ -198,8 +198,8 @@ export const utilityMetadataConfig = {
 // Error page metadata
 export const errorMetadataConfig = {
   404: {
-    title: '404 - Page Not Found | LoopLetter',
-    description: 'The page you\'re looking for doesn\'t exist. Return to LoopLetter and continue building relationships with your fans.',
+    title: '404 - Page Not Found | Loopletter',
+    description: 'The page you\'re looking for doesn\'t exist. Return to Loopletter and continue building relationships with your fans.',
     robots: {
       index: false,
       follow: false,
@@ -207,7 +207,7 @@ export const errorMetadataConfig = {
   } as Metadata,
   
   500: {
-    title: '500 - Server Error | LoopLetter',
+    title: '500 - Server Error | Loopletter',
     description: 'Something went wrong on our end. We\'re working to fix it. Please try again later.',
     robots: {
       index: false,

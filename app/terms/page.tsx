@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - LoopLetter",
-  description: "Terms and conditions for using LoopLetter's email marketing platform.",
+  title: "Terms of Service - Loopletter",
+  description: "Terms and conditions for using Loopletter's email marketing platform.",
 };
 
 export default function TermsPage() {
@@ -24,13 +24,13 @@ export default function TermsPage() {
         <div className="space-y-16">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Agreement to Terms</h2>
-            <p className="text-gray-600 mb-6">Last updated: December 1, 2024. These terms govern your use of &quot;LoopLetter&quot; (the &quot;Service&quot;) provided by LoopLetter Inc. (&quot;Company&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). By accessing or using our Service, you agree to be bound by these Terms.</p>
+            <p className="text-gray-600 mb-6">Last updated: December 1, 2024. These terms govern your use of &quot;Loopletter&quot; (the &quot;Service&quot;) provided by Loopletter Inc. (&quot;Company&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). By accessing or using our Service, you agree to be bound by these Terms.</p>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">2. Description of Service</h2>
             <p>
-              LoopLetter is an email marketing platform for independent artists. Users can create, send, and track email campaigns to engage with their fans and grow their audience.
+              Loopletter is an email marketing platform for independent artists. Users can create, send, and track email campaigns to engage with their fans and grow their audience.
             </p>
           </section>
 
@@ -55,7 +55,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">4. Acceptable Use Policy</h2>
-            <p className="mb-2">You agree not to use LoopLetter to:</p>
+            <p className="mb-2">You agree not to use Loopletter to:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Send spam or unsolicited emails.</li>
               <li>Distribute viruses or malware.</li>
@@ -85,13 +85,13 @@ export default function TermsPage() {
             <h3 className="text-xl font-medium mt-6 mb-2">Your Content</h3>
             <ul className="list-disc pl-6 space-y-1">
               <li>You retain ownership of your uploaded content.</li>
-              <li>You grant LoopLetter a license to use your content for delivering the Service.</li>
+              <li>You grant Loopletter a license to use your content for delivering the Service.</li>
               <li>You are solely responsible for the legality of your content.</li>
             </ul>
 
             <h3 className="text-xl font-medium mt-6 mb-2">Our IP</h3>
             <ul className="list-disc pl-6 space-y-1">
-              <li>LoopLetter is protected by copyright, trademark, and other laws.</li>
+              <li>Loopletter is protected by copyright, trademark, and other laws.</li>
               <li>You may not reproduce or reverse-engineer the platform.</li>
               <li>Use of our logos, trademarks, and branding is prohibited without written permission.</li>
             </ul>
@@ -127,7 +127,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">9. Data and Privacy</h2>
             <ul className="list-disc pl-6 space-y-1">
-              <li>Your use of LoopLetter is subject to our <Link href="/privacy" className="text-blue-600 underline">Privacy Policy</Link>.</li>
+              <li>Your use of Loopletter is subject to our <Link href="/privacy" className="text-blue-600 underline">Privacy Policy</Link>.</li>
               <li>You are responsible for obtaining and managing your subscribers’ consent.</li>
               <li>We implement security measures but cannot guarantee absolute protection.</li>
             </ul>
@@ -166,7 +166,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">12. Indemnification</h2>
             <p>
-              You agree to indemnify and hold LoopLetter harmless from claims, liabilities, damages, or expenses arising from your use of the Service or violation of these Terms.
+              You agree to indemnify and hold Loopletter harmless from claims, liabilities, damages, or expenses arising from your use of the Service or violation of these Terms.
             </p>
           </section>
 

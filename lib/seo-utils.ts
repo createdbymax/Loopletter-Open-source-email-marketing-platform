@@ -1,4 +1,4 @@
-// SEO utility functions for LoopLetter
+// SEO utility functions for Loopletter
 
 // Generate canonical URL
 export function generateCanonicalUrl(path: string): string {
@@ -57,7 +57,7 @@ export function generateArticleStructuredData(article: {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'LoopLetter',
+      name: 'Loopletter',
       logo: {
         '@type': 'ImageObject',
         url: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
@@ -75,7 +75,7 @@ export function generateOrganizationStructuredData() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'LoopLetter',
+    name: 'Loopletter',
     description: 'Email marketing platform for independent artists',
     url: process.env.NEXT_PUBLIC_APP_URL,
     logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,

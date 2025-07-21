@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Mail, MessageSquare, Clock, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Us - LoopLetter",
-  description: "Get in touch with the LoopLetter team. We&apos;d love to hear from you with questions, support, and feedback.",
+  title: "Contact Us - Loopletter",
+  description: "Get in touch with the Loopletter team. We&apos;d love to hear from you with questions, support, and feedback.",
 };
 
 export default function ContactPage() {
@@ -31,7 +31,7 @@ export default function ContactPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">General Support</h3>
               <p className="text-gray-600 mb-6">
-                Questions about your account, billing, or how to use LoopLetter? We&apos;re here to help.
+                Questions about your account, billing, or how to use Loopletter? We&apos;re here to help.
               </p>
               <div className="space-y-2">
                 <p className="font-medium text-gray-900">support@loopletter.com</p>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Can I schedule a demo?</h4>
-                  <p className="text-gray-600">Yes! Contact our sales team at sales@loopletter.com to schedule a personalized demo of LoopLetter.</p>
+                  <p className="text-gray-600">Yes! Contact our sales team at sales@loopletter.com to schedule a personalized demo of Loopletter.</p>
                 </div>
               </div>
             </div>

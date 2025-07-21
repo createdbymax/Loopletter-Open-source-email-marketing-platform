@@ -1,6 +1,6 @@
-# LoopLetter Subscription System
+# Loopletter Subscription System
 
-This document provides an overview of the subscription system implemented for LoopLetter, an email platform for independent music artists.
+This document provides an overview of the subscription system implemented for Loopletter, an email platform for independent music artists.
 
 ## Overview
 

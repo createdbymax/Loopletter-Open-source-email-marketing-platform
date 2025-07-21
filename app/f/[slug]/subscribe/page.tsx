@@ -53,7 +53,7 @@ export default async function SubscribePage({ params }: SubscribePageProps) {
                 href="/"
                 className="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
-                Go to LoopLetter
+                Go to Loopletter
               </a>
             </div>
           </div>
@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: SubscribePageProps) {
     return generateArtistSubscriptionMetadata(artist);
   } catch {
     return {
-      title: 'Subscribe | LoopLetter',
+      title: 'Subscribe | Loopletter',
       description: 'Subscribe to get exclusive updates from your favorite artist.',
       robots: {
         index: false,

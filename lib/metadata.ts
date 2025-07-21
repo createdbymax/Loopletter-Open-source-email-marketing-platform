@@ -3,7 +3,7 @@ import { Artist } from './types';
 
 // Base metadata configuration
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-const SITE_NAME = 'LoopLetter';
+const SITE_NAME = 'Loopletter';
 const SITE_DESCRIPTION = 'The email platform built for independent artists. Build direct relationships with your fans through email marketing that actually works.';
 
 // Default metadata for the application
@@ -25,9 +25,9 @@ export const defaultMetadata: Metadata = {
         'music promotion',
         'fan communication'
     ],
-    authors: [{ name: 'LoopLetter Team' }],
-    creator: 'LoopLetter',
-    publisher: 'LoopLetter',
+    authors: [{ name: 'Loopletter Team' }],
+    creator: 'Loopletter',
+    publisher: 'Loopletter',
     formatDetection: {
         email: false,
         address: false,

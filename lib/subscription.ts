@@ -176,7 +176,7 @@ export const FEATURE_NAMES: Record<keyof FeatureAccess, string> = {
   advancedAnalytics: 'Advanced Analytics (City, Device)',
   segmentation: 'Segmentation (by tag, opens, clicks)',
   automations: 'Unlimited Automations',
-  removeLoopLetterBranding: 'Remove LoopLetter Branding',
+  removeLoopLetterBranding: 'Remove Loopletter Branding',
   customSignupDomain: 'Custom Signup Domain',
   customEmailDesign: 'Custom Email Design',
   communitySupport: 'Community Support',

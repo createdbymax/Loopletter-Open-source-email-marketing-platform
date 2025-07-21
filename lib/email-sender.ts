@@ -32,9 +32,9 @@ export async function sendTeamInvitationEmail({
     <html>
       <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2>You've been invited to join ${artistName}'s team on LoopLetter</h2>
-          <p>${inviterName} has invited you to collaborate as a <strong>${role}</strong> on their LoopLetter account.</p>
-          <p>LoopLetter is an email marketing platform built specifically for artists and creators.</p>
+          <h2>You've been invited to join ${artistName}'s team on Loopletter</h2>
+          <p>${inviterName} has invited you to collaborate as a <strong>${role}</strong> on their Loopletter account.</p>
+          <p>Loopletter is an email marketing platform built specifically for artists and creators.</p>
           <div style="margin: 30px 0;">
             <a href="${invitationUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
               Accept Invitation
@@ -48,11 +48,11 @@ export async function sendTeamInvitationEmail({
   `;
 
   const text = `
-    You've been invited to join ${artistName}'s team on LoopLetter
+    You've been invited to join ${artistName}'s team on Loopletter
     
-    ${inviterName} has invited you to collaborate as a ${role} on their LoopLetter account.
+    ${inviterName} has invited you to collaborate as a ${role} on their Loopletter account.
     
-    LoopLetter is an email marketing platform built specifically for artists and creators.
+    Loopletter is an email marketing platform built specifically for artists and creators.
     
     Accept the invitation by visiting this link:
     ${invitationUrl}
@@ -63,13 +63,13 @@ export async function sendTeamInvitationEmail({
   `;
 
   const params = {
-    Source: `LoopLetter <noreply@loopletter.com>`,
+    Source: `Loopletter <noreply@loopletter.com>`,
     Destination: {
       ToAddresses: [to],
     },
     Message: {
       Subject: {
-        Data: `You've been invited to join ${artistName}'s team on LoopLetter`,
+        Data: `You've been invited to join ${artistName}'s team on Loopletter`,
         Charset: 'UTF-8',
       },
       Body: {
@@ -122,7 +122,7 @@ export async function sendCampaignEmail(
     // Determine sender email
     const senderEmail = artist.ses_domain_verified && artist.ses_domain 
       ? `${artist.name} <noreply@${artist.ses_domain}>`
-      : `${artist.name} via LoopLetter <noreply@loopletter.com>`;
+      : `${artist.name} via Loopletter <noreply@loopletter.com>`;
 
     const params = {
       Source: senderEmail,

@@ -1,4 +1,4 @@
-# LoopLetter Project Structure
+# Loopletter Project Structure
 
 ## Directory Organization
 

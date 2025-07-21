@@ -1,4 +1,4 @@
-// Core database types for LoopLetter
+// Core database types for Loopletter
 
 export type Artist = {
   id: string;

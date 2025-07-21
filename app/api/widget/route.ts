@@ -230,7 +230,7 @@ function generateWidgetHtml(artist: Artist, theme: string, size: string) {
     <div id="messageContainer"></div>
     
     <div class="widget-footer">
-      Powered by LoopLetter
+      Powered by Loopletter
     </div>
   </div>
 

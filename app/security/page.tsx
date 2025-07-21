@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { Shield, Lock, Eye, Server, CheckCircle, AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Security - LoopLetter",
-  description: "Learn about LoopLetter's security measures and data protection practices.",
+  title: "Security - Loopletter",
+  description: "Learn about Loopletter's security measures and data protection practices.",
 };
 
 export default function SecurityPage() {

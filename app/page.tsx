@@ -11,7 +11,7 @@ import {
 import { generateMarketingMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generateMarketingMetadata(
-  "LoopLetter - Email Built for Independent Artists",
+  "Loopletter - Email Built for Independent Artists",
   "Build real, lasting relationships with your fans. No algorithms, no middlemen. Just your voice in their inbox.",
   "/",
   [
@@ -53,7 +53,7 @@ export default function Home() {
           <div className="relative group cursor-pointer">
             <Image
               src="/newlogo.svg"
-              alt="LoopLetter"
+              alt="Loopletter"
               width={140}
               height={36}
               className="flex-shrink-0"
@@ -163,7 +163,7 @@ export default function Home() {
                   <div className="flex items-center gap-3">
                     <Image
                       src="/loopletterlogo.svg"
-                      alt="LoopLetter"
+                      alt="Loopletter"
                       width={100}
                       height={24}
                       className="flex-shrink-0"
@@ -278,15 +278,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What is LoopLetter */}
+      {/* What is Loopletter */}
       <section className="px-6 lg:px-12 py-32 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl font-bold text-gray-900 mb-8">
-            What is LoopLetter?
+            What is Loopletter?
           </h2>
           <div className="text-xl text-gray-700 leading-relaxed space-y-6">
             <p>
-              LoopLetter is a simple, modern email platform made just for
+              Loopletter is a simple, modern email platform made just for
               independent artists. It gives you a direct line to your fans — so
               you can share your music, your story, and your journey with the
               people who care most.
@@ -360,7 +360,7 @@ export default function Home() {
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-lg text-lg font-semibold">
               <Sparkles className="w-5 h-5" />
-              LoopLetter changes everything
+              Loopletter changes everything
             </div>
           </div>
         </div>
@@ -459,7 +459,7 @@ export default function Home() {
               worldwide
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              See how independent artists are using LoopLetter to build deeper
+              See how independent artists are using Loopletter to build deeper
               connections with their fans and grow their careers.
             </p>
           </div>
@@ -476,7 +476,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                &quot; &quot;LoopLetter helped me turn casual listeners into
+                &quot; &quot;Loopletter helped me turn casual listeners into
                 real fans. My last release got 3x more streams because I could
                 reach my audience directly.&quot;&quot;
               </p>
@@ -504,7 +504,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                &quot;I sold out my first tour by emailing my LoopLetter fans
+                &quot;I sold out my first tour by emailing my Loopletter fans
                 first. The personal connection makes all the difference.&quot;
               </p>
               <div className="flex items-center gap-4">
@@ -639,7 +639,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  LoopLetter branding
+                  Loopletter branding
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600" />
@@ -873,7 +873,7 @@ export default function Home() {
             <div className="lg:col-span-2">
               <Image
                 src="/loopletterlogo.svg"
-                alt="LoopLetter"
+                alt="Loopletter"
                 width={140}
                 height={36}
                 className="mb-4 invert"
@@ -1106,14 +1106,14 @@ export default function Home() {
                 </Link>
               </div>
               <div className="text-sm text-gray-400">
-                &copy; 2025 LoopLetter. All rights reserved.
+                &copy; 2025 Loopletter. All rights reserved.
               </div>
             </div>
 
             {/* Compliance Notice */}
             <div className="mt-6 pt-6 border-t border-gray-800">
               <p className="text-xs text-gray-500 text-center max-w-4xl mx-auto">
-                LoopLetter is committed to protecting your privacy and ensuring
+                Loopletter is committed to protecting your privacy and ensuring
                 compliance with email marketing regulations including CAN-SPAM
                 Act, GDPR, and CCPA. We provide tools to help artists maintain
                 compliant email practices and respect subscriber preferences.

@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Music, Heart, Users, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Us - LoopLetter",
+  title: "About Us - Loopletter",
   description:
-    "Learn about LoopLetter's mission to help independent artists build lasting relationships with their fans.",
+    "Learn about Loopletter's mission to help independent artists build lasting relationships with their fans.",
 };
 
 export default function AboutPage() {
@@ -19,7 +19,7 @@ export default function AboutPage() {
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed">
             We believe every artist deserves a direct line to their fans.
-            LoopLetter helps independent musicians build real, lasting
+            Loopletter helps independent musicians build real, lasting
             relationships without depending on algorithms or social media
             platforms.
           </p>
@@ -40,7 +40,7 @@ export default function AboutPage() {
                 and artists are building their careers on rented land.
               </p>
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                We created LoopLetter to give artists back control. Email is the
+                We created Loopletter to give artists back control. Email is the
                 one channel you truly own— no algorithm can hide your message,
                 no platform can take away your audience.
               </p>
@@ -95,7 +95,7 @@ export default function AboutPage() {
           </h2>
           <div className="prose prose-lg max-w-none">
             <p>
-              LoopLetter was born from frustration. As musicians ourselves, we
+              Loopletter was born from frustration. As musicians ourselves, we
               watched talented artists struggle to reach their own fans. Posts
               got buried in feeds, streaming algorithms favored major labels,
               and artists had no way to communicate directly with the people who
@@ -109,13 +109,13 @@ export default function AboutPage() {
               independent musicians.
             </p>
             <p>
-              So we built something different. LoopLetter is designed
+              So we built something different. Loopletter is designed
               specifically for artists, with templates that feel authentic,
               features that matter to musicians, and pricing that works for
               independent creators.
             </p>
             <p>
-              Today, thousands of artists use LoopLetter to share new releases,
+              Today, thousands of artists use Loopletter to share new releases,
               announce tours, and build genuine connections with their fans.
               Every email sent through our platform represents an artist taking
               control of their relationship with their audience.
@@ -244,7 +244,7 @@ export default function AboutPage() {
             Get in Touch
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Have questions about LoopLetter? Want to share your story? We&apos;d
+            Have questions about Loopletter? Want to share your story? We&apos;d
             love to hear from you.
           </p>
           <div className="grid md:grid-cols-3 gap-8">

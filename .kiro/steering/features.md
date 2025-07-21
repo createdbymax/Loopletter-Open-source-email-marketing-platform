@@ -1,4 +1,4 @@
-# LoopLetter Features
+# Loopletter Features
 
 ## Email Campaign Management
 

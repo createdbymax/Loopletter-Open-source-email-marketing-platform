@@ -1,6 +1,6 @@
-# LoopLetter - Email Marketing Platform
+# Loopletter - Email Marketing Platform
 
-LoopLetter is a comprehensive email marketing platform built specifically for artists and creators. The platform enables users to create, manage, and analyze email campaigns with advanced features for automation, analytics, segmentation, and deliverability optimization.
+Loopletter is a comprehensive email marketing platform built specifically for artists and creators. The platform enables users to create, manage, and analyze email campaigns with advanced features for automation, analytics, segmentation, and deliverability optimization.
 
 ## Core Features
 

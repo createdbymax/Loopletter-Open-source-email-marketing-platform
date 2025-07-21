@@ -60,14 +60,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <div className="relative group cursor-pointer">
               <Image
                 src="/newlogo.svg"
-                alt="LoopLetter"
+                alt="Loopletter"
                 width={125}
                 height={32}
                 className="flex-shrink-0"
               />
               <Send className="absolute -bottom-1 -right-1 w-3 h-3 text-blue-500 opacity-70 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:translate-x-2 group-hover:-translate-y-2 group-hover:rotate-12 group-hover:scale-110" />
             </div>
-            {/* <span className="font-bold text-xl">LoopLetter</span> */}
+            {/* <span className="font-bold text-xl">Loopletter</span> */}
           </div>
         </SidebarHeader>
 
