@@ -23,7 +23,7 @@ interface EmailRendererProps {
 export function EmailRenderer({ content }: EmailRendererProps) {
   const parseContent = (text: string) => {
     const lines = text.split("\n");
-    const elements: JSX.Element[] = [];
+    const elements: React.JSX.Element[] = [];
     let currentIndex = 0;
 
     for (let i = 0; i < lines.length; i++) {
@@ -505,7 +505,7 @@ export function EmailRenderer({ content }: EmailRendererProps) {
 export function EmailPreview({ content, subject, from }: EmailRendererProps) {
   const parseContent = (text: string) => {
     const lines = text.split("\n");
-    const elements: JSX.Element[] = [];
+    const elements: React.JSX.Element[] = [];
     let currentIndex = 0;
 
     for (let i = 0; i < lines.length; i++) {
