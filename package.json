@@ -91,6 +91,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/redis": "^4.0.10",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "lightningcss": "^1.28.2",
