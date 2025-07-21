@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  experimental: {
+    // Turbopack automatically handles PostCSS and Tailwind CSS
+    // No need for custom rules with Tailwind v4
+  },
   async rewrites() {
     return [
       {
