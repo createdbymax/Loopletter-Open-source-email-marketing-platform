@@ -1,29 +1,49 @@
 #!/bin/bash
 
-echo "🔧 Fixing Vercel build issue..."
+echo "🔧 Fixing Vercel build issues..."
 
-# Install dependencies with the new package.json
+# Stop the dev server if running
+echo "🛑 Stopping any running dev servers..."
+pkill -f "next dev" || true
+
+# Clean up node_modules and lock files
+echo "🧹 Cleaning up dependencies..."
+rm -rf node_modules
+rm -f package-lock.json yarn.lock
+
+# Install dependencies
 echo "📦 Installing dependencies..."
 npm install
 
-# Add all changes to git
-echo "📝 Adding changes to git..."
-git add .
+# Try to build locally first to test
+echo "🔨 Testing local build..."
+npm run build
 
-# Commit the changes
-echo "💾 Committing changes..."
-git commit -m "Fix Vercel build: downgrade to Tailwind CSS v3
+if [ $? -eq 0 ]; then
+    echo "✅ Local build successful!"
+    
+    # Add all changes to git
+    echo "📝 Adding changes to git..."
+    git add .
 
-- Remove @tailwindcss/postcss v4 dependency that was causing lightningcss issues
-- Downgrade to stable Tailwind CSS v3.4.17
-- Update PostCSS config to use standard Tailwind + Autoprefixer
-- Update globals.css to use standard Tailwind imports
-- Update tailwind.config.js with proper theme configuration
-- Remove package-lock.json and yarn.lock for clean dependency resolution"
+    # Commit the changes
+    echo "💾 Committing changes..."
+    git commit -m "Fix Vercel build issues
 
-# Push to main branch
-echo "🚀 Pushing to main branch..."
-git push origin main
+- Add lightningcss ^1.28.2 to fix Tailwind v4 native binary dependency
+- Add @types/uuid ^10.0.0 to fix TypeScript declaration error
+- Remove Turbopack custom CSS rules (handled automatically in v4)
+- Switch dev script back to regular Next.js (Turbopack optional)
+- Clean node_modules and lock files for fresh install"
 
-echo "✅ Done! Your Vercel build should now work."
-echo "🔗 Check your Vercel dashboard for the new deployment."
+    # Push to main branch
+    echo "🚀 Pushing to main branch..."
+    git push origin main
+
+    echo "✅ Done! Your Vercel build should now work."
+    echo "🔗 Check your Vercel dashboard for the new deployment."
+    echo "💡 You can now run 'npm run dev' to test locally."
+else
+    echo "❌ Local build failed. Please check the errors above."
+    echo "You may need to run 'npm run dev' to see more details."
+fi
