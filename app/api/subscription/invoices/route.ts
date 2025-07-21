@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const formattedInvoices = stripeInvoices.data.map(invoice => ({
       artist_id: artist.id,
       stripe_invoice_id: invoice.id,
-      stripe_payment_intent_id: invoice.payment_intent?.id || null,
+      stripe_payment_intent_id: typeof (invoice as any).payment_intent === 'string' ? (invoice as any).payment_intent : (invoice as any).payment_intent?.id || null,
       amount_due: invoice.amount_due,
       amount_paid: invoice.amount_paid,
       currency: invoice.currency,
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       invoice_pdf: invoice.invoice_pdf,
       hosted_invoice_url: invoice.hosted_invoice_url,
       invoice_date: new Date(invoice.created * 1000).toISOString(),
-      paid_at: invoice.status === 'paid' ? new Date(invoice.status_transitions.paid_at * 1000).toISOString() : null,
+      paid_at: invoice.status === 'paid' && invoice.status_transitions.paid_at ? new Date(invoice.status_transitions.paid_at * 1000).toISOString() : null,
     }));
     
     // Store invoices in database

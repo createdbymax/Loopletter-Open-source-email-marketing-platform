@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ 
         error: 'Validation error', 
-        details: error.errors 
+        details: error.issues 
       }, { status: 400 });
     }
     
@@ -193,9 +193,9 @@ function evaluateCondition(fan: Fan, condition: SegmentCondition): boolean {
     
     switch (operator) {
       case 'contains':
-        return fanTags.includes(value);
+        return typeof value === 'string' && fanTags.includes(value);
       case 'not_contains':
-        return !fanTags.includes(value);
+        return typeof value === 'string' && !fanTags.includes(value);
       case 'in':
         return Array.isArray(value) && value.some(tag => fanTags.includes(tag));
       case 'not_in':
@@ -214,7 +214,7 @@ function evaluateCondition(fan: Fan, condition: SegmentCondition): boolean {
   }
   
   // Handle standard fields
-  const fanValue = fan[field];
+  const fanValue = (fan as any)[field];
   return compareValues(fanValue, operator, value);
 }
 
@@ -226,13 +226,13 @@ function compareValues(a: unknown, operator: string, b: unknown): boolean {
     case 'not_equals':
       return a !== b;
     case 'contains':
-      return typeof a === 'string' && a.includes(b);
+      return typeof a === 'string' && typeof b === 'string' && a.includes(b);
     case 'not_contains':
-      return typeof a === 'string' && !a.includes(b);
+      return typeof a === 'string' && typeof b === 'string' && !a.includes(b);
     case 'greater_than':
-      return a > b;
+      return typeof a === 'number' && typeof b === 'number' && a > b;
     case 'less_than':
-      return a < b;
+      return typeof a === 'number' && typeof b === 'number' && a < b;
     case 'in':
       return Array.isArray(b) && b.includes(a);
     case 'not_in':

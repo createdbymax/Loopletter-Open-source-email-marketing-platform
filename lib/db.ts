@@ -2,7 +2,7 @@ import { supabase, createClerkSupabaseClient } from './supabase';
 import type { 
   Artist, Fan, Campaign, EmailSent, Segment, Automation, ABTest, 
   Template, Webhook, TeamMember, Integration, AnalyticsData,
-  CampaignFormData, FanFormData, SegmentFormData
+  CampaignFormData, FanFormData
 } from './types';
 
 // Helper function to map database fields to expected structure
@@ -240,17 +240,36 @@ export async function deleteCampaign(id: string) {
 
 export async function duplicateCampaign(id: string, artistId: string) {
   const original = await getCampaignById(id);
+  const now = new Date().toISOString();
   
-  const duplicate = {
+  const duplicate: Omit<Campaign, 'id'> = {
     title: `${original.title} (Copy)`,
+    subject: original.subject,
     message: original.message,
     artist_id: artistId,
     status: 'draft' as const,
-    send_date: new Date().toISOString(),
+    send_date: now,
     artwork_url: original.artwork_url,
     template_id: original.template_id,
     template_data: original.template_data,
-    created_at: new Date().toISOString(),
+    settings: original.settings,
+    stats: {
+      total_sent: 0,
+      delivered: 0,
+      opens: 0,
+      unique_opens: 0,
+      clicks: 0,
+      unique_clicks: 0,
+      bounces: 0,
+      complaints: 0,
+      unsubscribes: 0,
+      open_rate: 0,
+      click_rate: 0,
+      bounce_rate: 0,
+      unsubscribe_rate: 0,
+    },
+    created_at: now,
+    updated_at: now,
   };
 
   return createCampaign(duplicate);
@@ -367,7 +386,7 @@ export async function deleteSegment(id: string) {
   if (error) throw error;
 }
 
-export async function getFansBySegment(segment_id: string) {
+export async function getFansBySegment(_segment_id: string) {
   // This would need complex logic to evaluate segment conditions
   // For now, return empty array - implement based on your segment logic
   return [] as Fan[];
@@ -530,7 +549,7 @@ export async function getTeamMembersByArtist(artist_id: string) {
   return data as TeamMember[];
 }
 
-export async function getTeamMemberByClerkId(clerk_id: string, artist_id: string) {
+export async function getTeamMemberByClerkId(_clerk_id: string, _artist_id: string) {
   // Since we don't have a direct clerk_id field in the team_members table,
   // we need to modify the domain/reputation/route.ts approach instead
   
@@ -577,13 +596,13 @@ export async function getCampaignAnalytics(campaign_id: string) {
   
   const stats = {
     total_sent: emails.length,
-    delivered: emails.filter(e => e.status === 'delivered').length,
-    opens: emails.filter(e => e.opened_at).length,
-    unique_opens: emails.filter(e => e.opened_at).length, // Simplified
-    clicks: emails.filter(e => e.clicked_at).length,
-    unique_clicks: emails.filter(e => e.clicked_at).length, // Simplified
-    bounces: emails.filter(e => e.status === 'bounced').length,
-    complaints: emails.filter(e => e.status === 'complained').length,
+    delivered: emails.filter((e: any) => e.status === 'delivered').length,
+    opens: emails.filter((e: any) => e.opened_at).length,
+    unique_opens: emails.filter((e: any) => e.opened_at).length, // Simplified
+    clicks: emails.filter((e: any) => e.clicked_at).length,
+    unique_clicks: emails.filter((e: any) => e.clicked_at).length, // Simplified
+    bounces: emails.filter((e: any) => e.status === 'bounced').length,
+    complaints: emails.filter((e: any) => e.status === 'complained').length,
     unsubscribes: 0, // Would need separate tracking
     open_rate: 0,
     click_rate: 0,
@@ -622,7 +641,7 @@ export async function getArtistAnalytics(artist_id: string, period: 'day' | 'wee
 
   // Get email tracking data for campaigns in this period
   const campaignIds = campaigns?.map(c => c.id) || [];
-  let emailsData: unknown[] = [];
+  let emailsData: any[] = [];
   
   if (campaignIds.length > 0) {
     const { data: emails } = await supabase
@@ -635,14 +654,9 @@ export async function getArtistAnalytics(artist_id: string, period: 'day' | 'wee
 
   // Calculate metrics
   const sentCampaigns = campaigns?.filter(c => c.status === 'sent') || [];
-  const totalSent = emailsData.length;
   const delivered = emailsData.filter(e => e.status === 'delivered' || e.status === 'sent').length;
   const totalOpens = emailsData.filter(e => e.opened_at).length;
   const totalClicks = emailsData.filter(e => e.clicked_at).length;
-  
-  // Calculate unique opens and clicks
-  const uniqueOpens = new Set(emailsData.filter(e => e.opened_at).map(e => e.id)).size;
-  const uniqueClicks = new Set(emailsData.filter(e => e.clicked_at).map(e => e.id)).size;
 
   // New subscribers in period
   const newSubscribers = allFans?.filter(f => {
@@ -656,10 +670,6 @@ export async function getArtistAnalytics(artist_id: string, period: 'day' | 'wee
     const unsubDate = new Date(f.unsubscribed_at);
     return unsubDate >= periodStart;
   }).length || 0;
-
-  // Bounces and complaints
-  const bounces = emailsData.filter(e => e.status === 'bounced').length;
-  const complaints = emailsData.filter(e => e.status === 'complained').length;
 
   // Generate trends data (daily breakdown)
   const trends = [];
@@ -714,7 +724,8 @@ export async function addFanWithValidation(fanData: FanFormData, artist_id: stri
     ...fanData,
     artist_id,
     status: 'subscribed',
-    source: 'manual',
+    source: fanData.source || 'manual',
+    custom_fields: fanData.custom_fields as Record<string, string | number | boolean> | undefined,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -850,11 +861,6 @@ export async function createCampaignWithDefaults(campaignData: CampaignFormData,
     template_data: campaignData.template_data || null,
     segment_id: campaignData.segment_id || null,
     settings: {
-      send_time_optimization: false,
-      track_opens: true,
-      track_clicks: true,
-      auto_tweet: false,
-      send_to_unsubscribed: false,
       ...campaignData.settings,
     },
     stats: {

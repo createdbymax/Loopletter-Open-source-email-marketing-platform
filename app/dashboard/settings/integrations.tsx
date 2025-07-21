@@ -21,7 +21,7 @@ import {
   AlertCircle,
   ExternalLink,
 } from "lucide-react";
-import type { Integration } from "@/lib/types";
+import type { Artist, Integration } from "@/lib/types";
 
 const AVAILABLE_INTEGRATIONS = [
   {
@@ -243,8 +243,8 @@ function WebhookManager({ artistId }: { artistId: string }) {
 
 export function IntegrationsManager() {
   const { user, isLoaded } = useUser();
-  const [artist, setArtist] = useState<unknown>(null);
-  const [integrations, setIntegrations] = useState<Integration[]>([]);
+  const [artist, setArtist] = useState<Artist | null>(null);
+    const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -390,7 +390,9 @@ export function IntegrationsManager() {
                         const connected = getConnectedIntegration(
                           integration.type
                         );
-                        if (connected) handleDisconnect(connected.id);
+                        if (connected && 'id' in connected) {
+                          handleDisconnect(connected.id);
+                        }
                       }}
                     />
                   ))}
@@ -401,7 +403,7 @@ export function IntegrationsManager() {
         </TabsContent>
 
         <TabsContent value="webhooks">
-          <WebhookManager artistId={artist?.id} />
+          {artist?.id && <WebhookManager artistId={artist.id} />}
         </TabsContent>
 
         <TabsContent value="api" className="space-y-6">

@@ -116,7 +116,7 @@ export function TeamManager({ artist }: TeamManagerProps) {
       });
     } catch (error: unknown) {
       console.error("Error inviting team member:", error);
-      setError(error.message || "Failed to invite team member");
+      setError( "Failed to invite team member");
     } finally {
       setIsInviting(false);
     }

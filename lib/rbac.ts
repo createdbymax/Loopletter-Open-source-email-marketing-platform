@@ -91,6 +91,17 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   ]
 };
 
+// Type guard to check if a string is a valid permission
+function isValidPermission(permission: string): permission is Permission {
+  const allPermissions = Object.values(ROLE_PERMISSIONS).flat();
+  return allPermissions.includes(permission as Permission);
+}
+
+// Helper function to safely convert string[] to Permission[]
+function toPermissions(permissions: string[]): Permission[] {
+  return permissions.filter(isValidPermission);
+}
+
 // Check if a team member has a specific permission
 export function hasPermission(member: TeamMember, permission: Permission): boolean {
   // Get base permissions from role
@@ -102,7 +113,8 @@ export function hasPermission(member: TeamMember, permission: Permission): boole
   }
   
   // Check if the permission is in the member's custom permissions
-  if (member.permissions && member.permissions.includes(permission)) {
+  const customPermissions = toPermissions(member.permissions || []);
+  if (customPermissions.includes(permission)) {
     return true;
   }
   
@@ -112,7 +124,7 @@ export function hasPermission(member: TeamMember, permission: Permission): boole
 // Get all permissions for a team member
 export function getAllPermissions(member: TeamMember): Permission[] {
   const rolePermissions = ROLE_PERMISSIONS[member.role] || [];
-  const customPermissions = member.permissions || [];
+  const customPermissions = toPermissions(member.permissions || []);
   
   // Combine and deduplicate permissions
   return [...new Set([...rolePermissions, ...customPermissions])];

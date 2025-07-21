@@ -17,6 +17,7 @@ export type Artist = {
     plan: 'starter' | 'independent' | 'label';
     status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
     current_period_end?: string;
+    cancel_at_period_end?: boolean;
     stripe_customer_id?: string;
     stripe_subscription_id?: string;
     metadata?: Record<string, string | number | boolean>;

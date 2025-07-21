@@ -12,6 +12,11 @@ import { getOrCreateArtistByClerkId, getFansByArtist } from "@/lib/db";
 import { TemplatePreview } from "@/components/ui/template-preview";
 import { TemplateEditor } from "../../create/template-editor";
 import { Campaign } from "@/lib/types";
+import {
+  MusicReleaseTemplateProps,
+  ShowAnnouncementTemplateProps,
+  MerchandiseTemplateProps,
+} from "@/app/dashboard/email-templates";
 
 interface CampaignEditorProps {
   campaignId: string;
@@ -138,7 +143,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
     if (campaign) {
       setCampaign({
         ...campaign,
-        template_data: newData
+        template_data: newData as Record<string, unknown> | null
       });
     }
   };
@@ -262,7 +267,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
                 {campaign.template_id && campaign.template_data ? (
                   <TemplatePreview 
                     templateId={campaign.template_id}
-                    templateData={campaign.template_data}
+                    templateData={campaign.template_data as unknown as MusicReleaseTemplateProps | ShowAnnouncementTemplateProps | MerchandiseTemplateProps}
                   />
                 ) : (
                   <div className="text-center py-12 text-gray-500">

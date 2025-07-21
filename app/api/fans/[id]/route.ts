@@ -3,10 +3,10 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const fanId = params.id;
+    const { id: fanId } = await params;
 
     // Fetch fan data with artist information
     const { data: fan, error } = await supabase

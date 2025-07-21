@@ -22,10 +22,10 @@ class EmailQueue {
   async addCampaignToQueue(campaignId: string): Promise<void> {
     const campaign = await getCampaignById(campaignId);
     const fans = await getFansByArtist(campaign.artist_id);
-    
+
     // Filter active subscribers
     const activeFans = fans.filter(f => f.status === 'subscribed');
-    
+
     // Create jobs for each fan
     const jobs: EmailJob[] = activeFans.map(fan => ({
       id: `${campaignId}-${fan.id}-${Date.now()}`,
@@ -39,7 +39,7 @@ class EmailQueue {
     }));
 
     this.jobs.push(...jobs);
-    
+
     // Start processing if not already running
     if (!this.processing) {
       this.startProcessing();
@@ -48,7 +48,7 @@ class EmailQueue {
 
   private async startProcessing(): Promise<void> {
     this.processing = true;
-    
+
     while (this.jobs.length > 0) {
       const now = new Date();
       const readyJobs = this.jobs
@@ -61,7 +61,7 @@ class EmailQueue {
         const nextJob = this.jobs
           .filter(job => job.scheduledFor > now)
           .sort((a, b) => a.scheduledFor.getTime() - b.scheduledFor.getTime())[0];
-        
+
         if (nextJob) {
           const waitTime = nextJob.scheduledFor.getTime() - now.getTime();
           await new Promise(resolve => setTimeout(resolve, Math.min(waitTime, 60000))); // Max 1 minute wait
@@ -73,16 +73,16 @@ class EmailQueue {
 
       // Process batch
       await this.processBatch(readyJobs);
-      
+
       // Remove processed jobs
       this.jobs = this.jobs.filter(job => !readyJobs.includes(job));
-      
+
       // Wait between batches to respect rate limits
       if (this.jobs.length > 0) {
         await new Promise(resolve => setTimeout(resolve, this.batchInterval));
       }
     }
-    
+
     this.processing = false;
   }
 
@@ -96,7 +96,7 @@ class EmailQueue {
       if (result.status === 'rejected') {
         const job = jobs[index];
         job.attempts++;
-        
+
         if (job.attempts < job.maxAttempts) {
           // Retry with exponential backoff
           job.scheduledFor = new Date(Date.now() + Math.pow(2, job.attempts) * 60000);
@@ -122,7 +122,7 @@ class EmailQueue {
       }
 
       const result = await sendCampaignEmail(campaign, fan, artist);
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to send email');
       }
@@ -146,7 +146,7 @@ export const emailQueue = new EmailQueue();
 // API endpoint helper
 export async function queueCampaign(campaignId: string): Promise<void> {
   await emailQueue.addCampaignToQueue(campaignId);
-  
+
   // Update campaign status
   await updateCampaign(campaignId, {
     status: 'sending',

@@ -177,21 +177,36 @@ export function SegmentManager({ artist }: SegmentManagerProps) {
   const getConditionDescription = (condition: SegmentCondition) => {
     const { field, operator, value } = condition;
     
-    let fieldLabel = field;
-    if (field === 'tags') fieldLabel = 'Tag';
-    if (field === 'opened') fieldLabel = 'Opened Email';
-    if (field === 'clicked') fieldLabel = 'Clicked Link';
-    if (field === 'created_at') fieldLabel = 'Subscribed Date';
+    // Map field names to display labels
+    const fieldLabels: Record<string, string> = {
+      'tags': 'Tag',
+      'opened': 'Opened Email',
+      'clicked': 'Clicked Link',
+      'created_at': 'Subscribed Date'
+    };
     
-    let operatorLabel = operator;
-    if (operator === 'equals') operatorLabel = 'is';
-    if (operator === 'not_equals') operatorLabel = 'is not';
-    if (operator === 'contains') operatorLabel = 'contains';
-    if (operator === 'not_contains') operatorLabel = 'does not contain';
-    if (operator === 'greater_than') operatorLabel = 'is after';
-    if (operator === 'less_than') operatorLabel = 'is before';
+    const fieldLabel = fieldLabels[field] || field;
     
-    return `${fieldLabel} ${operatorLabel} "${value}"`;
+    // Map operators to display text
+    const operatorLabels: Record<string, string> = {
+      'equals': 'is',
+      'not_equals': 'is not',
+      'contains': 'contains',
+      'not_contains': 'does not contain',
+      'greater_than': 'is after',
+      'less_than': 'is before',
+      'in': 'is in',
+      'not_in': 'is not in'
+    };
+    
+    const operatorLabel = operatorLabels[operator] || operator;
+    
+    // Handle array values for 'in' and 'not_in' operators
+    const displayValue = Array.isArray(value) 
+      ? value.join(', ') 
+      : String(value);
+    
+    return `${fieldLabel} ${operatorLabel} "${displayValue}"`;
   };
 
   return (
@@ -341,8 +356,15 @@ export function SegmentManager({ artist }: SegmentManagerProps) {
                         </Select>
                         
                         <Input
-                          value={condition.value}
-                          onChange={(e) => updateCondition(index, 'value', e.target.value)}
+                          value={typeof condition.value === 'boolean' ? String(condition.value) : condition.value}
+                          onChange={(e) => {
+                            // Convert 'true'/'false' strings back to boolean if needed
+                            let newValue: string | number | boolean | string[] = e.target.value;
+                            if (condition.value === true || condition.value === false) {
+                              newValue = e.target.value === 'true';
+                            }
+                            updateCondition(index, 'value', newValue);
+                          }}
                           placeholder="Value"
                           className="flex-1"
                         />

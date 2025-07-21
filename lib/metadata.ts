@@ -109,7 +109,7 @@ export function generateArtistSubscriptionMetadata(artist: Artist): Metadata {
             description,
             images: [
                 {
-                    url: artist.settings?.artist_image_url || '/og-artist-default.png',
+                    url: artist.settings?.subscription_page_settings?.header?.artist_image_url || '/og-artist-default.png',
                     width: 1200,
                     height: 630,
                     alt: `Subscribe to ${artist.name} - ${SITE_NAME}`,
@@ -120,7 +120,7 @@ export function generateArtistSubscriptionMetadata(artist: Artist): Metadata {
             card: 'summary_large_image',
             title,
             description,
-            images: [artist.settings?.artist_image_url || '/og-artist-default.png'],
+            images: [artist.settings?.subscription_page_settings?.header?.artist_image_url || '/og-artist-default.png'],
         },
         other: {
             'artist:name': artist.name,

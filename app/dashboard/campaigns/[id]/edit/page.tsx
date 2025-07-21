@@ -1,5 +1,6 @@
 import { CampaignEditor } from "./campaign-editor";
 
-export default function EditCampaignPage({ params }: { params: { id: string } }) {
-  return <CampaignEditor campaignId={params.id} />;
+export default async function EditCampaignPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <CampaignEditor campaignId={id} />;
 }

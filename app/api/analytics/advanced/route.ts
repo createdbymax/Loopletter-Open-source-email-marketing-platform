@@ -1,12 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withFeatureAccess } from '@/app/api/middleware/feature-access';
-import { getArtistAnalytics } from '@/lib/db';
-import { Artist } from '@/lib/types';
+import { getAuth } from '@clerk/nextjs/server';
+import { getOrCreateArtistByClerkId, getArtistAnalytics } from '@/lib/db';
+import { canAccessFeature } from '@/lib/subscription';
 
-// Handler for advanced analytics data
-async function handler(req: NextRequest, artist: Artist) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    // Get authenticated user
+    const { userId } = getAuth(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get artist
+    const artist = await getOrCreateArtistByClerkId(
+      userId,
+      '', // Email will be fetched from Clerk
+      '' // Name will be fetched from Clerk
+    );
+
+    // Check feature access
+    if (!canAccessFeature(artist, 'advancedAnalytics')) {
+      return NextResponse.json(
+        {
+          error: 'Feature not available',
+          message: `This feature requires an upgrade to access.`,
+          feature: 'advancedAnalytics',
+          upgradeUrl: `/dashboard/settings?tab=subscription&feature=advancedAnalytics`,
+        },
+        { status: 403 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') as 'day' | 'week' | 'month' | 'year' || 'month';
 
     // Get basic analytics data
@@ -77,6 +106,3 @@ async function handler(req: NextRequest, artist: Artist) {
     );
   }
 }
-
-// Wrap the handler with feature access middleware
-export const GET = withFeatureAccess('advancedAnalytics', handler);

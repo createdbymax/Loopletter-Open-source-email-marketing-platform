@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
     }
     
     // Get user's email from Clerk
-    const user = await auth().getUser(userId);
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
     const userEmail = user.emailAddresses[0]?.emailAddress;
     
     if (!userEmail) {

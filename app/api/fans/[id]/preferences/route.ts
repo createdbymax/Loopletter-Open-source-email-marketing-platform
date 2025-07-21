@@ -3,11 +3,11 @@ import { supabase } from '@/lib/supabase';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { preferences, tracking_preferences } = await req.json();
-    const fanId = params.id;
+    const { id: fanId } = await params;
 
     // Update fan preferences
     const { error } = await supabase

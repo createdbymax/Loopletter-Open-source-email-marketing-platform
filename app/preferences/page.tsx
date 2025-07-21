@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Shield, Eye, MousePointer, Mail, Bell, Globe } from 'lucide-react';
 
-export default function PreferencesPage() {
+function PreferencesContent() {
   const searchParams = useSearchParams();
   const fanId = searchParams.get('fan_id');
   
@@ -319,5 +319,21 @@ export default function PreferencesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    </div>
+  );
+}
+
+export default function PreferencesPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PreferencesContent />
+    </Suspense>
   );
 }

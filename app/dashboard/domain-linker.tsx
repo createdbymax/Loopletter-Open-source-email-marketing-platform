@@ -297,7 +297,7 @@ export function DomainLinker() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <Label htmlFor="clickTracking">Click Tracking</Label>
-                <Switch id="clickTracking" checked={config.clickTracking} disabled readOnly />
+                <Switch id="clickTracking" checked={config.clickTracking} disabled />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
@@ -307,7 +307,7 @@ export function DomainLinker() {
               </div>
               <div className="flex items-center gap-3">
                 <Label htmlFor="openTracking">Open Tracking</Label>
-                <Switch id="openTracking" checked={config.openTracking} disabled readOnly />
+                <Switch id="openTracking" checked={config.openTracking} disabled />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />

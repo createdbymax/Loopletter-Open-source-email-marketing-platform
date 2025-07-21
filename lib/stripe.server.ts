@@ -12,7 +12,7 @@ let stripe: Stripe | null = null;
 // Initialize Stripe only on the server side
 if (typeof window === 'undefined') {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2023-10-16', // Use a stable API version
+    apiVersion: '2025-06-30.basil', // Use a stable API version
   });
 }
 
@@ -103,8 +103,8 @@ export async function createCustomerPortalSession(
     throw new Error('Stripe is not initialized');
   }
 
-  // Check both the individual field and the subscription object
-  const customerId = artist.stripe_customer_id || artist.subscription?.stripe_customer_id;
+  // Get customer ID from subscription object
+  const customerId = artist.subscription?.stripe_customer_id;
   
   if (!customerId) {
     throw new Error('Artist does not have a Stripe customer ID');
@@ -121,12 +121,12 @@ export async function createCustomerPortalSession(
           return_url: returnUrl,
         });
         return session;
-      } catch (stripeError) {
+      } catch (stripeError: any) {
         console.error('Stripe error:', stripeError);
         
         // If that fails, check if it's because the customer doesn't exist
-        if (stripeError.message?.includes('No such customer') || 
-            stripeError.code === 'resource_missing') {
+        if (stripeError?.message?.includes('No such customer') || 
+            stripeError?.code === 'resource_missing') {
           console.log('Customer not found in Stripe, creating mock portal session for development');
           
           // Return a mock session for development

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   VisualEmailBuilder,
   EmailTemplate,
+  EmailBlock,
 } from "@/components/email-builder/visual-email-builder";
 import { ArrowLeft, Save, Send } from "lucide-react";
 
@@ -42,30 +43,18 @@ export function VisualEditor({
   }, []);
 
   // Convert HTML to template format if initialHtml is provided
-  const getInitialTemplate = (): EmailTemplate | undefined => {
-    if (!initialHtml) return undefined;
+  const getInitialBlocks = (): EmailBlock[] => {
+    if (!initialHtml) return [];
 
     // This is a simplified conversion - in a real implementation,
     // you would need a more sophisticated HTML parser
-    return {
-      blocks: [
-        {
-          id: "1",
-          type: "text",
-          content: initialHtml,
-          styles: {
-            fontSize: 16,
-            color: "#333333",
-          },
-        },
-      ],
-      styles: {
-        backgroundColor: "#f5f5f5",
-        width: "600px",
-        padding: "20px",
-        fontFamily: "Arial, sans-serif",
+    return [
+      {
+        id: "1",
+        type: "paragraph",
+        content: initialHtml,
       },
-    };
+    ];
   };
 
   const handleSaveClick = () => {
@@ -114,23 +103,11 @@ export function VisualEditor({
 
       <div className="flex-1 overflow-hidden">
         <VisualEmailBuilder
-          initialTemplate={getInitialTemplate()}
-          onChange={(template) => {
-            // This will be handled by the useEffect that checks the iframe
-          }}
-          onPreview={() => {
-            // Preview is handled internally by the VisualEmailBuilder
-          }}
-          onSave={() => {
-            // When the user clicks save in the builder, we'll save the campaign
-            const iframe = document.getElementById(
-              "preview-iframe"
-            ) as HTMLIFrameElement;
-            if (iframe && iframe.srcdoc) {
-              onSave(iframe.srcdoc);
-            } else if (generatedHtml) {
-              onSave(generatedHtml);
-            }
+          initialBlocks={getInitialBlocks()}
+          onChange={(blocks) => {
+            // Convert blocks to HTML and update state
+            const html = blocks.map(block => `<div>${block.content}</div>`).join('');
+            setGeneratedHtml(html);
           }}
         />
       </div>

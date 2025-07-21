@@ -834,7 +834,8 @@ export default function DomainPage() {
                   </AlertDescription>
                 </Alert>
               </CardContent>
-            </Card>) /* Authentication Status */}/* Authentication Status */
+            </Card>
+          )}
 
           {/* Authentication Status */}
           {reputationData && (

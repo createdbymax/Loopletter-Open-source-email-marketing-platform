@@ -15,11 +15,11 @@ if (typeof window !== 'undefined') {
     static readonly OPEN = 1;
     static readonly CLOSING = 2;
     static readonly CLOSED = 3;
-    
+
     constructor() {
       throw new Error('WebSocket is not available in server environment');
     }
   };
 }
 
-export {};
+export { };

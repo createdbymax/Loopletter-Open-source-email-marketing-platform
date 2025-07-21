@@ -121,8 +121,27 @@ export function formatAmount(amount: number, currency: string = 'usd'): string {
     style: 'currency',
     currency: currency.toUpperCase(),
   });
-  
+
   return formatter.format(amount / 100);
+}
+
+// Type definition for Stripe subscription object
+interface StripeSubscription {
+  items?: {
+    data?: Array<{
+      price?: {
+        id?: string;
+      };
+    }>;
+  };
+  status?: string;
+  current_period_end?: number;
+  cancel_at_period_end?: boolean;
+}
+
+// Type guard to check if object has subscription properties
+function isStripeSubscription(obj: unknown): obj is StripeSubscription {
+  return typeof obj === 'object' && obj !== null;
 }
 
 /**
@@ -134,7 +153,7 @@ export function getPlanDetailsFromSubscription(subscription: unknown): {
   currentPeriodEnd: string;
   cancelAtPeriodEnd: boolean;
 } {
-  if (!subscription) {
+  if (!subscription || !isStripeSubscription(subscription)) {
     return {
       plan: 'starter',
       status: 'active',
@@ -142,16 +161,16 @@ export function getPlanDetailsFromSubscription(subscription: unknown): {
       cancelAtPeriodEnd: false,
     };
   }
-  
+
   const priceId = subscription.items?.data?.[0]?.price?.id || '';
   let plan: SubscriptionPlan = 'starter';
-  
+
   if (priceId.includes('independent')) {
     plan = 'independent';
   } else if (priceId.includes('label')) {
     plan = 'label';
   }
-  
+
   return {
     plan,
     status: subscription.status || 'active',

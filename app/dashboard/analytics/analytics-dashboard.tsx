@@ -455,13 +455,11 @@ export function AnalyticsDashboard() {
                     dataKey="openRate" 
                     fill="#3b82f6" 
                     name="Open Rate"
-                    formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
                   />
                   <Bar 
                     dataKey="clickRate" 
                     fill="#10b981" 
                     name="Click Rate"
-                    formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
                   />
                 </RechartsBarChart>
               </ResponsiveContainer>

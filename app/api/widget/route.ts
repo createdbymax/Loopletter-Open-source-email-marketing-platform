@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArtistBySlug } from '@/lib/db';
+import { Artist } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function generateWidgetHtml(artist: unknown, theme: string, size: string) {
+function generateWidgetHtml(artist: Artist, theme: string, size: string) {
   const isDark = theme === 'dark';
   const isSmall = size === 'small';
   const isMedium = size === 'medium';

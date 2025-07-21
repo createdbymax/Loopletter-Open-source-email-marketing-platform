@@ -60,14 +60,23 @@ async function recordOpenEvent(messageId: string, campaignId: string, fanId: str
       .limit(1);
     
     if (existingOpen && existingOpen.length > 0) {
-      // Update the existing open record with a new timestamp
+      // Get current open_count and increment it
+      const { data: currentRecord } = await supabase
+        .from('email_opens')
+        .select('open_count')
+        .eq('id', existingOpen[0].id)
+        .single();
+      
+      const currentCount = currentRecord?.open_count || 0;
+      
+      // Update the existing open record with a new timestamp and incremented count
       await supabase
         .from('email_opens')
         .update({
           opened_at: new Date().toISOString(),
           user_agent: userAgent,
           ip_address: ip,
-          open_count: supabase.sql`open_count + 1`
+          open_count: currentCount + 1
         })
         .eq('id', existingOpen[0].id);
     } else {

@@ -476,9 +476,9 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                &quot; &quot;LoopLetter helped me turn casual listeners into real
-                fans. My last release got 3x more streams because I could reach
-                my audience directly.&quot;&quot;
+                &quot; &quot;LoopLetter helped me turn casual listeners into
+                real fans. My last release got 3x more streams because I could
+                reach my audience directly.&quot;&quot;
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">

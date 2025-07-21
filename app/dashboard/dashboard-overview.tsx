@@ -199,9 +199,7 @@ export function DashboardOverview(props: DashboardOverviewProps) {
   const { maxSubscribers, maxEmailSends } = getUserLimits(artist);
   
   // Calculate usage percentages
-  const subscriberPercentage = maxSubscribers === 'unlimited' 
-    ? 0 
-    : Math.min(100, Math.round((stats.totalFans / (maxSubscribers as number)) * 100));
+  const subscriberPercentage = Math.min(100, Math.round((stats.totalFans / maxSubscribers) * 100));
   
   const emailPercentage = maxEmailSends === 'unlimited' 
     ? 0 
@@ -308,7 +306,7 @@ export function DashboardOverview(props: DashboardOverviewProps) {
                   <span className="font-medium">Subscriber Usage</span>
                 </div>
                 <span className="text-sm font-medium">
-                  {stats.totalFans.toLocaleString()} / {maxSubscribers === 'unlimited' ? 'Unlimited' : maxSubscribers.toLocaleString()}
+                  {stats.totalFans.toLocaleString()} / {maxSubscribers.toLocaleString()}
                 </span>
               </div>
               

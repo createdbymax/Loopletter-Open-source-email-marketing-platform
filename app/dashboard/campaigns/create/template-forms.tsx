@@ -12,9 +12,9 @@ import { ArrowLeft, ArrowRight, Upload, Plus, X } from "lucide-react";
 import { 
   MusicReleaseTemplateProps, 
   ShowAnnouncementTemplateProps, 
-  MerchandiseTemplateProps,
-  ArtistPromoTemplateProps
+  MerchandiseTemplateProps
 } from "@/app/dashboard/email-templates";
+import { ArtistPromoTemplateProps } from "@/app/dashboard/email-template-types";
 import { ArtistPromoForm } from "./artist-promo-form";
 
 interface TemplateFormProps {

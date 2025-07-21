@@ -13,19 +13,19 @@ export const ses = new SESClient({
 export const SES_CONFIG = {
   // Whether we're in sandbox mode (limited sending)
   isSandbox: process.env.SES_SANDBOX === 'true',
-  
+
   // Configuration set for tracking email events
   configurationSet: process.env.SES_CONFIGURATION_SET || 'default',
-  
+
   // Default sender domain
   defaultSenderDomain: process.env.SES_DEFAULT_SENDER_DOMAIN || 'loopletter.com',
-  
+
   // Maximum batch size for sending emails
   batchSize: parseInt(process.env.SES_BATCH_SIZE || '50', 10),
-  
+
   // Rate limit (emails per second)
   rateLimit: parseInt(process.env.SES_RATE_LIMIT || '14', 10),
-  
+
   // Retry configuration
   retry: {
     maxRetries: parseInt(process.env.SES_MAX_RETRIES || '3', 10),
@@ -40,13 +40,13 @@ export async function isEmailVerifiedInSandbox(email: string): Promise<boolean> 
     // If not in sandbox mode, all emails are considered "verified"
     return true;
   }
-  
+
   try {
     // In a real implementation, you would check against the list of verified emails
     // For now, we'll just check if the email ends with a test domain
-    return email.endsWith('@example.com') || 
-           email.endsWith('@test.com') || 
-           email.endsWith('@loopletter.com');
+    return email.endsWith('@example.com') ||
+      email.endsWith('@test.com') ||
+      email.endsWith('@loopletter.com');
   } catch (error) {
     console.error('Error checking if email is verified:', error);
     return false;

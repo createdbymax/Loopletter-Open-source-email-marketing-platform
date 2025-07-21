@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { Artist } from '@/lib/types';
 import { FeatureGate, UpgradeButton } from '@/components/ui/feature-access';
@@ -56,25 +54,12 @@ export function ScheduleCampaign({ artist, onSchedule }: ScheduleCampaignProps) 
         <div className="space-y-3">
           <div>
             <Label>Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal mt-1"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              type="date"
+              value={date ? format(date, 'yyyy-MM-dd') : ''}
+              onChange={(e) => setDate(e.target.value ? new Date(e.target.value) : undefined)}
+              className="mt-1"
+            />
           </div>
           
           <div>

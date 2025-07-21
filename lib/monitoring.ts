@@ -35,15 +35,34 @@ export function logEvent(name: string, data?: Record<string, any>) {
 }
 
 // Helper function to start performance monitoring
+// Note: startTransaction is deprecated in Sentry v7+, using modern span API
 export function startTransaction(name: string, op: string) {
   if (!process.env.SENTRY_DSN) {
     return null;
   }
   
-  return Sentry.startTransaction({
-    name,
-    op,
-  });
+  // Return a compatible interface for legacy code
+  return {
+    setTag: (key: string, value: string) => Sentry.setTag(key, value),
+    setData: (key: string, value: any) => Sentry.setContext(key, value),
+    finish: () => {
+      // Log completion for debugging
+      console.log(`Transaction completed: ${name} (${op})`);
+    },
+  };
+}
+
+// Modern helper function for performance monitoring using spans
+export function withPerformanceMonitoring<T>(
+  name: string, 
+  op: string, 
+  fn: () => T | Promise<T>
+): T | Promise<T> {
+  if (!process.env.SENTRY_DSN) {
+    return fn();
+  }
+  
+  return Sentry.startSpan({ name, op }, fn);
 }
 
 // Helper function to set user information for monitoring

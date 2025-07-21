@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Upload } from "lucide-react";
-import { ArtistPromoTemplateProps } from "@/app/dashboard/email-templates";
+import { ArtistPromoTemplateProps } from "@/app/dashboard/email-template-types";
 
 interface ArtistPromoFormProps {
   onBack: () => void;

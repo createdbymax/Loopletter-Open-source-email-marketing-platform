@@ -82,7 +82,7 @@ export function AutomationManager({ artist }: AutomationManagerProps) {
       }
       
       setAutomations(automations.map(automation => 
-        automation.id === id ? { ...automation, status: newStatus as string } : automation
+        automation.id === id ? { ...automation, status: newStatus } : automation
       ));
     } catch (error) {
       console.error('Error updating automation status:', error);
@@ -95,15 +95,15 @@ export function AutomationManager({ artist }: AutomationManagerProps) {
       case 'fan_subscribed':
         return 'When a fan subscribes';
       case 'fan_tagged':
-        return `When a fan is tagged with "${trigger.conditions.tag}"`;
+        return `When a fan is tagged with "${(trigger.conditions as any)?.tag || 'unknown tag'}"`;
       case 'campaign_opened':
-        return `When a fan opens "${trigger.conditions.campaign_name}"`;
+        return `When a fan opens "${(trigger.conditions as any)?.campaign_name || 'unknown campaign'}"`;
       case 'campaign_clicked':
-        return `When a fan clicks a link in "${trigger.conditions.campaign_name}"`;
+        return `When a fan clicks a link in "${(trigger.conditions as any)?.campaign_name || 'unknown campaign'}"`;
       case 'date_based':
-        return `On ${trigger.conditions.date}`;
+        return `On ${(trigger.conditions as any)?.date || 'unknown date'}`;
       case 'custom_field_changed':
-        return `When "${trigger.conditions.field}" changes`;
+        return `When "${(trigger.conditions as any)?.field || 'unknown field'}" changes`;
       default:
         return 'Custom trigger';
     }
@@ -112,17 +112,17 @@ export function AutomationManager({ artist }: AutomationManagerProps) {
   const getActionDescription = (action: Record<string, unknown>) => {
     switch (action.type) {
       case 'send_email':
-        return `Send email "${action.config.subject}"`;
+        return `Send email "${(action.config as any)?.subject || 'unknown subject'}"`;
       case 'add_tag':
-        return `Add tag "${action.config.tag}"`;
+        return `Add tag "${(action.config as any)?.tag || 'unknown tag'}"`;
       case 'remove_tag':
-        return `Remove tag "${action.config.tag}"`;
+        return `Remove tag "${(action.config as any)?.tag || 'unknown tag'}"`;
       case 'update_field':
-        return `Update field "${action.config.field}"`;
+        return `Update field "${(action.config as any)?.field || 'unknown field'}"`;
       case 'webhook':
         return `Call webhook`;
       case 'wait':
-        return `Wait ${action.config.duration} ${action.config.unit}`;
+        return `Wait ${(action.config as any)?.duration || 'unknown'} ${(action.config as any)?.unit || 'time'}`;
       default:
         return 'Custom action';
     }

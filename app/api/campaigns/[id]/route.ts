@@ -4,7 +4,7 @@ import { getCampaignById, updateCampaign, deleteCampaign } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request);
@@ -12,7 +12,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const campaign = await getCampaignById(params.id);
+    const { id } = await params;
+    const campaign = await getCampaignById(id);
     return NextResponse.json(campaign);
   } catch (error) {
     console.error('Failed to fetch campaign:', error);
@@ -25,7 +26,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request);
@@ -33,8 +34,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await request.json();
-    const campaign = await updateCampaign(params.id, body);
+    const campaign = await updateCampaign(id, body);
 
     return NextResponse.json(campaign);
   } catch (error) {
@@ -48,7 +50,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request);
@@ -56,7 +58,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await deleteCampaign(params.id);
+    const { id } = await params;
+    await deleteCampaign(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete campaign:', error);

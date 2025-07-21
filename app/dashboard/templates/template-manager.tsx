@@ -2,18 +2,29 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { 
-  getOrCreateArtistByClerkId, 
-  getTemplatesByArtist, 
+import {
+  getOrCreateArtistByClerkId,
+  getTemplatesByArtist,
   getPublicTemplates,
-  createTemplate 
+  createTemplate,
 } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,13 +33,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Plus, 
-  Layout, 
-  Eye, 
-  Copy, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Layout,
+  Eye,
+  Copy,
+  Edit,
+  Trash2,
   MoreHorizontal,
   Mail,
   Music,
@@ -37,55 +48,65 @@ import {
   Newspaper,
   Heart,
   Palette,
-  Code
+  Code,
 } from "lucide-react";
 import type { Template, TemplateVariable } from "@/lib/types";
 
 const TEMPLATE_CATEGORIES = [
-  { value: 'music_release', label: 'Music Release', icon: Music },
-  { value: 'show_announcement', label: 'Show Announcement', icon: Calendar },
-  { value: 'merchandise', label: 'Merchandise', icon: ShoppingBag },
-  { value: 'newsletter', label: 'Newsletter', icon: Newspaper },
-  { value: 'welcome', label: 'Welcome', icon: Heart },
-  { value: 'custom', label: 'Custom', icon: Layout },
+  { value: "music_release", label: "Music Release", icon: Music },
+  { value: "show_announcement", label: "Show Announcement", icon: Calendar },
+  { value: "merchandise", label: "Merchandise", icon: ShoppingBag },
+  { value: "newsletter", label: "Newsletter", icon: Newspaper },
+  { value: "welcome", label: "Welcome", icon: Heart },
+  { value: "custom", label: "Custom", icon: Layout },
 ];
 
 const VARIABLE_TYPES = [
-  { value: 'text', label: 'Text' },
-  { value: 'image', label: 'Image URL' },
-  { value: 'url', label: 'Link URL' },
-  { value: 'color', label: 'Color' },
-  { value: 'number', label: 'Number' },
-  { value: 'boolean', label: 'True/False' },
+  { value: "text", label: "Text" },
+  { value: "image", label: "Image URL" },
+  { value: "url", label: "Link URL" },
+  { value: "color", label: "Color" },
+  { value: "number", label: "Number" },
+  { value: "boolean", label: "True/False" },
 ];
 
-function TemplateBuilder({ 
-  template, 
-  onSave, 
-  onCancel 
-}: { 
-  template?: Template; 
-  onSave: (data: any) => void; 
-  onCancel: () => void; 
+function TemplateBuilder({
+  template,
+  onSave,
+  onCancel,
+}: {
+  template?: Template;
+  onSave: (data: any) => void;
+  onCancel: () => void;
 }) {
-  const [name, setName] = useState(template?.name || '');
-  const [description, setDescription] = useState(template?.description || '');
-  const [category, setCategory] = useState<Template['category']>(template?.category || 'custom');
-  const [htmlContent, setHtmlContent] = useState(template?.html_content || '');
-  const [variables, setVariables] = useState<TemplateVariable[]>(template?.variables || []);
+  const [name, setName] = useState(template?.name || "");
+  const [description, setDescription] = useState(template?.description || "");
+  const [category, setCategory] = useState<Template["category"]>(
+    template?.category || "custom"
+  );
+  const [htmlContent, setHtmlContent] = useState(template?.html_content || "");
+  const [variables, setVariables] = useState<TemplateVariable[]>(
+    template?.variables || []
+  );
   const [isPublic, setIsPublic] = useState(template?.is_public || false);
 
   const addVariable = () => {
-    setVariables([...variables, {
-      name: '',
-      type: 'text',
-      label: '',
-      default_value: '',
-      required: false,
-    }]);
+    setVariables([
+      ...variables,
+      {
+        name: "",
+        type: "text",
+        label: "",
+        default_value: "",
+        required: false,
+      },
+    ]);
   };
 
-  const updateVariable = (index: number, updates: Partial<TemplateVariable>) => {
+  const updateVariable = (
+    index: number,
+    updates: Partial<TemplateVariable>
+  ) => {
     const newVariables = [...variables];
     newVariables[index] = { ...newVariables[index], ...updates };
     setVariables(newVariables);
@@ -102,13 +123,15 @@ function TemplateBuilder({
       description: description.trim(),
       category,
       html_content: htmlContent,
-      variables: variables.filter(v => v.name && v.label),
+      variables: variables.filter((v) => v.name && v.label),
       is_public: isPublic,
     });
   };
 
   const insertVariable = (varName: string) => {
-    const cursorPos = (document.getElementById('html-editor') as HTMLTextAreaElement)?.selectionStart || 0;
+    const cursorPos =
+      (document.getElementById("html-editor") as HTMLTextAreaElement)
+        ?.selectionStart || 0;
     const before = htmlContent.substring(0, cursorPos);
     const after = htmlContent.substring(cursorPos);
     setHtmlContent(before + `{{${varName}}}` + after);
@@ -118,22 +141,27 @@ function TemplateBuilder({
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Template Name</label>
+          <label className="block text-sm font-medium mb-2">
+            Template Name
+          </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g., New Release Announcement"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium mb-2">Category</label>
-          <Select value={category} onValueChange={(value: any) => setCategory(value)}>
+          <Select
+            value={category}
+            onValueChange={(value: any) => setCategory(value)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {TEMPLATE_CATEGORIES.map(cat => (
+              {TEMPLATE_CATEGORIES.map((cat) => (
                 <SelectItem key={cat.value} value={cat.value}>
                   <div className="flex items-center gap-2">
                     <cat.icon className="w-4 h-4" />
@@ -147,7 +175,9 @@ function TemplateBuilder({
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Description (Optional)</label>
+        <label className="block text-sm font-medium mb-2">
+          Description (Optional)
+        </label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -165,7 +195,9 @@ function TemplateBuilder({
 
         <TabsContent value="editor" className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">HTML Content</label>
+            <label className="block text-sm font-medium mb-2">
+              HTML Content
+            </label>
             <Textarea
               id="html-editor"
               value={htmlContent}
@@ -175,23 +207,26 @@ function TemplateBuilder({
               className="font-mono text-sm"
             />
           </div>
-          
+
           {variables.length > 0 && (
             <div>
-              <label className="block text-sm font-medium mb-2">Insert Variables</label>
+              <label className="block text-sm font-medium mb-2">
+                Insert Variables
+              </label>
               <div className="flex flex-wrap gap-2">
-                {variables.map((variable, index) => (
-                  variable.name && (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => insertVariable(variable.name)}
-                    >
-                      {variable.name}
-                    </Button>
-                  )
-                ))}
+                {variables.map(
+                  (variable, index) =>
+                    variable.name && (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => insertVariable(variable.name)}
+                      >
+                        {variable.name}
+                      </Button>
+                    )
+                )}
               </div>
             </div>
           )}
@@ -212,34 +247,46 @@ function TemplateBuilder({
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Variable Name</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Variable Name
+                      </label>
                       <Input
                         value={variable.name}
-                        onChange={(e) => updateVariable(index, { name: e.target.value })}
+                        onChange={(e) =>
+                          updateVariable(index, { name: e.target.value })
+                        }
                         placeholder="e.g., song_title"
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium mb-2">Display Label</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Display Label
+                      </label>
                       <Input
                         value={variable.label}
-                        onChange={(e) => updateVariable(index, { label: e.target.value })}
+                        onChange={(e) =>
+                          updateVariable(index, { label: e.target.value })
+                        }
                         placeholder="e.g., Song Title"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Type</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Type
+                      </label>
                       <Select
                         value={variable.type}
-                        onValueChange={(value: any) => updateVariable(index, { type: value })}
+                        onValueChange={(value: any) =>
+                          updateVariable(index, { type: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {VARIABLE_TYPES.map(type => (
+                          {VARIABLE_TYPES.map((type) => (
                             <SelectItem key={type.value} value={type.value}>
                               {type.label}
                             </SelectItem>
@@ -249,10 +296,16 @@ function TemplateBuilder({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Default Value</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Default Value
+                      </label>
                       <Input
-                        value={variable.default_value || ''}
-                        onChange={(e) => updateVariable(index, { default_value: e.target.value })}
+                        value={variable.default_value?.toString() || ""}
+                        onChange={(e) =>
+                          updateVariable(index, {
+                            default_value: e.target.value,
+                          })
+                        }
                         placeholder="Default value..."
                       />
                     </div>
@@ -262,11 +315,15 @@ function TemplateBuilder({
                         <input
                           type="checkbox"
                           checked={variable.required}
-                          onChange={(e) => updateVariable(index, { required: e.target.checked })}
+                          onChange={(e) =>
+                            updateVariable(index, {
+                              required: e.target.checked,
+                            })
+                          }
                         />
                         <span className="text-sm">Required field</span>
                       </label>
-                      
+
                       <Button
                         variant="ghost"
                         size="sm"
@@ -279,10 +336,11 @@ function TemplateBuilder({
                 </CardContent>
               </Card>
             ))}
-            
+
             {variables.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                No variables defined. Add variables to make your template dynamic.
+                No variables defined. Add variables to make your template
+                dynamic.
               </div>
             )}
           </div>
@@ -291,9 +349,13 @@ function TemplateBuilder({
         <TabsContent value="preview" className="space-y-4">
           <div className="border rounded-lg p-4 bg-gray-50">
             <h3 className="text-lg font-medium mb-4">Template Preview</h3>
-            <div 
+            <div
               className="bg-white p-4 rounded border"
-              dangerouslySetInnerHTML={{ __html: htmlContent || '<p class="text-gray-500">No content to preview</p>' }}
+              dangerouslySetInnerHTML={{
+                __html:
+                  htmlContent ||
+                  '<p class="text-gray-500">No content to preview</p>',
+              }}
             />
           </div>
         </TabsContent>
@@ -313,8 +375,11 @@ function TemplateBuilder({
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!name.trim() || !htmlContent.trim()}>
-            {template ? 'Update' : 'Create'} Template
+          <Button
+            onClick={handleSave}
+            disabled={!name.trim() || !htmlContent.trim()}
+          >
+            {template ? "Update" : "Create"} Template
           </Button>
         </div>
       </div>
@@ -322,13 +387,20 @@ function TemplateBuilder({
   );
 }
 
-function TemplateCard({ template, onEdit, onDuplicate, onDelete }: {
+function TemplateCard({
+  template,
+  onEdit,
+  onDuplicate,
+  onDelete,
+}: {
   template: Template;
   onEdit: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
-  const categoryInfo = TEMPLATE_CATEGORIES.find(c => c.value === template.category);
+  const categoryInfo = TEMPLATE_CATEGORIES.find(
+    (c) => c.value === template.category
+  );
   const CategoryIcon = categoryInfo?.icon || Layout;
 
   return (
@@ -337,11 +409,17 @@ function TemplateCard({ template, onEdit, onDuplicate, onDelete }: {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CategoryIcon className="w-5 h-5 text-gray-600" />
-            <Badge variant="outline">{categoryInfo?.label || template.category}</Badge>
+            <Badge variant="outline">
+              {categoryInfo?.label || template.category}
+            </Badge>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="opacity-0 group-hover:opacity-100"
+              >
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -369,18 +447,18 @@ function TemplateCard({ template, onEdit, onDuplicate, onDelete }: {
       <CardContent>
         <div className="space-y-3">
           <div className="bg-gray-50 p-3 rounded text-xs">
-            <div 
-              dangerouslySetInnerHTML={{ 
-                __html: template.html_content.substring(0, 200) + '...' 
-              }} 
+            <div
+              dangerouslySetInnerHTML={{
+                __html: template.html_content.substring(0, 200) + "...",
+              }}
             />
           </div>
-          
+
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span>{template.variables.length} variables</span>
             <span>{new Date(template.created_at).toLocaleDateString()}</span>
           </div>
-          
+
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={onEdit}>
               <Eye className="w-4 h-4 mr-2" />
@@ -405,7 +483,7 @@ export function TemplateManager() {
   const [loading, setLoading] = useState(true);
   const [showBuilder, setShowBuilder] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
-  const [activeTab, setActiveTab] = useState('my-templates');
+  const [activeTab, setActiveTab] = useState("my-templates");
 
   useEffect(() => {
     async function fetchData() {
@@ -414,20 +492,20 @@ export function TemplateManager() {
       try {
         const a = await getOrCreateArtistByClerkId(
           user.id,
-          user.primaryEmailAddress?.emailAddress || '',
+          user.primaryEmailAddress?.emailAddress || "",
           user.fullName || user.username || "Artist"
         );
         setArtist(a);
-        
+
         const [templatesData, publicTemplatesData] = await Promise.all([
           getTemplatesByArtist(a.id),
-          getPublicTemplates()
+          getPublicTemplates(),
         ]);
-        
+
         setTemplates(templatesData);
         setPublicTemplates(publicTemplatesData);
       } catch (error) {
-        console.error('Error fetching templates:', error);
+        console.error("Error fetching templates:", error);
       } finally {
         setLoading(false);
       }
@@ -445,8 +523,8 @@ export function TemplateManager() {
       setTemplates([newTemplate, ...templates]);
       setShowBuilder(false);
     } catch (error) {
-      console.error('Error creating template:', error);
-      alert('Failed to create template');
+      console.error("Error creating template:", error);
+      alert("Failed to create template");
     }
   };
 
@@ -461,8 +539,8 @@ export function TemplateManager() {
       });
       setTemplates([duplicatedTemplate, ...templates]);
     } catch (error) {
-      console.error('Error duplicating template:', error);
-      alert('Failed to duplicate template');
+      console.error("Error duplicating template:", error);
+      alert("Failed to duplicate template");
     }
   };
 
@@ -479,7 +557,9 @@ export function TemplateManager() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Email Templates</h1>
-          <p className="text-gray-600">Create and manage reusable email templates</p>
+          <p className="text-gray-600">
+            Create and manage reusable email templates
+          </p>
         </div>
         <Button onClick={() => setShowBuilder(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -501,7 +581,9 @@ export function TemplateManager() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Public Templates</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Public Templates
+            </CardTitle>
             <Palette className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -516,7 +598,9 @@ export function TemplateManager() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {templates.find(t => t.category === 'music_release')?.name.substring(0, 10) || 'None'}
+              {templates
+                .find((t) => t.category === "music_release")
+                ?.name.substring(0, 10) || "None"}
             </div>
           </CardContent>
         </Card>
@@ -528,7 +612,7 @@ export function TemplateManager() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {new Set(templates.map(t => t.category)).size}
+              {new Set(templates.map((t) => t.category)).size}
             </div>
           </CardContent>
         </Card>
@@ -545,7 +629,9 @@ export function TemplateManager() {
             <Card>
               <CardContent className="text-center py-12">
                 <Layout className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No templates yet</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No templates yet
+                </h3>
                 <p className="text-gray-600 mb-6">
                   Create your first email template to get started
                 </p>
@@ -564,7 +650,9 @@ export function TemplateManager() {
                   onEdit={() => setEditingTemplate(template)}
                   onDuplicate={() => handleDuplicateTemplate(template)}
                   onDelete={() => {
-                    if (confirm('Are you sure you want to delete this template?')) {
+                    if (
+                      confirm("Are you sure you want to delete this template?")
+                    ) {
                       // Handle delete
                     }
                   }}
@@ -603,7 +691,10 @@ export function TemplateManager() {
       </Dialog>
 
       {/* Edit Template Dialog */}
-      <Dialog open={!!editingTemplate} onOpenChange={() => setEditingTemplate(null)}>
+      <Dialog
+        open={!!editingTemplate}
+        onOpenChange={() => setEditingTemplate(null)}
+      >
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Template</DialogTitle>
@@ -611,7 +702,7 @@ export function TemplateManager() {
           {editingTemplate && (
             <TemplateBuilder
               template={editingTemplate}
-              onSave={(data) => {
+              onSave={() => {
                 // Handle update
                 setEditingTemplate(null);
               }}

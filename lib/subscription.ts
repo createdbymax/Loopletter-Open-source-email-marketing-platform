@@ -193,13 +193,22 @@ export const FEATURE_NAMES: Record<keyof FeatureAccess, string> = {
 export function getUserSubscriptionPlan(artist: Artist): SubscriptionPlan {
   // Get plan from artist object
   // Default to starter if no plan is found
-  return (artist?.subscription_plan as SubscriptionPlan) || (artist?.subscription?.plan as SubscriptionPlan) || 'starter';
+  return (artist?.subscription?.plan as SubscriptionPlan) || 'starter';
 }
 
 // Check if a user can access a specific feature
 export function canAccessFeature(artist: Artist, feature: keyof FeatureAccess): boolean {
   const plan = getUserSubscriptionPlan(artist);
-  return PLAN_FEATURES[plan][feature];
+  const featureValue = PLAN_FEATURES[plan][feature];
+  
+  // For boolean features, return the boolean value
+  // For numeric/string features (like limits), return true if they exist
+  if (typeof featureValue === 'boolean') {
+    return featureValue;
+  }
+  
+  // For numeric limits or 'unlimited', return true if the feature is available
+  return featureValue !== 0 && featureValue !== null && featureValue !== undefined;
 }
 
 // Get the user's feature limits

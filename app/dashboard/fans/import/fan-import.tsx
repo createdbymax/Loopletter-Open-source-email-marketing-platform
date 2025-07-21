@@ -98,13 +98,14 @@ export function FanImport() {
           fileInputRef.current.value = '';
         }
       }
-    } catch (error: any) {
-      console.error('Error importing fans:', error);
+    } catch (error: unknown) {
+      console.error('Error importing fans:', error instanceof Error ? error.message : String(error));
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       setResult({
         success: false,
         imported: 0,
         failed: 0,
-        errors: [{ error: error.message }],
+        errors: [{ error: errorMessage }],
       });
     } finally {
       setLoading(false);
@@ -167,12 +168,13 @@ export function FanImport() {
         setManualEmails('');
       }
     } catch (error: unknown) {
-      console.error('Error importing fans:', error);
+      console.error('Error importing fans:', error instanceof Error ? error.message : String(error));
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       setResult({
         success: false,
         imported: 0,
         failed: 0,
-        errors: [{ error: error.message }],
+        errors: [{ message: errorMessage }],
       });
     } finally {
       setLoading(false);

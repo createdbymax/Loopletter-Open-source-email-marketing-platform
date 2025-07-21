@@ -556,7 +556,16 @@ function NotificationSettings() {
     setSaveStatus("idle");
 
     try {
+      // Ensure all required ArtistSettings fields are present
       const updatedSettings = {
+        timezone: artist.settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        send_time_optimization: artist.settings?.send_time_optimization ?? false,
+        double_opt_in: artist.settings?.double_opt_in ?? false,
+        brand_colors: artist.settings?.brand_colors || {
+          primary: "#3b82f6",
+          secondary: "#64748b",
+        },
+        social_links: artist.settings?.social_links || {},
         ...artist.settings,
         notifications,
       };
@@ -749,21 +758,35 @@ function BrandingSettings() {
     "idle"
   );
 
-  const [branding, setBranding] = useState({
+  // Extend ArtistSettings with UI-specific fields
+  type BrandingState = Omit<ArtistSettings, 'social_links'> & {
+    logo_url: string;
+    email_footer: string;
+    social_links: ArtistSettings['social_links'] & {
+      youtube?: string; // UI-only field
+    };
+  };
+
+  // Create default branding state with all required fields
+  const defaultBranding: BrandingState = {
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    send_time_optimization: false,
+    double_opt_in: false,
     brand_colors: {
       primary: "#3b82f6",
       secondary: "#64748b",
     },
-    logo_url: "",
-    email_footer: "",
     social_links: {
       website: "",
       instagram: "",
       twitter: "",
       spotify: "",
-      youtube: "",
     },
-  });
+    logo_url: "",
+    email_footer: "",
+  };
+
+  const [branding, setBranding] = useState<BrandingState>(defaultBranding);
 
   useEffect(() => {
     async function fetchArtist() {
@@ -776,22 +799,19 @@ function BrandingSettings() {
         );
         setArtist(a);
 
-        const settings = a.settings as unknown;
-        setBranding({
+        const settings = a.settings as Partial<ArtistSettings>;
+        setBranding(prev => ({
+          ...defaultBranding,
+          ...settings,
           brand_colors: {
-            primary: settings?.brand_colors?.primary || "#3b82f6",
-            secondary: settings?.brand_colors?.secondary || "#64748b",
+            ...defaultBranding.brand_colors,
+            ...settings.brand_colors,
           },
-          logo_url: settings?.logo_url || "",
-          email_footer: settings?.email_footer || "",
           social_links: {
-            website: settings?.social_links?.website || "",
-            instagram: settings?.social_links?.instagram || "",
-            twitter: settings?.social_links?.twitter || "",
-            spotify: settings?.social_links?.spotify || "",
-            youtube: settings?.social_links?.youtube || "",
+            ...defaultBranding.social_links,
+            ...settings.social_links,
           },
-        });
+        }));
       } catch (error) {
         console.error("Error fetching artist:", error);
       } finally {
@@ -807,9 +827,37 @@ function BrandingSettings() {
     setSaveStatus("idle");
 
     try {
-      const updatedSettings = {
+      // Create base settings with required fields
+      const baseSettings: ArtistSettings = {
+        timezone: branding.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        send_time_optimization: artist.settings?.send_time_optimization ?? false,
+        double_opt_in: artist.settings?.double_opt_in ?? false,
+        brand_colors: {
+          primary: branding.brand_colors?.primary || "#3b82f6",
+          secondary: branding.brand_colors?.secondary || "#64748b",
+        },
+        social_links: {
+          website: branding.social_links?.website || "",
+          instagram: branding.social_links?.instagram || "",
+          twitter: branding.social_links?.twitter || "",
+          spotify: branding.social_links?.spotify || "",
+        },
+        // Include any other required fields from ArtistSettings with defaults
+        ...(artist.settings?.unsubscribe_redirect_url && { 
+          unsubscribe_redirect_url: artist.settings.unsubscribe_redirect_url 
+        }),
+        ...(artist.settings?.subscription_page_settings && {
+          subscription_page_settings: artist.settings.subscription_page_settings
+        })
+      };
+
+      // Merge with existing settings and branding, ensuring required fields are set
+      const updatedSettings: ArtistSettings = {
+        ...baseSettings,
         ...artist.settings,
         ...branding,
+        brand_colors: baseSettings.brand_colors,
+        social_links: baseSettings.social_links,
       };
 
       await updateArtist(artist.id, { settings: updatedSettings });

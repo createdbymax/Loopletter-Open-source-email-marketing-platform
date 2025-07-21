@@ -59,12 +59,20 @@ export function FansManager() {
         name: newFan.name || null,
         artist_id: artist.id,
         tags: null,
+        source: "",
+        status: "subscribed",
+        created_at: "",
+        updated_at: ""
       });
       setFans([...fans, fan]);
       setNewFan({ email: '', name: '' });
       setShowAddForm(false);
     } catch (error) {
-      console.error('Error adding fan:', error);
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error('Unknown error', error);
+      }
       alert('Failed to add fan');
     }
   };
@@ -101,7 +109,7 @@ export function FansManager() {
           </Button>
           <Button 
             onClick={() => setShowAddForm(true)}
-            disabled={artist && hasReachedSubscriberLimit(artist, fans.length)}
+            disabled={artist ? hasReachedSubscriberLimit(artist, fans.length) : undefined}
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Fan

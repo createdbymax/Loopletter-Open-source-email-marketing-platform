@@ -35,11 +35,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Helper function to get fan by ID (add to db.ts)
-async function getFanById(id: string) {
-  const { supabase } = await import('@/lib/supabase');
-  const { data, error } = await supabase.from('fans').select('*').eq('id', id).single();
-  if (error) throw error;
-  return data;
-}

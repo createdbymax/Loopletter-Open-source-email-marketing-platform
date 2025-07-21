@@ -14,6 +14,7 @@ import {
   ShowAnnouncementTemplate,
   MerchandiseTemplate
 } from "@/app/dashboard/email-templates";
+// Note: TypeScript resolves to .tsx file for template components
 import { render } from "@react-email/render";
 
 // Import SES config and email queue
@@ -188,7 +189,7 @@ async function generateEmailContent(campaign: Campaign, templateData: TemplateDa
 
 export async function POST(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -196,8 +197,8 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fix for Next.js warning about params.id
-    const { id: campaignId } = params;
+    // Await params in Next.js 13+ App Router
+    const { id: campaignId } = await params;
     if (!campaignId) {
       return NextResponse.json({ error: "Campaign ID is required" }, { status: 400 });
     }
@@ -235,7 +236,12 @@ export async function POST(
     }
 
     // Generate email content
-    const emailContent = await generateEmailContent(campaign, campaign.template_data);
+    // Ensure template_data is properly typed - provide default if undefined/null
+    const templateData: TemplateData = {
+      templateId: campaign.template_id || 'default',
+      data: campaign.template_data || {}
+    };
+    const emailContent = await generateEmailContent(campaign, templateData);
 
     // Log the subscribers we're about to send to
     console.log(`Attempting to send to ${subscribedFans.length} subscribers:`,

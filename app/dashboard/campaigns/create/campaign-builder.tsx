@@ -27,6 +27,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { getOrCreateArtistByClerkId, getFansByArtist } from "@/lib/db";
+import { Artist } from "@/lib/types";
 import { TemplateSelector } from "./template-selector";
 import { TemplateForm } from "./template-forms";
 import { TemplatePreview } from "@/components/ui/template-preview";
@@ -35,6 +36,27 @@ import { MailyEditor } from "@/components/email-builder/maily-editor";
 import { DomainCheck } from "./domain-check";
 import { EmailLimitWarning } from "@/components/ui/limit-warning";
 import { hasReachedEmailSendLimit, getUserSubscriptionPlan } from "@/lib/subscription";
+
+// Template data types
+interface MusicReleaseData {
+  artistName: string;
+  releaseTitle: string;
+  releaseType: string;
+}
+
+interface ShowAnnouncementData {
+  artistName: string;
+  city: string;
+  date: string;
+  venue: string;
+}
+
+interface MerchandiseData {
+  artistName: string;
+  collectionName: string;
+}
+
+type TemplateData = MusicReleaseData | ShowAnnouncementData | MerchandiseData | Record<string, unknown>;
 
 interface Block {
   id: string;
@@ -109,7 +131,7 @@ export function CampaignBuilder() {
   });
 
   // Artist state
-  const [artist, setArtist] = useState(null);
+  const [artist, setArtist] = useState<Artist | null>(null);
 
   // Fetch fan count and artist on component mount
   useEffect(() => {
@@ -136,7 +158,6 @@ export function CampaignBuilder() {
     setSelectedTemplate(templateId);
     // Always go directly to the Maily editor with the selected template
     setCurrentStep("maily-editor");
-    setPreferredEditor("maily-editor");
     
     // Clear any existing email HTML to ensure we use the template
     setEmailHtml('');
@@ -145,29 +166,32 @@ export function CampaignBuilder() {
   };
 
   // Handle template form completion
-  const handleTemplateFormComplete = (data: unknown) => {
+  const handleTemplateFormComplete = (data: TemplateData) => {
     setTemplateData(data);
     // Always go to Maily editor after form completion
     setCurrentStep("maily-editor");
 
     // Pre-populate email metadata based on template
-    if (selectedTemplate === "music-release") {
+    if (selectedTemplate === "music-release" && 'artistName' in data && 'releaseTitle' in data && 'releaseType' in data) {
+      const musicData = data as MusicReleaseData;
       setEmailData((prev) => ({
         ...prev,
-        subject: `🎵 ${data.artistName} just released "${data.releaseTitle}"!`,
-        previewText: `New ${data.releaseType} from ${data.artistName} - listen now!`,
+        subject: `🎵 ${musicData.artistName} just released "${musicData.releaseTitle}"!`,
+        previewText: `New ${musicData.releaseType} from ${musicData.artistName} - listen now!`,
       }));
-    } else if (selectedTemplate === "show-announcement") {
+    } else if (selectedTemplate === "show-announcement" && 'artistName' in data && 'city' in data && 'date' in data && 'venue' in data) {
+      const showData = data as ShowAnnouncementData;
       setEmailData((prev) => ({
         ...prev,
-        subject: `🎤 ${data.artistName} live in ${data.city} - ${data.date}`,
-        previewText: `Don't miss ${data.artistName} at ${data.venue}!`,
+        subject: `🎤 ${showData.artistName} live in ${showData.city} - ${showData.date}`,
+        previewText: `Don't miss ${showData.artistName} at ${showData.venue}!`,
       }));
-    } else if (selectedTemplate === "merchandise") {
+    } else if (selectedTemplate === "merchandise" && 'artistName' in data && 'collectionName' in data) {
+      const merchData = data as MerchandiseData;
       setEmailData((prev) => ({
         ...prev,
-        subject: `🛍️ New ${data.artistName} merch is here!`,
-        previewText: `Check out the ${data.collectionName} collection`,
+        subject: `🛍️ New ${merchData.artistName} merch is here!`,
+        previewText: `Check out the ${merchData.collectionName} collection`,
       }));
     }
   };
@@ -204,7 +228,7 @@ export function CampaignBuilder() {
       }
     } catch (error) {
       console.error("Error saving campaign:", error);
-      alert(`Failed to save campaign: ${error.message}`);
+      alert(`Failed to save campaign: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -268,7 +292,7 @@ export function CampaignBuilder() {
         }
       } catch (error) {
         console.error("Error sending campaign:", error);
-        alert(`Failed to send campaign: ${error.message}`);
+        alert(`Failed to send campaign: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
   };
@@ -320,7 +344,7 @@ export function CampaignBuilder() {
         }}
         initialHtml={emailHtml}
         templateData={templateData}
-        templateId={selectedTemplate}
+        templateId={selectedTemplate || undefined}
         fanCount={fanCount}
         subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : 'starter'}
       />
@@ -436,7 +460,7 @@ export function CampaignBuilder() {
               onClick={handleSendCampaign}
               disabled={
                 !isDomainValid ||
-                (artist && hasReachedEmailSendLimit(artist, fanCount))
+                Boolean(artist && hasReachedEmailSendLimit(artist, fanCount))
               }
               title={
                 artist && hasReachedEmailSendLimit(artist, fanCount)
@@ -460,10 +484,12 @@ export function CampaignBuilder() {
         {/* Email Limit Warning */}
         {user && (
           <div className="mb-6">
-            <EmailLimitWarning
-              artist={artist}
-              currentCount={fanCount} // Using fan count as a proxy for email sends
-            />
+            {artist && (
+              <EmailLimitWarning
+                artist={artist}
+                currentCount={fanCount} // Using fan count as a proxy for email sends
+              />
+            )}
           </div>
         )}
         <div className="grid grid-cols-12 gap-6">
@@ -695,11 +721,11 @@ export function CampaignBuilder() {
                     previewMode === "mobile" ? "max-w-sm" : "max-w-2xl"
                   }`}
                 >
-                  {selectedTemplate && templateData ? (
+                  {selectedTemplate && templateData && Object.keys(templateData).length > 0 ? (
                     // Show template preview
                     <TemplatePreview
                       templateId={selectedTemplate}
-                      templateData={templateData}
+                      templateData={templateData as any}
                     />
                   ) : (
                     // Show block editor
@@ -860,7 +886,7 @@ function BlockEditor({
       {block.type === "heading" &&
         (isEditing ? (
           <input
-            ref={inputRef as unknown}
+            ref={inputRef as unknown as React.RefObject<HTMLInputElement>}
             value={block.content}
             onChange={(e) => onUpdate({ content: e.target.value })}
             onBlur={handleBlur}

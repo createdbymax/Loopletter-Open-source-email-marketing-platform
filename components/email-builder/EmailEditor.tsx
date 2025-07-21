@@ -1,21 +1,18 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { Loader2 } from 'lucide-react';
-import type { Editor as TiptapEditor, FocusPosition } from '@tiptap/core';
+import dynamic from "next/dynamic";
+import { Loader2 } from "lucide-react";
+import type { Editor as TiptapEditor, FocusPosition } from "@tiptap/core";
 
 // Dynamically import the TipTap editor to avoid SSR issues
-const TiptapEmailEditor = dynamic(
-  () => import('./TiptapEmailEditor'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-full w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    ),
-  }
-);
+const TiptapEmailEditor = dynamic(() => import("./TiptapEmailEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  ),
+});
 
 interface EmailEditorProps {
   defaultContent?: string;
