@@ -2,7 +2,8 @@ import { Metadata } from 'next';
 import { Artist } from './types';
 
 // Base metadata configuration
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 
+  (process.env.NODE_ENV === 'production' ? 'https://loopletter.vercel.app' : 'http://localhost:3000');
 const SITE_NAME = 'Loopletter';
 const SITE_DESCRIPTION = 'The email platform built for independent artists. Build direct relationships with your fans through email marketing that actually works.';
 
