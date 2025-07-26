@@ -48,11 +48,57 @@ export async function getArtistBySlug(slug: string) {
 export async function updateArtist(id: string, updates: Partial<Artist>) {
   const { data, error } = await supabase.from('artists').update(updates).eq('id', id).single();
   if (error) throw error;
+  return mapArtistFields(data) as Artist;
+}
+
+export async function updateArtistProfile(clerkUserId: string, updates: { name?: string; bio?: string; settings?: any }) {
+  const { data, error } = await supabase
+    .from('artists')
+    .update({
+      name: updates.name,
+      bio: updates.bio,
+      settings: updates.settings,
+      updated_at: new Date().toISOString()
+    })
+    .eq('clerk_user_id', clerkUserId)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return mapArtistFields(data) as Artist;
+}
+
+export async function updateArtistSettings(clerkUserId: string, settingsUpdate: any) {
+  // First get current settings
+  const { data: artist, error: fetchError } = await supabase
+    .from('artists')
+    .select('settings')
+    .eq('clerk_user_id', clerkUserId)
+    .single();
+  
+  if (fetchError) throw fetchError;
+  
+  // Merge with existing settings
+  const currentSettings = artist.settings || {};
+  const newSettings = { ...currentSettings, ...settingsUpdate };
+  
+  const { data, error } = await supabase
+    .from('artists')
+    .update({
+      settings: newSettings,
+      updated_at: new Date().toISOString()
+    })
+    .eq('clerk_user_id', clerkUserId)
+    .select()
+    .single();
+  
+  if (error) throw error;
   
   // If no data was returned, fetch the artist to get the updated data
   if (!data) {
-    console.log('No data returned from update, fetching artist');
-    return await getArtistById(id);
+    console.log('No data returned from update, fetching artist by clerk ID');
+    const artist = await getOrCreateArtistByClerkId(clerkUserId, '', '');
+    return artist;
   }
   
   return mapArtistFields(data) as Artist;

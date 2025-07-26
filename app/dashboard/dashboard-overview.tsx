@@ -22,6 +22,8 @@ import { getUserSubscriptionPlan, getUserLimits } from '@/lib/subscription';
 import Link from 'next/link';
 import { useUser } from "@clerk/nextjs";
 import { getCampaignsByArtist, getFansByArtist, getOrCreateArtistByClerkId } from "@/lib/db";
+import { OnboardingProgress } from '@/components/onboarding/onboarding-progress';
+import { shouldShowOnboarding, getOnboardingStatus } from '@/lib/onboarding';
 
 interface DashboardOverviewProps {
   artist?: Artist;
@@ -213,6 +215,10 @@ export function DashboardOverview(props: DashboardOverviewProps) {
   const recentCampaigns = campaigns.slice(0, 5);
   const sentCampaigns = campaigns.filter(c => c.status === 'sent');
   const draftCampaigns = campaigns.filter(c => c.status === 'draft');
+  
+  // Check onboarding status
+  const onboardingStatus = getOnboardingStatus(artist, fans, campaigns);
+  const showOnboardingProgress = !onboardingStatus.isComplete && (fans.length > 0 || campaigns.length > 0);
 
   // Calculate this month's campaigns
   const now = new Date();
@@ -240,6 +246,15 @@ export function DashboardOverview(props: DashboardOverviewProps) {
           </Button>
         </Link>
       </div>
+
+      {/* Onboarding Progress */}
+      {showOnboardingProgress && (
+        <OnboardingProgress 
+          artist={artist}
+          fans={fans}
+          campaigns={campaigns}
+        />
+      )}
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

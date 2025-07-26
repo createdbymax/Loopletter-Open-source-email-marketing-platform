@@ -1,0 +1,20 @@
+{
+  "title": "Loopletter Documentation",
+  "description": "Complete guide to using Loopletter for email marketing",
+  "pages": [
+    "index",
+    {
+      "title": "Getting Started",
+      "pages": [
+        "getting-started/index",
+        "getting-started/profile-setup"
+      ]
+    },
+    {
+      "title": "Campaigns",
+      "pages": [
+        "campaigns/creating-campaigns"
+      ]
+    }
+  ]
+}

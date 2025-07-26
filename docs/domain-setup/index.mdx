@@ -1,0 +1,285 @@
+---
+title: Domain Setup
+description: Set up email authentication to improve deliverability and build trust
+---
+
+# Email Domain Setup
+
+Setting up your own domain for email sending is crucial for deliverability, brand recognition, and building trust with your fans.
+
+## Why Set Up Your Domain?
+
+### Better Deliverability
+- Higher inbox placement rates
+- Lower spam folder placement
+- Improved sender reputation
+- Better email authentication
+
+### Brand Recognition
+- Emails come from your domain (you@yourdomain.com)
+- Consistent branding across all communications
+- Professional appearance
+- Increased fan trust
+
+### Compliance
+- Required for high-volume sending
+- Meets email authentication standards
+- Satisfies ISP requirements
+- Reduces risk of being blocked
+
+## Prerequisites
+
+Before starting, you need:
+- A domain name you own (yourdomain.com)
+- Access to your domain's DNS settings
+- Basic understanding of DNS records
+
+<Callout type="info">
+If you don't have a domain, you can purchase one from registrars like GoDaddy, Namecheap, or Google Domains.
+</Callout>
+
+## Domain Setup Process
+
+<Steps>
+  <Step>
+    ### Add Your Domain
+    In Loopletter, go to **Settings** → **Domain Setup** → **Add Domain**
+  </Step>
+  
+  <Step>
+    ### Verify Domain Ownership
+    Add a TXT record to prove you own the domain
+  </Step>
+  
+  <Step>
+    ### Configure DNS Records
+    Add SPF, DKIM, and DMARC records to your DNS
+  </Step>
+  
+  <Step>
+    ### Verify Setup
+    Our system checks that all records are properly configured
+  </Step>
+  
+  <Step>
+    ### Start Sending
+    Begin sending emails from your verified domain
+  </Step>
+</Steps>
+
+## DNS Records Explained
+
+### SPF (Sender Policy Framework)
+Specifies which servers can send email from your domain.
+
+**Example SPF Record:**
+```
+Type: TXT
+Name: @
+Value: v=spf1 include:amazonses.com ~all
+```
+
+### DKIM (DomainKeys Identified Mail)
+Adds a digital signature to verify email authenticity.
+
+**Example DKIM Record:**
+```
+Type: CNAME
+Name: [provided-by-loopletter]._domainkey
+Value: [provided-by-loopletter].dkim.amazonses.com
+```
+
+### DMARC (Domain-based Message Authentication)
+Tells email providers what to do with emails that fail authentication.
+
+**Example DMARC Record:**
+```
+Type: TXT
+Name: _dmarc
+Value: v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com
+```
+
+## Step-by-Step DNS Configuration
+
+### 1. Access Your DNS Settings
+Log into your domain registrar or DNS provider:
+- **GoDaddy**: Domain management → DNS
+- **Namecheap**: Domain list → Manage → Advanced DNS
+- **Cloudflare**: DNS → Records
+- **Google Domains**: DNS → Custom records
+
+### 2. Add Domain Verification Record
+```
+Type: TXT
+Name: @ (or leave blank)
+Value: [verification-code-from-loopletter]
+TTL: 300 (or default)
+```
+
+### 3. Add SPF Record
+```
+Type: TXT
+Name: @ (or leave blank)
+Value: v=spf1 include:amazonses.com ~all
+TTL: 300
+```
+
+<Callout type="warning">
+If you already have an SPF record, modify it to include `include:amazonses.com` rather than creating a duplicate.
+</Callout>
+
+### 4. Add DKIM Records
+You'll receive 3 DKIM records from Loopletter:
+```
+Type: CNAME
+Name: [token1]._domainkey
+Value: [token1].dkim.amazonses.com
+TTL: 300
+
+Type: CNAME
+Name: [token2]._domainkey
+Value: [token2].dkim.amazonses.com
+TTL: 300
+
+Type: CNAME
+Name: [token3]._domainkey
+Value: [token3].dkim.amazonses.com
+TTL: 300
+```
+
+### 5. Add DMARC Record
+```
+Type: TXT
+Name: _dmarc
+Value: v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com
+TTL: 300
+```
+
+## Verification Process
+
+### DNS Propagation
+After adding records:
+- Changes can take 5 minutes to 48 hours
+- Most changes propagate within 1-2 hours
+- Use DNS checker tools to verify propagation
+
+### Loopletter Verification
+Our system checks:
+- Domain ownership verification
+- SPF record presence and format
+- All 3 DKIM records
+- DMARC record (optional but recommended)
+
+### Verification Status
+- **Pending**: Records not yet detected
+- **Verified**: All records found and valid
+- **Failed**: Issues with one or more records
+
+## Troubleshooting Common Issues
+
+### SPF Record Problems
+**Issue**: SPF record not found
+**Solution**: 
+- Ensure record type is TXT, not SPF
+- Use @ or blank for the name field
+- Check for typos in the value
+
+**Issue**: Multiple SPF records
+**Solution**: 
+- Combine into single record
+- Use multiple `include:` statements
+
+### DKIM Record Problems
+**Issue**: CNAME records not resolving
+**Solution**:
+- Verify exact name and value from Loopletter
+- Some DNS providers require full domain name
+- Check TTL settings
+
+### DMARC Record Problems
+**Issue**: DMARC policy too strict
+**Solution**:
+- Start with `p=none` for monitoring
+- Gradually move to `p=quarantine` then `p=reject`
+- Monitor DMARC reports
+
+### General DNS Issues
+**Issue**: Records not propagating
+**Solution**:
+- Wait longer (up to 48 hours)
+- Clear DNS cache
+- Try different DNS checker tools
+- Contact DNS provider support
+
+## Advanced Configuration
+
+### Subdomain Setup
+Use a subdomain for email sending:
+- **Setup**: mail.yourdomain.com
+- **Benefits**: Isolates email reputation
+- **Process**: Same DNS setup on subdomain
+
+### Multiple Domains
+Set up multiple domains:
+- Different brands or projects
+- Geographic variations (.com, .co.uk)
+- Backup domains for redundancy
+
+### Custom Return-Path
+Advanced users can set custom return-path:
+- Better bounce handling
+- Improved reputation tracking
+- Requires additional DNS setup
+
+## Monitoring and Maintenance
+
+### Regular Checks
+Monitor your domain setup:
+- **Monthly**: Verify DNS records still exist
+- **Quarterly**: Review DMARC reports
+- **Annually**: Renew domain registration
+
+### Performance Monitoring
+Track domain performance:
+- **Deliverability rates**: Inbox vs. spam placement
+- **Authentication rates**: SPF/DKIM pass rates
+- **Reputation scores**: Sender reputation metrics
+
+### DMARC Reports
+Analyze DMARC reports for:
+- Authentication failures
+- Unauthorized sending attempts
+- Delivery statistics
+- Policy effectiveness
+
+## Best Practices
+
+### Domain Selection
+- Use your main brand domain
+- Avoid new or suspicious TLDs
+- Consider domain age and history
+- Ensure domain renewal is current
+
+### DNS Management
+- Use reliable DNS providers
+- Set appropriate TTL values
+- Keep records organized
+- Document all changes
+
+### Gradual Rollout
+- Start with small email volumes
+- Monitor deliverability closely
+- Gradually increase sending volume
+- Watch for any reputation issues
+
+## Next Steps
+
+After domain setup:
+1. [Send your first campaign](/docs/campaigns/creating-campaigns) from your domain
+2. [Monitor deliverability](/docs/analytics/deliverability) metrics
+3. [Set up email automation](/docs/automation) with your verified domain
+4. [Configure team access](/docs/team-management) to domain settings
+
+<Callout type="success">
+Proper domain setup can improve your deliverability by 20-40% and significantly increase fan trust in your emails.
+</Callout>

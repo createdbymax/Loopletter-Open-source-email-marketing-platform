@@ -1,6 +1,7 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import type { Campaign, Fan, Artist } from './types';
 import { logEmailSent } from './db';
+import { sesRateLimiter } from './ses-config';
 // import { render } from '@react-email/render';
 
 // Initialize SES client
@@ -101,6 +102,21 @@ export async function sendCampaignEmail(
   artist: Artist
 ): Promise<EmailResult> {
   try {
+    // Check rate limits before sending
+    const rateLimitCheck = await sesRateLimiter.canSendEmail();
+    if (!rateLimitCheck.canSend) {
+      // If we need to wait, delay the execution
+      if (rateLimitCheck.waitTime) {
+        await new Promise(resolve => setTimeout(resolve, rateLimitCheck.waitTime));
+        // Check again after waiting
+        const secondCheck = await sesRateLimiter.canSendEmail();
+        if (!secondCheck.canSend) {
+          throw new Error(`Rate limit exceeded: ${secondCheck.reason}`);
+        }
+      } else {
+        throw new Error(`Quota exceeded: ${rateLimitCheck.reason}`);
+      }
+    }
     // Personalize the email content
     let personalizedMessage = campaign.message;
     if (fan.name) {
@@ -176,6 +192,9 @@ export async function sendCampaignEmail(
 
     const command = new SendEmailCommand(params);
     const result = await ses.send(command);
+
+    // Record the email as sent for rate limiting
+    sesRateLimiter.recordEmailSent();
 
     // Log the sent email
     await logEmailSent({

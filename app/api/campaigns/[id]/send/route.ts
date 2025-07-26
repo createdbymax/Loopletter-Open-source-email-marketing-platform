@@ -19,7 +19,7 @@ import { render } from "@react-email/render";
 
 // Import SES config and email queue
 import { SES_CONFIG, isEmailVerifiedInSandbox } from '@/lib/ses-config';
-import { queueEmail } from '@/lib/email-queue';
+import { emailQueue } from '@/lib/email-queue';
 
 import { EmailContent, TemplateData } from '@/lib/email-types';
 import { Campaign } from '@/lib/types';
@@ -331,13 +331,14 @@ export async function POST(
         };
         
         // Queue the email for sending
-        const queueId = await queueEmail(
+        const job = await emailQueue.add('campaign-email', {
           campaignId,
-          fan.id,
-          fan.email,
-          params,
-          0 // Default priority
-        );
+          fanId: fan.id,
+          artistId: campaign.artist_id
+        }, {
+          priority: 0
+        });
+        const queueId = job.id;
         
         queuedEmails.push({
           queueId,

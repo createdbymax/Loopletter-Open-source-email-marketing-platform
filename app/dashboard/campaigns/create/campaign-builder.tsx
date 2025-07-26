@@ -154,13 +154,31 @@ export function CampaignBuilder() {
   }, [user, isLoaded]);
 
   // Handle template selection
-  const handleTemplateSelect = (templateId: string) => {
+  const handleTemplateSelect = (templateId: string, templateData?: any) => {
     setSelectedTemplate(templateId);
+    
+    // If it's a Spotify-generated template, set the Maily JSON content
+    if (templateId === 'spotify-generated' && templateData) {
+      console.log('Campaign Builder - Received Spotify template data:', templateData);
+      
+      // Store the Maily JSON as the template data
+      setTemplateData(templateData);
+      
+      // Pre-populate email metadata based on Spotify data
+      setEmailData((prev) => ({
+        ...prev,
+        subject: `🎵 New ${templateData.releaseData.type === 'track' ? 'Track' : 'Album'}: ${templateData.releaseData.title}`,
+        previewText: `${templateData.releaseData.artist} just released "${templateData.releaseData.title}" - listen now!`,
+      }));
+      
+      console.log('Campaign Builder - Template data set:', templateData);
+    } else {
+      // Clear any existing email HTML to ensure we use the template
+      setEmailHtml('');
+    }
+    
     // Always go directly to the Maily editor with the selected template
     setCurrentStep("maily-editor");
-    
-    // Clear any existing email HTML to ensure we use the template
-    setEmailHtml('');
     
     console.log(`Selected template: ${templateId}`);
   };
@@ -319,6 +337,11 @@ export function CampaignBuilder() {
   if (currentStep === "maily-editor") {
     return (
       <MailyEditor
+        initialHtml={emailHtml}
+        templateId={selectedTemplate || undefined}
+        templateData={templateData}
+        fanCount={fanCount}
+        subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : 'starter'}
         onBack={() => setCurrentStep("template")}
         onSave={(htmlContent) => {
           setEmailHtml(htmlContent);
@@ -342,11 +365,6 @@ export function CampaignBuilder() {
           }
           handleSendCampaign();
         }}
-        initialHtml={emailHtml}
-        templateData={templateData}
-        templateId={selectedTemplate || undefined}
-        fanCount={fanCount}
-        subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : 'starter'}
       />
     );
   }

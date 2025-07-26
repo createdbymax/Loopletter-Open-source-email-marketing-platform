@@ -132,13 +132,22 @@ export function MailyEditor({
       {/* Editor */}
       <div className="flex-1 overflow-y-auto">
         <EmailEditorSandbox
-          template={{ 
-            id: templateId,
-            title: templateData && typeof templateData === 'object' && 'subject' in templateData ? 
-              String(templateData.subject) : '',
-            preview_text: templateData && typeof templateData === 'object' && 'previewText' in templateData ? 
-              String(templateData.previewText) : ''
-          }}
+          template={(() => {
+            const template = { 
+              // Don't set ID for Spotify-generated templates to use EmailEditor instead of DirectTemplateEditor
+              id: templateId === 'spotify-generated' ? undefined : templateId,
+              title: templateData && typeof templateData === 'object' && 'subject' in templateData ? 
+                String(templateData.subject) : '',
+              preview_text: templateData && typeof templateData === 'object' && 'previewText' in templateData ? 
+                String(templateData.previewText) : '',
+              content: templateData && typeof templateData === 'object' && 'mailyJson' in templateData ? 
+                JSON.stringify(templateData.mailyJson) : initialHtml
+            };
+            console.log('MailyEditor - Template object:', template);
+            console.log('MailyEditor - Template data:', templateData);
+            console.log('MailyEditor - Initial HTML:', initialHtml);
+            return template;
+          })()}
           onSave={handleSave}
           onUpdate={handleSend}
           onSendTest={handleSendTest}

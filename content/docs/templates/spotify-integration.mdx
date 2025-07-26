@@ -1,0 +1,185 @@
+---
+title: Spotify Template Generator
+description: Automatically create professional email templates from Spotify track and album links
+---
+
+# Spotify Template Generator
+
+The Spotify Template Generator allows you to automatically create professional email templates from Spotify track and album links. This feature streamlines the process of promoting your music releases by extracting metadata and generating cross-platform links.
+
+## How It Works
+
+1. **Paste a Spotify URL** - Simply paste any Spotify track or album URL
+2. **Preview the Data** - See the extracted metadata and generated template
+3. **Customize** - Add a custom template name and personal touches
+4. **Save** - Create the template for use in your campaigns
+
+## Getting Started
+
+### Step 1: Access the Generator
+
+1. Go to your **Templates** page in the dashboard
+2. Click **"Generate from Spotify"**
+3. The Spotify Template Generator dialog will open
+
+### Step 2: Enter Spotify URL
+
+Paste any valid Spotify URL in the input field:
+
+- **Track URLs**: `https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh`
+- **Album URLs**: `https://open.spotify.com/album/1DFixLWuPkv3KT3TnV35m3`
+- **Spotify URIs**: `spotify:track:4iV5W9uYEdYUVa79Axb7Rh`
+
+### Step 3: Preview the Template
+
+Click **"Preview"** to see:
+
+- **Release Information** - Title, artist, release date, artwork
+- **Platform Links** - Automatically generated links to other streaming services
+- **Email Preview** - How the final email will look
+
+### Step 4: Create the Template
+
+1. Enter a **template name** (auto-generated if left blank)
+2. Click **"Create Template"**
+3. Your template is now ready to use in campaigns
+
+## Extracted Data
+
+The generator automatically extracts:
+
+### For Tracks
+- Track title
+- Artist name(s)
+- Album artwork (high resolution)
+- Release date
+- ISRC (International Standard Recording Code)
+- Spotify URL
+
+### For Albums
+- Album title
+- Artist name(s)
+- Album artwork (high resolution)
+- Release date
+- UPC (Universal Product Code)
+- Track listing
+- Spotify URL
+
+## Cross-Platform Links
+
+The system automatically generates links to major streaming platforms:
+
+- **Apple Music** - Using iTunes Search API
+- **YouTube Music** - Search-based links
+- **Amazon Music** - ISRC/UPC-based links
+- **Tidal** - Search-based links
+- **Deezer** - ISRC-based links
+
+## Template Features
+
+Generated templates include:
+
+### Professional Design
+- Clean, modern layout
+- High-quality album artwork display
+- Responsive design for all devices
+- Email client compatibility
+
+### Interactive Elements
+- Clickable platform buttons
+- Hover effects and animations
+- Mobile-optimized touch targets
+
+### Customization Variables
+- `{{artist_name}}` - Personalize with your artist name
+- `{{personal_message}}` - Add custom messages
+- `{{unsubscribe_url}}` - Required unsubscribe link
+- `{{preferences_url}}` - Preference management link
+
+## Using Generated Templates
+
+Once created, your Spotify-generated templates can be used like any other template:
+
+1. **Create a Campaign** - Start a new email campaign
+2. **Select Template** - Choose your Spotify-generated template
+3. **Fill Variables** - Customize the template variables
+4. **Send** - Launch your campaign
+
+## Best Practices
+
+### Template Naming
+- Use descriptive names: "Midnight Dreams - Single Release"
+- Include release type: "Album", "Single", "EP"
+- Add date if relevant: "Summer 2024 Release"
+
+### Personalization
+- Always fill in the `{{artist_name}}` variable
+- Add personal messages to connect with fans
+- Customize the header text for your brand
+
+### Timing
+- Generate templates before your release date
+- Test the template with a small segment first
+- Schedule campaigns for optimal engagement times
+
+## Troubleshooting
+
+### Common Issues
+
+**"Invalid Spotify URL" Error**
+- Ensure you're using a valid Spotify track or album URL
+- Check for typos in the URL
+- Try copying the URL directly from Spotify
+
+**"Failed to fetch data from Spotify" Error**
+- Check your internet connection
+- Verify the Spotify track/album exists and is available
+- Try again in a few minutes (rate limiting)
+
+**Missing Platform Links**
+- Some platforms require ISRC/UPC codes
+- Older releases might have limited metadata
+- Links are generated based on available data
+
+### Getting Help
+
+If you encounter issues:
+
+1. Check the [Spotify Setup Guide](/docs/integrations/spotify-setup)
+2. Verify your Spotify URLs are correct
+3. Contact support if problems persist
+
+## Advanced Usage
+
+### Bulk Template Creation
+- Generate templates for entire album releases
+- Create variations for different audience segments
+- Use templates as starting points for custom designs
+
+### Integration with Campaigns
+- Combine with audience segmentation
+- Use A/B testing with different template variations
+- Track performance across platforms
+
+### Custom Modifications
+- Edit generated templates in the template builder
+- Add additional variables for more personalization
+- Modify the HTML for brand-specific styling
+
+## API Integration
+
+For developers, the Spotify integration is available via API:
+
+```javascript
+// Preview Spotify data
+GET /api/spotify/generate-template?url=SPOTIFY_URL
+
+// Create template
+POST /api/spotify/generate-template
+{
+  "spotifyUrl": "SPOTIFY_URL",
+  "templateName": "Custom Name"
+}
+```
+
+This allows for programmatic template generation and integration with external tools.

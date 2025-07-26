@@ -54,26 +54,38 @@ export function FansManager() {
     if (!artist || !newFan.email) return;
 
     try {
-      const fan = await addFan({
-        email: newFan.email,
-        name: newFan.name || null,
-        artist_id: artist.id,
-        tags: null,
-        source: "",
-        status: "subscribed",
-        created_at: "",
-        updated_at: ""
+      const response = await fetch('/api/fans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: newFan.email,
+          name: newFan.name || null,
+          source: 'manual'
+        }),
       });
-      setFans([...fans, fan]);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to add fan');
+      }
+
+      if (data.fans && data.fans.length > 0) {
+        setFans([...fans, ...data.fans]);
+      }
+      
       setNewFan({ email: '', name: '' });
       setShowAddForm(false);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
+        alert(error.message);
       } else {
         console.error('Unknown error', error);
+        alert('Failed to add fan');
       }
-      alert('Failed to add fan');
     }
   };
 

@@ -49,8 +49,10 @@ import {
   Heart,
   Palette,
   Code,
+  Sparkles,
 } from "lucide-react";
 import type { Template, TemplateVariable } from "@/lib/types";
+import { SpotifyTemplateGenerator } from "@/components/spotify-template-generator";
 
 const TEMPLATE_CATEGORIES = [
   { value: "music_release", label: "Music Release", icon: Music },
@@ -77,7 +79,7 @@ function TemplateBuilder({
 }: {
   template?: Template;
   onSave: (data: any) => void;
-  onCancel: () => void;
+    onCancel: () => void;
 }) {
   const [name, setName] = useState(template?.name || "");
   const [description, setDescription] = useState(template?.description || "");
@@ -482,6 +484,7 @@ export function TemplateManager() {
   const [publicTemplates, setPublicTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBuilder, setShowBuilder] = useState(false);
+  const [showSpotifyGenerator, setShowSpotifyGenerator] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [activeTab, setActiveTab] = useState("my-templates");
 
@@ -561,10 +564,20 @@ export function TemplateManager() {
             Create and manage reusable email templates
           </p>
         </div>
-        <Button onClick={() => setShowBuilder(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Create Template
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowSpotifyGenerator(true)}
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Generate from Spotify
+          </Button>
+          <Button type="button" onClick={() => setShowBuilder(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Template
+          </Button>
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -635,10 +648,20 @@ export function TemplateManager() {
                 <p className="text-gray-600 mb-6">
                   Create your first email template to get started
                 </p>
-                <Button onClick={() => setShowBuilder(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Your First Template
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowSpotifyGenerator(true)}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate from Spotify
+                  </Button>
+                  <Button type="button" onClick={() => setShowBuilder(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Template
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : (
@@ -684,8 +707,28 @@ export function TemplateManager() {
             <DialogTitle>Create New Template</DialogTitle>
           </DialogHeader>
           <TemplateBuilder
-            onSave={handleCreateTemplate}
+            onSave={(data) => {
+              void handleCreateTemplate(data); // make it non-blocking
+            }}
             onCancel={() => setShowBuilder(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Spotify Template Generator Dialog */}
+      <Dialog
+        open={showSpotifyGenerator}
+        onOpenChange={setShowSpotifyGenerator}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Generate Template from Spotify</DialogTitle>
+          </DialogHeader>
+          <SpotifyTemplateGenerator
+            onTemplateGenerated={(template: any) => {
+              setTemplates([template, ...templates]);
+              setShowSpotifyGenerator(false);
+            }}
           />
         </DialogContent>
       </Dialog>

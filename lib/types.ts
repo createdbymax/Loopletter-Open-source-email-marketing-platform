@@ -29,6 +29,7 @@ export type ArtistSettings = {
   send_time_optimization: boolean;
   double_opt_in: boolean;
   unsubscribe_redirect_url?: string;
+  onboarding_completed?: boolean;
   brand_colors: {
     primary: string;
     secondary: string;

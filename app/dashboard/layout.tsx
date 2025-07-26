@@ -44,6 +44,7 @@ const nav = [
   { href: "/dashboard/automations", label: "Automations", icon: Zap },
   { href: "/dashboard/templates", label: "Templates", icon: FileText },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/queue", label: "Email Queue", icon: Send },
   { href: "/dashboard/domain", label: "Domain & Deliverability", icon: Globe },
   { href: "/dashboard/team", label: "Team", icon: UserCheck },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },

@@ -1,0 +1,57 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    {
+      "title": "Getting Started",
+      "pages": [
+        "getting-started/index",
+        "getting-started/profile-setup"
+      ]
+    },
+    {
+      "title": "Campaigns",
+      "pages": [
+        "campaigns/creating-campaigns"
+      ]
+    },
+    {
+      "title": "Audience",
+      "pages": [
+        "audience/importing-fans",
+        "audience/segmentation"
+      ]
+    },
+    {
+      "title": "Domain Setup",
+      "pages": [
+        "domain-setup/index"
+      ]
+    },
+    {
+      "title": "Analytics",
+      "pages": [
+        "analytics/index"
+      ]
+    },
+    {
+      "title": "Automation",
+      "pages": [
+        "automation/index"
+      ]
+    },
+    {
+      "title": "Team Management",
+      "pages": [
+        "team-management/index"
+      ]
+    },
+    {
+      "title": "Troubleshooting",
+      "pages": [
+        "troubleshooting/index",
+        "troubleshooting/faq"
+      ]
+    }
+  ]
+}

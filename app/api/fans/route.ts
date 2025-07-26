@@ -1,88 +1,95 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { getOrCreateArtistByClerkId, addFanWithValidation, getFansByArtist } from '@/lib/db';
-import { hasReachedSubscriberLimit } from '@/lib/subscription';
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(req);
-    
-    if (!userId) {
+    const user = await currentUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const data = await req.json();
-    
+
     // Get artist
     const artist = await getOrCreateArtistByClerkId(
-      userId,
-      '', // Email will be fetched from Clerk
-      '' // Name will be fetched from Clerk
+      user.id,
+      user.primaryEmailAddress?.emailAddress || '',
+      user.fullName || 'Artist'
     );
+
+    const body = await request.json();
     
-    // Check subscriber limits
-    const fans = await getFansByArtist(artist.id);
-    if (hasReachedSubscriberLimit(artist, fans.length)) {
-      return NextResponse.json(
-        {
-          error: 'Subscriber limit reached',
-          message: `You've reached the maximum number of subscribers for your plan.`,
-          limit: artist.subscription?.plan === 'starter' ? 1000 : 
-                 artist.subscription?.plan === 'independent' ? 10000 : 50000,
-          currentCount: fans.length,
-          upgradeUrl: '/dashboard/settings?tab=subscription&feature=maxSubscribers',
-        },
-        { status: 403 }
-      );
+    // Handle single fan or array of fans
+    const fansData = body.fans || [body];
+
+    if (!Array.isArray(fansData) || fansData.length === 0) {
+      return NextResponse.json({ error: 'Fan data is required' }, { status: 400 });
     }
-    
-    // Add fan
-    const fan = await addFanWithValidation({
-      email: data.email,
-      name: data.name,
-      tags: data.tags,
-      custom_fields: data.custom_fields,
-      source: data.source || 'manual',
-    }, artist.id);
-    
-    return NextResponse.json(fan);
+
+    const addedFans = [];
+    const errors = [];
+
+    // Process each fan
+    for (const fanData of fansData) {
+      if (!fanData.email || typeof fanData.email !== 'string' || !fanData.email.includes('@')) {
+        errors.push(`Invalid email: ${fanData.email}`);
+        continue;
+      }
+
+      try {
+        const fan = await addFanWithValidation({
+          email: fanData.email.trim(),
+          name: fanData.name?.trim() || null,
+          tags: fanData.tags || null,
+          source: fanData.source || 'manual',
+          custom_fields: fanData.custom_fields || {}
+        }, artist.id);
+        
+        addedFans.push(fan);
+      } catch (error) {
+        errors.push(`Failed to add ${fanData.email}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      added: addedFans.length,
+      fans: addedFans,
+      errors: errors.length > 0 ? errors : undefined,
+      message: `Successfully added ${addedFans.length} fan${addedFans.length !== 1 ? 's' : ''}`
+    });
+
   } catch (error) {
-    console.error('Error adding fan:', error);
-    
-    // Handle duplicate fan error
-    if (error instanceof Error && error.message.includes('already exists')) {
-      return NextResponse.json(
-        { error: 'Fan with this email already exists' },
-        { status: 400 }
-      );
-    }
-    
+    console.error('Error adding fans:', error);
     return NextResponse.json(
-      { error: 'Failed to add fan' },
+      { error: 'Failed to add fans' },
       { status: 500 }
     );
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const { userId } = getAuth(req);
-    
-    if (!userId) {
+    const user = await currentUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // Get artist
     const artist = await getOrCreateArtistByClerkId(
-      userId,
-      '', // Email will be fetched from Clerk
-      '' // Name will be fetched from Clerk
+      user.id,
+      user.primaryEmailAddress?.emailAddress || '',
+      user.fullName || 'Artist'
     );
-    
-    // Get fans
+
+    // Fetch fans from database
     const fans = await getFansByArtist(artist.id);
-    
-    return NextResponse.json(fans);
+
+    return NextResponse.json({ 
+      success: true,
+      fans,
+      total: fans.length
+    });
+
   } catch (error) {
     console.error('Error fetching fans:', error);
     return NextResponse.json(

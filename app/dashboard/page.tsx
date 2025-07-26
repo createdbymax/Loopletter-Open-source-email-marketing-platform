@@ -1,5 +1,6 @@
 import { generateDashboardMetadata } from "@/lib/metadata";
 import { DashboardOverview } from "./dashboard-overview";
+import { OnboardingWrapper } from "./onboarding-wrapper";
 
 export const metadata = generateDashboardMetadata(
   "Dashboard",
@@ -8,6 +9,7 @@ export const metadata = generateDashboardMetadata(
 
 import { getOrCreateArtistByClerkId, getCampaignsByArtist, getFansByArtist } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
+import { shouldShowOnboarding } from "@/lib/onboarding";
 
 export default async function DashboardPage() {
   // Get the current user from Clerk
@@ -74,11 +76,23 @@ export default async function DashboardPage() {
     clickRate: avgClickRate,
   };
   
+  // Check if user needs onboarding
+  const needsOnboarding = shouldShowOnboarding(artist, fans, campaigns);
+  
   // Pass both the stats and the actual data collections to avoid refetching
-  return <DashboardOverview 
-    artist={artist} 
-    stats={stats} 
-    initialCampaigns={campaigns} 
-    initialFans={fans} 
-  />;
+  return (
+    <OnboardingWrapper 
+      artist={artist}
+      fans={fans}
+      campaigns={campaigns}
+      showOnboarding={needsOnboarding}
+    >
+      <DashboardOverview 
+        artist={artist} 
+        stats={stats} 
+        initialCampaigns={campaigns} 
+        initialFans={fans} 
+      />
+    </OnboardingWrapper>
+  );
 }

@@ -1,0 +1,147 @@
+---
+title: Creating Campaigns
+description: Learn how to create, design, and send email campaigns to your fans
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+# Creating Email Campaigns
+
+Email campaigns are the heart of your fan engagement strategy. This guide covers everything from basic setup to advanced features.
+
+## Campaign Types
+
+<Cards>
+  <Card title="Newsletter" description="Regular updates about your music, tours, and creative process." />
+  <Card title="Announcement" description="Important news like album releases, tour dates, or merchandise launches." />
+  <Card title="Welcome Series" description="Automated sequence for new subscribers to introduce them to your music." />
+  <Card title="Re-engagement" description="Target inactive subscribers to win them back." />
+</Cards>
+
+## Creating Your First Campaign
+
+<Steps>
+  <Step>
+    ### Choose Campaign Type
+    Navigate to **Campaigns** → **Create New** and select your campaign type.
+  </Step>
+  
+  <Step>
+    ### Campaign Settings
+    - **Campaign Name**: Internal name for organization
+    - **Subject Line**: What fans see in their inbox
+    - **Preview Text**: Additional text shown in email previews
+    - **From Name**: How you want to appear (e.g., "Sarah from The Band")
+  </Step>
+  
+  <Step>
+    ### Design Your Email
+    Use our visual editor or HTML editor to create your content.
+  </Step>
+  
+  <Step>
+    ### Select Audience
+    Choose which fans receive this campaign using segments or your entire list.
+  </Step>
+  
+  <Step>
+    ### Review and Send
+    Preview your email, test it, then schedule or send immediately.
+  </Step>
+</Steps>
+
+## Email Design Best Practices
+
+### Subject Lines
+- Keep under 50 characters for mobile
+- Create urgency without being spammy
+- Personalize when possible: "Hey [Name], new song is here!"
+- A/B test different approaches
+
+### Content Structure
+
+<Tabs items={['Basic Structure', 'Visual Elements', 'Mobile Optimization']}>
+  <Tab value="Basic Structure">
+    ```
+    1. Header with your branding
+    2. Personal greeting
+    3. Main content (news, updates, stories)
+    4. Call-to-action (listen, buy, follow)
+    5. Footer with social links and unsubscribe
+    ```
+  </Tab>
+  <Tab value="Visual Elements">
+    - Use high-quality images (under 1MB each)
+    - Maintain consistent branding
+    - Ensure mobile responsiveness
+    - Include alt text for accessibility
+  </Tab>
+  <Tab value="Mobile Optimization">
+    - Single column layout
+    - Large, tappable buttons
+    - Readable font sizes (14px minimum)
+    - Compressed images for fast loading
+  </Tab>
+</Tabs>
+
+## Personalization
+
+### Dynamic Content
+Insert personalized elements:
+- `{{first_name}}` - Fan's first name
+- `{{location}}` - Fan's city/country
+- `{{signup_date}}` - When they subscribed
+- Custom fields you've collected
+
+### Example Usage
+```text
+Hey {{first_name}},
+
+Hope you're doing well in {{location}}! 
+Since you joined us {{signup_date}}, we've released 3 new songs...
+```
+
+## Audience Targeting
+
+<Callout type="info">
+Targeted emails get 2-3x higher open rates and 5x higher click rates compared to generic broadcasts.
+</Callout>
+
+### Send to All Fans
+Send to your entire subscriber list.
+
+### Segment Targeting
+Target specific groups:
+- **Location**: Fans in specific cities for tour announcements
+- **Engagement**: Active vs. inactive subscribers
+- **Tags**: Fans interested in specific topics
+- **Custom Segments**: Based on multiple criteria
+
+### A/B Testing
+Test different versions with a portion of your audience:
+- **Subject Lines**: Test 2-3 variations
+- **Send Times**: Find optimal timing
+- **Content**: Different messaging approaches
+- **Call-to-Actions**: Button text and placement
+
+## Campaign Analytics
+
+After sending, monitor:
+- **Open Rate**: Percentage who opened your email
+- **Click Rate**: Percentage who clicked links
+- **Unsubscribe Rate**: Fans who opted out
+- **Bounce Rate**: Emails that couldn't be delivered
+
+<Callout type="tip">
+Industry average open rates for music/entertainment are 20-25%. Click rates typically range from 2-5%.
+</Callout>
+
+## Next Steps
+
+- Learn about [audience segmentation](/docs/audience/segmentation)
+- Set up [email automation](/docs/automation)
+- Monitor [campaign analytics](/docs/analytics)
+- Optimize [email deliverability](/docs/domain-setup)
