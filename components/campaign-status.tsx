@@ -10,10 +10,10 @@ import {
   CheckCircle, 
   XCircle, 
   Pause,
-  Play,
   Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQueueProcessor } from '@/components/queue-auto-processor';
 
 interface CampaignStatusProps {
   campaignId: string;
@@ -40,6 +40,7 @@ export function CampaignStatus({
 }: CampaignStatusProps) {
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [loading, setLoading] = useState(false);
+  const { processQueue, isProcessing } = useQueueProcessor();
 
   // Fetch job status if jobId is provided
   const fetchJobStatus = async () => {
@@ -176,26 +177,16 @@ export function CampaignStatus({
             size="sm"
             variant="outline"
             onClick={async () => {
-              try {
-                const response = await fetch('/api/queue/process', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ processNext: true }),
-                });
-                if (response.ok) {
-                  toast.success('Processing jobs...');
-                  fetchJobStatus();
-                } else {
-                  toast.error('Failed to process jobs');
-                }
-              } catch (error) {
-                toast.error('Error processing jobs');
+              const result = await processQueue();
+              if (result) {
+                fetchJobStatus();
               }
             }}
+            disabled={isProcessing}
             className="ml-2"
           >
-            <Activity className="w-4 h-4 mr-2" />
-            Process Queue
+            <Activity className={`w-4 h-4 mr-2 ${isProcessing ? 'animate-spin' : ''}`} />
+            {isProcessing ? 'Processing...' : 'Process Queue'}
           </Button>
         )}
       </div>

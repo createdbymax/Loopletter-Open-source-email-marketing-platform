@@ -48,6 +48,10 @@ const nextConfig: NextConfig = {
       };
     }
 
+    // Exclude Supabase functions from webpack processing
+    config.externals = config.externals || [];
+    config.externals.push(/^supabase\/functions/);
+
     return config;
   },
 };
