@@ -18,7 +18,7 @@ export const SES_CONFIG = {
   configurationSet: process.env.SES_CONFIGURATION_SET || 'default',
 
   // Default sender domain
-  defaultSenderDomain: process.env.SES_DEFAULT_SENDER_DOMAIN || 'loopletter.com',
+  defaultSenderDomain: process.env.SES_DEFAULT_SENDER_DOMAIN || 'loopletter.co',
 
   // AWS SES Limits - Your specified limits
   limits: {
@@ -56,7 +56,7 @@ export async function isEmailVerifiedInSandbox(email: string): Promise<boolean> 
     // For now, we'll just check if the email ends with a test domain
     return email.endsWith('@example.com') ||
       email.endsWith('@test.com') ||
-      email.endsWith('@loopletter.com');
+      email.endsWith('@loopletter.co');
   } catch (error) {
     console.error('Error checking if email is verified:', error);
     return false;

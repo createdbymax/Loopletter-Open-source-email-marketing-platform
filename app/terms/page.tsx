@@ -187,7 +187,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">15. Contact Us</h2>
             <ul className="list-none pl-0">
-              <li><strong>Email:</strong> <a href="mailto:legal@loopletter.com" className="text-blue-600 underline">legal@loopletter.com</a></li>
+              <li><strong>Email:</strong> <a href="mailto:legal@loopletter.co" className="text-blue-600 underline">legal@loopletter.co</a></li>
               <li className="mt-2"><strong>Mailing Address:</strong><br />
                 LOST HILLS LLC<br />
                 5830 E 2nd St, Ste 7000 #21352<br />

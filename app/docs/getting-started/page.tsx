@@ -73,7 +73,7 @@ export default function GettingStartedPage() {
               <div>
                 <h3 className="font-medium">Create Your Account</h3>
                 <p className="text-sm text-muted-foreground">
-                  Sign up at loopletter.com and complete the onboarding process.
+                  Sign up at loopletter.co and complete the onboarding process.
                 </p>
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function GettingStartedPage() {
               FAQ <ArrowRight className="h-3 w-3" />
             </Link>
             <Link 
-              href="mailto:support@loopletter.com" 
+              href="mailto:support@loopletter.co" 
               className="text-sm text-primary hover:underline inline-flex items-center gap-1"
             >
               Contact Support <ArrowRight className="h-3 w-3" />

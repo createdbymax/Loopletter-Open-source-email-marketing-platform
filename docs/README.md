@@ -36,7 +36,7 @@ New to Loopletter? Start here:
 
 ## Need Help?
 
-- **Email Support**: [support@loopletter.com](mailto:support@loopletter.com)
+- **Email Support**: [support@loopletter.co](mailto:support@loopletter.co)
 - **Troubleshooting**: Check our [common issues guide](/docs/troubleshooting)
 - **Feature Requests**: Let us know what you'd like to see next
 

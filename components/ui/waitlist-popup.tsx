@@ -274,11 +274,11 @@ export function WaitlistPopup({ isOpen, onClose }: WaitlistPopupProps) {
                       <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400">
                         Get priority access to the email marketing platform built for artists.
                       </p>
-                      {waitlistCount && (
+                      {/* {waitlistCount && (
                         <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 mt-2">
                           {waitlistCount} artists have requested access
                         </p>
-                      )}
+                      )} */}
                     </div>
 
                     {/* Progress Bar */}

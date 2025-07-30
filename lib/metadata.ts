@@ -54,7 +54,7 @@ export const defaultMetadata: Metadata = {
                 type: 'image/png',
             },
         ],
-        emails: ['hello@loopletter.com'],
+        emails: ['hello@loopletter.co'],
         phoneNumbers: [],
         faxNumbers: [],
         alternateLocale: ['en_GB', 'en_CA'],

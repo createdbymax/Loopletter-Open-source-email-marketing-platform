@@ -23,7 +23,7 @@ export function Header() {
               <Link href="/dashboard">Dashboard</Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href="mailto:support@loopletter.com">Support</Link>
+              <Link href="mailto:support@loopletter.co">Support</Link>
             </Button>
           </nav>
         </div>

@@ -124,7 +124,7 @@ export default function PrivacyPage() {
               <li>Submit complaints to a data authority</li>
             </ul>
             <p className="mt-2">
-              Contact us at <a href="mailto:privacy@loopletter.com" className="text-blue-600 underline">privacy@loopletter.com</a> to exercise your rights.
+              Contact us at <a href="mailto:privacy@loopletter.co" className="text-blue-600 underline">privacy@loopletter.co</a> to exercise your rights.
             </p>
           </section>
 
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">12. California Privacy Rights (CCPA)</h2>
             <p>
-              California residents can request to view, delete, or opt out of the sale of their personal data. We do not sell user data. Requests can be sent to <a href="mailto:privacy@loopletter.com" className="text-blue-600 underline">privacy@loopletter.com</a>.
+              California residents can request to view, delete, or opt out of the sale of their personal data. We do not sell user data. Requests can be sent to <a href="mailto:privacy@loopletter.co" className="text-blue-600 underline">privacy@loopletter.co</a>.
             </p>
           </section>
 
@@ -159,7 +159,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">14. Contact Us</h2>
             <ul className="list-none pl-0">
-              <li><strong>Email:</strong> <a href="mailto:privacy@loopletter.com" className="text-blue-600 underline">privacy@loopletter.com</a></li>
+              <li><strong>Email:</strong> <a href="mailto:privacy@loopletter.co" className="text-blue-600 underline">privacy@loopletter.co</a></li>
               <li className="mt-2"><strong>Mailing Address:</strong><br />
                 LOST HILLS LLC<br />
                 5830 E 2nd St, Ste 7000 #21352<br />

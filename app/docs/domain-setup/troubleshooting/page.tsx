@@ -386,7 +386,7 @@ export default function DomainTroubleshootingPage() {
             <div>
               <h3 className="font-medium mb-3">Support Channels</h3>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Email: support@loopletter.com</li>
+                <li>• Email: support@loopletter.co</li>
                 <li>• In-app chat support</li>
                 <li>• Help documentation</li>
                 <li>• Community forum</li>

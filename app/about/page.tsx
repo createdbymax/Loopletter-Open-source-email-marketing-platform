@@ -252,15 +252,15 @@ export default function AboutPage() {
               <h3 className="font-semibold text-gray-900 mb-2">
                 General Inquiries
               </h3>
-              <p className="text-gray-600">hello@loopletter.com</p>
+              <p className="text-gray-600">hello@loopletter.co</p>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Support</h3>
-              <p className="text-gray-600">support@loopletter.com</p>
+              <p className="text-gray-600">support@loopletter.co</p>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Press</h3>
-              <p className="text-gray-600">press@loopletter.com</p>
+              <p className="text-gray-600">press@loopletter.co</p>
             </div>
           </div>
         </div>

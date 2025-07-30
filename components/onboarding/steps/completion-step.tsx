@@ -57,17 +57,17 @@ export function CompletionStep({ artist, onFinish }: CompletionStepProps) {
     {
       title: "Email Marketing Best Practices",
       description: "Learn how to write engaging emails that convert",
-      href: "https://docs.loopletter.com/best-practices",
+      href: "https://docs.loopletter.co/best-practices",
     },
     {
       title: "Growing Your Email List",
       description: "Strategies to attract and retain more subscribers",
-      href: "https://docs.loopletter.com/list-growth",
+      href: "https://docs.loopletter.co/list-growth",
     },
     {
       title: "Understanding Analytics",
       description: "Make sense of your campaign performance data",
-      href: "https://docs.loopletter.com/analytics",
+      href: "https://docs.loopletter.co/analytics",
     },
   ];
 
@@ -187,7 +187,7 @@ export function CompletionStep({ artist, onFinish }: CompletionStepProps) {
         <div className="flex justify-center gap-2">
           <Button variant="outline" size="sm" asChild>
             <a
-              href="https://docs.loopletter.com"
+              href="https://docs.loopletter.co"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -195,7 +195,7 @@ export function CompletionStep({ artist, onFinish }: CompletionStepProps) {
             </a>
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <a href="mailto:support@loopletter.com">Contact Support</a>
+            <a href="mailto:support@loopletter.co">Contact Support</a>
           </Button>
         </div>
       </div>

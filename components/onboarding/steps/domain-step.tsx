@@ -225,7 +225,7 @@ export function DomainStep({ artist, onNext, onSkip, onStepComplete }: DomainSte
               
               <Button variant="ghost" asChild>
                 <a 
-                  href="https://docs.loopletter.com/domain-setup" 
+                  href="https://docs.loopletter.co/domain-setup" 
                   target="_blank" 
                   rel="noopener noreferrer"
                 >
@@ -277,7 +277,7 @@ export function DomainStep({ artist, onNext, onSkip, onStepComplete }: DomainSte
         </p>
         <Button variant="outline" size="sm" asChild>
           <a 
-            href="https://docs.loopletter.com/getting-a-domain" 
+            href="https://docs.loopletter.co/getting-a-domain" 
             target="_blank" 
             rel="noopener noreferrer"
           >

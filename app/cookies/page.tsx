@@ -162,7 +162,7 @@ export default function CookiesPage() {
           <section>
             <h2>Contact Us</h2>
             <ul>
-              <li><strong>Email:</strong> <a href="mailto:privacy@loopletter.com" className="text-blue-600 hover:underline">privacy@loopletter.com</a></li>
+              <li><strong>Email:</strong> <a href="mailto:privacy@loopletter.co" className="text-blue-600 hover:underline">privacy@loopletter.co</a></li>
               <li className="mt-2"><strong>Mailing Address:</strong><br />
                 LOST HILLS LLC<br />
                 5830 E 2nd St, Ste 7000 #21352<br />

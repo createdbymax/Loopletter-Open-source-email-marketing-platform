@@ -209,11 +209,11 @@ Stop chasing algorithms that don't care about your music. Build a fanbase that s
 Thanks for believing in artist independence,
 The Loopletter Team
 
-loopletter.com
+loopletter.co
   `;
 
   const params = {
-    Source: `Loopletter <hello@loopletter.com>`,
+    Source: `Loopletter <hello@loopletter.co>`,
     Destination: {
       ToAddresses: [to],
     },

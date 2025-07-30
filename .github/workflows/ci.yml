@@ -82,7 +82,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     environment:
       name: staging
-      url: https://staging.loopletter.com
+      url: https://staging.loopletter.co
     steps:
       - uses: actions/checkout@v3
       
@@ -108,7 +108,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: production
-      url: https://loopletter.com
+      url: https://loopletter.co
     steps:
       - uses: actions/checkout@v3
       

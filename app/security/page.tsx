@@ -273,7 +273,7 @@ export default function SecurityPage() {
               If you discover a security vulnerability, please report it to us immediately. We appreciate responsible disclosure and will work with you to address any issues.
             </p>
             <div className="space-y-2">
-              <p><strong>Security Email:</strong> security@loopletter.com</p>
+              <p><strong>Security Email:</strong> security@loopletter.co</p>
               <p><strong>PGP Key:</strong> Available upon request</p>
               <p><strong>Response Time:</strong> Within 24 hours</p>
             </div>

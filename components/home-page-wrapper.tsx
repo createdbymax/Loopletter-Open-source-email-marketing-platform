@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { WaitlistPopup } from '@/components/ui/waitlist-popup';
+import { UrlParamHandler } from '@/components/ui/url-param-handler';
 
 interface HomePageWrapperProps {
   children: React.ReactNode;
@@ -9,6 +10,10 @@ interface HomePageWrapperProps {
 
 export function HomePageWrapper({ children }: HomePageWrapperProps) {
   const [showWaitlist, setShowWaitlist] = useState(false);
+
+  const handleEarlyAccessTrigger = () => {
+    setShowWaitlist(true);
+  };
 
   // Add click handler to existing waitlist buttons
   const handleWaitlistClick = (e: MouseEvent) => {
@@ -28,6 +33,9 @@ export function HomePageWrapper({ children }: HomePageWrapperProps) {
   return (
     <>
       {children}
+      <Suspense fallback={null}>
+        <UrlParamHandler onEarlyAccessTrigger={handleEarlyAccessTrigger} />
+      </Suspense>
       <WaitlistPopup 
         isOpen={showWaitlist} 
         onClose={() => setShowWaitlist(false)} 

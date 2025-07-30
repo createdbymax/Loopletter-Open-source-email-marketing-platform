@@ -395,7 +395,7 @@ export default function TroubleshootingPage() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-1 text-sm text-muted-foreground">
-                  <li>• Email: support@loopletter.com</li>
+                  <li>• Email: support@loopletter.co</li>
                   <li>• In-app chat (bottom right)</li>
                   <li>• Response time: 24-48 hours</li>
                   <li>• Priority support for paid plans</li>

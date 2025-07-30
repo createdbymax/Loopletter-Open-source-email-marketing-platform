@@ -122,7 +122,7 @@ export default function ContactSupportPage() {
               <div>
                 <h4 className="text-sm font-medium mb-2">Contact Information:</h4>
                 <div className="bg-muted p-3 rounded-md text-sm">
-                  <div><strong>Email:</strong> support@loopletter.com</div>
+                  <div><strong>Email:</strong> support@loopletter.co</div>
                   <div><strong>Response Time:</strong> 24-48 hours</div>
                   <div><strong>Availability:</strong> 24/7 (responses during business hours)</div>
                 </div>

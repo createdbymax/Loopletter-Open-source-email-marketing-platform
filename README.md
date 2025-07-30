@@ -409,10 +409,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **Documentation**: [docs.loopletter.com](https://docs.loopletter.com)
+- **Documentation**: [docs.loopletter.co](https://docs.loopletter.co)
 - **Community**: [Discord Server](https://discord.gg/loopletter)
 - **Issues**: [GitHub Issues](https://github.com/yourusername/loopletter/issues)
-- **Email**: support@loopletter.com
+- **Email**: support@loopletter.co
 
 ## 🎉 Acknowledgments
 

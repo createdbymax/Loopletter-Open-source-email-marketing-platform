@@ -34,7 +34,7 @@ export default function ContactPage() {
                 Questions about your account, billing, or how to use Loopletter? We&apos;re here to help.
               </p>
               <div className="space-y-2">
-                <p className="font-medium text-gray-900">support@loopletter.com</p>
+                <p className="font-medium text-gray-900">support@loopletter.co</p>
                 <p className="text-sm text-gray-600">Response within 24 hours</p>
               </div>
             </div>
@@ -49,7 +49,7 @@ export default function ContactPage() {
                 Interested in custom plans, partnerships, or enterprise solutions?
               </p>
               <div className="space-y-2">
-                <p className="font-medium text-gray-900">sales@loopletter.com</p>
+                <p className="font-medium text-gray-900">sales@loopletter.co</p>
                 <p className="text-sm text-gray-600">Let&apos;s talk about your needs</p>
               </div>
             </div>
@@ -64,7 +64,7 @@ export default function ContactPage() {
                 Media inquiries, press releases, and interview requests.
               </p>
               <div className="space-y-2">
-                <p className="font-medium text-gray-900">press@loopletter.com</p>
+                <p className="font-medium text-gray-900">press@loopletter.co</p>
                 <p className="text-sm text-gray-600">Press kit available</p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Can I schedule a demo?</h4>
-                  <p className="text-gray-600">Yes! Contact our sales team at sales@loopletter.com to schedule a personalized demo of Loopletter.</p>
+                  <p className="text-gray-600">Yes! Contact our sales team at sales@loopletter.co to schedule a personalized demo of Loopletter.</p>
                 </div>
               </div>
             </div>

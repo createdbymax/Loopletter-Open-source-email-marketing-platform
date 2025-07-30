@@ -87,7 +87,7 @@ export function generateOrganizationStructuredData() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'support@loopletter.com',
+      email: 'support@loopletter.co',
     },
   };
 }

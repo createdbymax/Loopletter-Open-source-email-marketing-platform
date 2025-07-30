@@ -328,7 +328,7 @@ export default function FAQPage() {
       <Alert>
         <Lightbulb className="h-4 w-4" />
         <AlertDescription>
-          <strong>Still have questions?</strong> Check our full documentation or contact support at support@loopletter.com. 
+          <strong>Still have questions?</strong> Check our full documentation or contact support at support@loopletter.co. 
           We're here to help you succeed with email marketing!
         </AlertDescription>
       </Alert>
