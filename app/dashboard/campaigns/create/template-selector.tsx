@@ -108,9 +108,9 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
+      <div className="bg-white dark:bg-neutral-800 border-b dark:border-neutral-700 px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => router.back()}>
@@ -118,8 +118,8 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
               Back
             </Button>
             <div>
-              <h1 className="text-xl font-semibold">Choose a Template</h1>
-              <p className="text-sm text-gray-600">
+              <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Choose a Template</h1>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Start with a professional template or build from scratch
               </p>
             </div>
@@ -153,18 +153,18 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
         {/* Spotify Generator Card */}
         <div className="mb-8">
           <Card
-            className="border-2 border-dashed border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 hover:shadow-lg transition-all duration-200 cursor-pointer"
+            className="border-2 border-dashed border-green-300 dark:border-green-700 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 hover:shadow-lg transition-all duration-200 cursor-pointer"
             onClick={() => setShowSpotifyGenerator(true)}
           >
             <CardHeader className="pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-green-100 text-green-600">
+                <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
                   <CardTitle className="text-lg flex items-center gap-2">
                     Generate from Spotify
-                    <Badge className="bg-green-100 text-green-700 text-xs">
+                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs">
                       NEW
                     </Badge>
                   </CardTitle>
@@ -176,7 +176,7 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2 text-sm text-green-700">
+              <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
                 <Music className="w-4 h-4" />
                 <span>Works with tracks and albums</span>
                 <span>•</span>
@@ -208,12 +208,12 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
                     <div
                       className={`p-2 rounded-lg ${
                         template.category === "Music"
-                          ? "bg-purple-100 text-purple-600"
+                          ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600"
                           : template.category === "Events"
-                            ? "bg-red-100 text-red-600"
+                            ? "bg-red-100 dark:bg-red-900/30 text-red-600"
                             : template.category === "Commerce"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-gray-100 text-gray-600"
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-600"
+                              : "bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-neutral-400"
                       }`}
                     >
                       {template.icon}
@@ -248,7 +248,7 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
 
                 {/* Template Features */}
                 <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2">
+                  <p className="text-xs font-medium text-gray-700 dark:text-neutral-300 mb-2">
                     Features:
                   </p>
                   <div className="flex flex-wrap gap-1">
@@ -270,11 +270,11 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
 
         {/* Selected Template Details */}
         {selectedTemplate && (
-          <div className="mt-8 bg-white rounded-lg border p-6">
+          <div className="mt-8 bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-6">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Template Preview */}
               <div className="w-full md:w-1/2 lg:w-2/5">
-                <div className="rounded-lg overflow-hidden border border-gray-200 h-[400px]">
+                <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-neutral-700 h-[400px]">
                   <TemplateContentPreview
                     templateId={selectedTemplate}
                     height={400}
@@ -286,10 +286,10 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
               <div className="w-full md:w-1/2 lg:w-3/5">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">
+                    <h3 className="text-lg font-semibold mb-2 text-neutral-900 dark:text-neutral-100">
                       {templates.find((t) => t.id === selectedTemplate)?.name}
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-neutral-400">
                       {
                         templates.find((t) => t.id === selectedTemplate)
                           ?.description
@@ -306,7 +306,7 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
                 </div>
 
                 <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
+                  <p className="text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                     This template includes:
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -326,10 +326,10 @@ export function TemplateSelector({ onSelectTemplate }: TemplateSelectorProps) {
                 </div>
 
                 <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
+                  <p className="text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                     Perfect for:
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-neutral-400">
                     {selectedTemplate === "blank" &&
                       "Creating custom emails from scratch with complete design freedom."}
                     {selectedTemplate === "music-release" &&

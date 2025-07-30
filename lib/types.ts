@@ -9,6 +9,8 @@ export type Artist = {
   ses_domain_verified: boolean;
   ses_domain?: string | null;
   ses_status?: string | null;
+  default_from_name?: string | null;
+  default_from_email?: string | null;
   clerk_user_id: string;
   created_at: string;
   updated_at: string;
@@ -30,6 +32,7 @@ export type ArtistSettings = {
   double_opt_in: boolean;
   unsubscribe_redirect_url?: string;
   onboarding_completed?: boolean;
+  logo_url?: string;
   brand_colors: {
     primary: string;
     secondary: string;
@@ -106,6 +109,8 @@ export type Campaign = {
   title: string;
   subject: string;
   message: string;
+  from_name?: string | null;
+  from_email?: string | null;
   artwork_url?: string | null;
   link?: string | null;
   send_date: string;
@@ -321,6 +326,8 @@ export type CampaignFormData = {
   title: string;
   subject: string;
   message: string;
+  from_name?: string;
+  from_email?: string;
   template_id?: string;
   template_data?: Record<string, unknown>;
   segment_id?: string;

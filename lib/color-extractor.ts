@@ -35,7 +35,7 @@ export async function extractColorsFromImage(imageUrl: string): Promise<ColorPal
           const imageData = ctx?.getImageData(0, 0, 100, 100);
           const colors = analyzeImageData(imageData);
           resolve(colors);
-        } catch (error) {
+        } catch (_error) {
           // Fallback to default palette if CORS or other issues
           resolve(getDefaultPalette());
         }
@@ -47,7 +47,7 @@ export async function extractColorsFromImage(imageUrl: string): Promise<ColorPal
       
       img.src = imageUrl;
     });
-  } catch (error) {
+  } catch (_error) {
     return getDefaultPalette();
   }
 }

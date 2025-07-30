@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
+
+// Global flag to prevent multiple instances
+let globalProcessingFlag = false;
 
 interface QueueAutoProcessorProps {
   enabled?: boolean;
@@ -14,14 +17,20 @@ export function QueueAutoProcessor({
 }: QueueAutoProcessorProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastProcessed, setLastProcessed] = useState<Date | null>(null);
+  const processingRef = useRef(false);
+  const instanceId = useRef(Math.random().toString(36).substr(2, 9));
 
   useEffect(() => {
     if (!enabled) return;
+    
+    console.log(`[QueueAutoProcessor-${instanceId.current}] Starting with ${intervalMs}ms interval`);
 
     const processQueue = async () => {
-      if (isProcessing) return;
+      if (processingRef.current || globalProcessingFlag) return;
 
       try {
+        processingRef.current = true;
+        globalProcessingFlag = true;
         setIsProcessing(true);
         const response = await fetch('/api/queue/process', {
           method: 'POST',
@@ -32,13 +41,15 @@ export function QueueAutoProcessor({
         if (response.ok) {
           const result = await response.json();
           if (result.processed > 0) {
-            console.log(`Processed ${result.processed} email jobs`);
+            console.log(`[QueueAutoProcessor-${instanceId.current}] Processed ${result.processed} email jobs`);
             setLastProcessed(new Date());
           }
         }
       } catch (error) {
-        console.error('Auto-processing error:', error);
+        console.error(`[QueueAutoProcessor-${instanceId.current}] Auto-processing error:`, error);
       } finally {
+        processingRef.current = false;
+        globalProcessingFlag = false;
         setIsProcessing(false);
       }
     };
@@ -49,8 +60,11 @@ export function QueueAutoProcessor({
     // Set up interval
     const interval = setInterval(processQueue, intervalMs);
 
-    return () => clearInterval(interval);
-  }, [enabled, intervalMs, isProcessing]);
+    return () => {
+      console.log(`[QueueAutoProcessor-${instanceId.current}] Cleaning up interval`);
+      clearInterval(interval);
+    };
+  }, [enabled, intervalMs]); // Removed isProcessing from dependencies to prevent loop
 
   // Don't render anything - this is a background processor
   return null;
@@ -59,11 +73,13 @@ export function QueueAutoProcessor({
 // Hook for manual queue processing
 export function useQueueProcessor() {
   const [isProcessing, setIsProcessing] = useState(false);
+  const processingRef = useRef(false);
 
   const processQueue = async () => {
-    if (isProcessing) return;
+    if (processingRef.current) return;
 
     try {
+      processingRef.current = true;
       setIsProcessing(true);
       const response = await fetch('/api/queue/process', {
         method: 'POST',
@@ -89,6 +105,7 @@ export function useQueueProcessor() {
       toast.error('Error processing queue');
       return null;
     } finally {
+      processingRef.current = false;
       setIsProcessing(false);
     }
   };

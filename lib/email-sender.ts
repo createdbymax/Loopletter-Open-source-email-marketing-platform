@@ -21,6 +21,137 @@ interface TeamInvitationEmailProps {
   invitationUrl: string;
 }
 
+interface WaitlistConfirmationEmailProps {
+  to: string;
+  waitlistCount?: number;
+}
+
+export async function sendWaitlistConfirmationEmail({
+  to,
+  waitlistCount
+}: WaitlistConfirmationEmailProps): Promise<void> {
+  const html = `
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #1e293b; font-size: 28px; margin: 0; font-weight: bold;">
+                🎉 Welcome to the Loopletter Waitlist!
+              </h1>
+            </div>
+            
+            <!-- Main Content -->
+            <div style="margin-bottom: 30px;">
+              <p style="font-size: 16px; margin-bottom: 20px;">
+                Thanks for joining the waitlist! You're now part of an exclusive group of artists who are ready to own their audience and transform their music careers.
+              </p>
+              
+              ${waitlistCount ? `
+                <div style="background: #f1f5f9; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+                  <p style="margin: 0; font-size: 18px; color: #475569;">
+                    You're <strong style="color: #3b82f6;">#${waitlistCount}</strong> on the waitlist
+                  </p>
+                </div>
+              ` : ''}
+              
+              <h3 style="color: #1e293b; font-size: 20px; margin: 30px 0 15px 0;">
+                What happens next?
+              </h3>
+              
+              <ul style="padding-left: 20px; margin-bottom: 30px;">
+                <li style="margin-bottom: 10px;">📧 We'll email you as soon as Loopletter launches</li>
+                <li style="margin-bottom: 10px;">🎯 You'll get exclusive early access before the general public</li>
+                <li style="margin-bottom: 10px;">💰 Special founder pricing (50% off for your first year)</li>
+                <li style="margin-bottom: 10px;">🚀 Free migration help from your current email platform</li>
+              </ul>
+              
+              <h3 style="color: #1e293b; font-size: 20px; margin: 30px 0 15px 0;">
+                Why Loopletter?
+              </h3>
+              
+              <p style="font-size: 16px; margin-bottom: 15px;">
+                Stop chasing algorithms that don't care about your music. Build a fanbase that shows up, buys tickets, and streams your songs because they genuinely love what you create.
+              </p>
+              
+              <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;">
+                <p style="margin: 0; font-style: italic; color: #475569;">
+                  "The moment everything changes is when you own your audience."
+                </p>
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
+              <p style="font-size: 14px; color: #64748b; margin: 0;">
+                Thanks for believing in artist independence,<br>
+                <strong>The Loopletter Team</strong>
+              </p>
+              
+              <div style="margin-top: 20px;">
+                <a href="https://loopletter.com" style="color: #3b82f6; text-decoration: none; font-size: 14px;">
+                  loopletter.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  const text = `
+🎉 Welcome to the Loopletter Waitlist!
+
+Thanks for joining the waitlist! You're now part of an exclusive group of artists who are ready to own their audience and transform their music careers.
+
+${waitlistCount ? `You're #${waitlistCount} on the waitlist` : ''}
+
+What happens next?
+• We'll email you as soon as Loopletter launches
+• You'll get exclusive early access before the general public  
+• Special founder pricing (50% off for your first year)
+• Free migration help from your current email platform
+
+Why Loopletter?
+Stop chasing algorithms that don't care about your music. Build a fanbase that shows up, buys tickets, and streams your songs because they genuinely love what you create.
+
+"The moment everything changes is when you own your audience."
+
+Thanks for believing in artist independence,
+The Loopletter Team
+
+loopletter.com
+  `;
+
+  const params = {
+    Source: `Loopletter <hello@loopletter.com>`,
+    Destination: {
+      ToAddresses: [to],
+    },
+    Message: {
+      Subject: {
+        Data: `🎉 Welcome to the Loopletter Waitlist!`,
+        Charset: 'UTF-8',
+      },
+      Body: {
+        Html: {
+          Data: html,
+          Charset: 'UTF-8',
+        },
+        Text: {
+          Data: text,
+          Charset: 'UTF-8',
+        },
+      },
+    },
+  };
+
+  const command = new SendEmailCommand(params);
+  await ses.send(command);
+}
+
 export async function sendTeamInvitationEmail({
   to,
   artistName,
@@ -135,10 +266,11 @@ export async function sendCampaignEmail(
       personalizedMessage += `\n\n---\nTo unsubscribe from these emails, click here: ${unsubscribeUrl}`;
     }
     
-    // Determine sender email
+    // Determine sender email - use campaign's from_name if available
+    const fromName = campaign.from_name || artist.default_from_name || artist.name;
     const senderEmail = artist.ses_domain_verified && artist.ses_domain 
-      ? `${artist.name} <noreply@${artist.ses_domain}>`
-      : `${artist.name} via Loopletter <noreply@loopletter.com>`;
+      ? `${fromName} <noreply@${artist.ses_domain}>`
+      : `${fromName} via Loopletter <noreply@loopletter.com>`;
 
     const params = {
       Source: senderEmail,

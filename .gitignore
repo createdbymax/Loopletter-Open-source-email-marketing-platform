@@ -40,4 +40,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# documentation and setup files
+*.md
+!README.md
+*.sql
+*.csv
+
+# IDE and development files
+.vscode/
+.DS_Store
+
 .env.local

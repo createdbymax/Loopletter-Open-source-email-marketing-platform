@@ -35,6 +35,8 @@ import {
 } from "lucide-react";
 import { getOrCreateArtistByClerkId, updateArtist } from "@/lib/db";
 import type { Artist, ArtistSettings } from "@/lib/types";
+import { FileUpload } from "@/components/ui/file-upload";
+import { ArtistLogo } from "@/components/ui/artist-logo";
 
 // Main settings page component
 export default function SettingsPage() {
@@ -82,10 +84,22 @@ export default function SettingsPage() {
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 w-full">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-2">
-          Manage your account and application preferences
-        </p>
+        <div className="flex items-center gap-4">
+          {artist && (
+            <ArtistLogo 
+              logoUrl={artist.settings?.logo_url}
+              artistName={artist.name}
+              size="md"
+              className="flex-shrink-0"
+            />
+          )}
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+            <p className="text-gray-600 mt-2">
+              Manage your account and application preferences
+            </p>
+          </div>
+        </div>
       </div>
 
       <Tabs value={activeTab} defaultValue="profile" className="space-y-4" onValueChange={(value) => {
@@ -151,6 +165,7 @@ function ProfileSettings() {
     name: "",
     bio: "",
     email: "",
+    default_from_name: "",
     settings: {
       timezone: "UTC",
       send_time_optimization: false,
@@ -183,6 +198,7 @@ function ProfileSettings() {
           name: a.name || "",
           bio: a.bio || "",
           email: a.email || "",
+          default_from_name: a.default_from_name || "",
           settings: {
             timezone: a.settings?.timezone || "UTC",
             send_time_optimization: a.settings?.send_time_optimization || false,
@@ -219,6 +235,7 @@ function ProfileSettings() {
       await updateArtist(artist.id, {
         name: formData.name,
         bio: formData.bio,
+        default_from_name: formData.default_from_name,
         settings: formData.settings,
       });
 
@@ -325,6 +342,19 @@ function ProfileSettings() {
               placeholder="Tell your fans about yourself..."
               rows={3}
             />
+          </div>
+
+          <div>
+            <Label htmlFor="default-from-name">Default From Name</Label>
+            <Input
+              id="default-from-name"
+              value={formData.default_from_name || ""}
+              onChange={(e) => updateField("default_from_name", e.target.value)}
+              placeholder={`${formData.name || "Your Name"}`}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              How you'll appear in subscribers' inboxes by default (e.g., "Sarah from The Band", "Sarah Miller", "The Band")
+            </p>
           </div>
 
           <div>
@@ -760,7 +790,6 @@ function BrandingSettings() {
 
   // Extend ArtistSettings with UI-specific fields
   type BrandingState = Omit<ArtistSettings, 'social_links'> & {
-    logo_url: string;
     email_footer: string;
     social_links: ArtistSettings['social_links'] & {
       youtube?: string; // UI-only field
@@ -969,40 +998,17 @@ function BrandingSettings() {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="logo">Logo URL</Label>
-            <Input
-              id="logo"
-              value={branding.logo_url}
-              onChange={(e) =>
-                setBranding((prev) => ({ ...prev, logo_url: e.target.value }))
-              }
-              placeholder="https://your-domain.com/logo.png"
-            />
-            <p className="text-sm text-gray-600 mt-1">
-              Enter a direct URL to your logo image (PNG, JPG, or SVG
-              recommended)
-            </p>
-            {branding.logo_url && (
-              <div className="mt-3 p-3 border rounded-lg bg-gray-50">
-                <p className="text-sm text-gray-600 mb-2">Logo Preview:</p>
-                <img
-                  src={branding.logo_url}
-                  alt="Logo preview"
-                  className="h-12 object-contain border rounded"
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    target.style.display = "none";
-                    const errorMsg = target.nextElementSibling as HTMLElement;
-                    if (errorMsg) errorMsg.style.display = "block";
-                  }}
-                />
-                <p className="text-sm text-red-600 mt-2 hidden">
-                  Unable to load image. Please check the URL.
-                </p>
-              </div>
-            )}
-          </div>
+          <FileUpload
+            label="Logo"
+            currentUrl={branding.logo_url}
+            onUploadComplete={(url) =>
+              setBranding((prev) => ({ ...prev, logo_url: url }))
+            }
+            onRemove={() =>
+              setBranding((prev) => ({ ...prev, logo_url: "" }))
+            }
+            description="Upload your logo (PNG, JPG, or SVG recommended, max 5MB)"
+          />
 
           <div>
             <Label htmlFor="email-footer">Email Footer</Label>

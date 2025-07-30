@@ -78,8 +78,15 @@ function TemplateBuilder({
   onCancel,
 }: {
   template?: Template;
-  onSave: (data: any) => void;
-    onCancel: () => void;
+  onSave: (data: {
+    name: string;
+    description: string;
+    category: Template["category"];
+    html_content: string;
+    variables: TemplateVariable[];
+    is_public: boolean;
+  }) => void;
+  onCancel: () => void;
 }) {
   const [name, setName] = useState(template?.name || "");
   const [description, setDescription] = useState(template?.description || "");
@@ -340,7 +347,7 @@ function TemplateBuilder({
             ))}
 
             {variables.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-neutral-400">
                 No variables defined. Add variables to make your template
                 dynamic.
               </div>
@@ -349,14 +356,16 @@ function TemplateBuilder({
         </TabsContent>
 
         <TabsContent value="preview" className="space-y-4">
-          <div className="border rounded-lg p-4 bg-gray-50">
-            <h3 className="text-lg font-medium mb-4">Template Preview</h3>
+          <div className="border dark:border-neutral-700 rounded-lg p-4 bg-gray-50 dark:bg-neutral-800">
+            <h3 className="text-lg font-medium mb-4 text-neutral-900 dark:text-neutral-100">
+              Template Preview
+            </h3>
             <div
-              className="bg-white p-4 rounded border"
+              className="bg-white dark:bg-neutral-900 p-4 rounded border dark:border-neutral-700"
               dangerouslySetInnerHTML={{
                 __html:
                   htmlContent ||
-                  '<p class="text-gray-500">No content to preview</p>',
+                  '<p class="text-gray-500 dark:text-neutral-400">No content to preview</p>',
               }}
             />
           </div>
@@ -410,7 +419,7 @@ function TemplateCard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CategoryIcon className="w-5 h-5 text-gray-600" />
+            <CategoryIcon className="w-5 h-5 text-gray-600 dark:text-neutral-400" />
             <Badge variant="outline">
               {categoryInfo?.label || template.category}
             </Badge>
@@ -434,7 +443,10 @@ function TemplateCard({
                 <Copy className="w-4 h-4 mr-2" />
                 Duplicate
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={onDelete}>
+              <DropdownMenuItem
+                className="text-red-600 dark:text-red-400"
+                onClick={onDelete}
+              >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -443,12 +455,14 @@ function TemplateCard({
         </div>
         <CardTitle className="text-lg">{template.name}</CardTitle>
         {template.description && (
-          <p className="text-sm text-gray-600">{template.description}</p>
+          <p className="text-sm text-gray-600 dark:text-neutral-400">
+            {template.description}
+          </p>
         )}
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <div className="bg-gray-50 p-3 rounded text-xs">
+          <div className="bg-gray-50 dark:bg-neutral-800 p-3 rounded text-xs">
             <div
               dangerouslySetInnerHTML={{
                 __html: template.html_content.substring(0, 200) + "...",
@@ -456,7 +470,7 @@ function TemplateCard({
             />
           </div>
 
-          <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-neutral-400">
             <span>{template.variables.length} variables</span>
             <span>{new Date(template.created_at).toLocaleDateString()}</span>
           </div>
@@ -516,7 +530,14 @@ export function TemplateManager() {
     if (isLoaded) fetchData();
   }, [user, isLoaded]);
 
-  const handleCreateTemplate = async (data: any) => {
+  const handleCreateTemplate = async (data: {
+    name: string;
+    description: string;
+    category: Template["category"];
+    html_content: string;
+    variables: TemplateVariable[];
+    is_public: boolean;
+  }) => {
     if (!artist) return;
     try {
       const newTemplate = await createTemplate({
@@ -550,7 +571,7 @@ export function TemplateManager() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-neutral-100"></div>
       </div>
     );
   }
@@ -559,8 +580,10 @@ export function TemplateManager() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Email Templates</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">
+            Email Templates
+          </h1>
+          <p className="text-gray-600 dark:text-neutral-400">
             Create and manage reusable email templates
           </p>
         </div>
@@ -641,11 +664,11 @@ export function TemplateManager() {
           {templates.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
-                <Layout className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <Layout className="w-12 h-12 text-gray-400 dark:text-neutral-500 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-neutral-100 mb-2">
                   No templates yet
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 dark:text-neutral-400 mb-6">
                   Create your first email template to get started
                 </p>
                 <div className="flex gap-3 justify-center">
@@ -707,9 +730,7 @@ export function TemplateManager() {
             <DialogTitle>Create New Template</DialogTitle>
           </DialogHeader>
           <TemplateBuilder
-            onSave={(data) => {
-              void handleCreateTemplate(data); // make it non-blocking
-            }}
+            onSave={handleCreateTemplate}
             onCancel={() => setShowBuilder(false)}
           />
         </DialogContent>
@@ -745,8 +766,9 @@ export function TemplateManager() {
           {editingTemplate && (
             <TemplateBuilder
               template={editingTemplate}
-              onSave={() => {
-                // Handle update
+              onSave={(data) => {
+                // Handle update - you'll need to implement updateTemplate function
+                console.log("Update template:", data);
                 setEditingTemplate(null);
               }}
               onCancel={() => setEditingTemplate(null)}

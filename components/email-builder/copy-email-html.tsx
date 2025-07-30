@@ -40,7 +40,7 @@ export function CopyEmailHtml({ previewText, editor, subscriptionPlan = 'starter
 
   return (
     <button
-      className="flex items-center rounded-md bg-white px-2 py-1 text-sm text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex items-center rounded-md bg-white dark:bg-neutral-700 px-2 py-1 text-sm text-black dark:text-neutral-100 hover:bg-gray-100 dark:hover:bg-neutral-600 disabled:cursor-not-allowed disabled:opacity-50"
       onClick={handleCopy}
       disabled={!editor}
     >

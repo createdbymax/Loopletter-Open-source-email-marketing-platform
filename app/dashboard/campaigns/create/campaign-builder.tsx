@@ -35,7 +35,10 @@ import { TemplateEditor } from "./template-editor";
 import { MailyEditor } from "@/components/email-builder/maily-editor";
 import { DomainCheck } from "./domain-check";
 import { EmailLimitWarning } from "@/components/ui/limit-warning";
-import { hasReachedEmailSendLimit, getUserSubscriptionPlan } from "@/lib/subscription";
+import {
+  hasReachedEmailSendLimit,
+  getUserSubscriptionPlan,
+} from "@/lib/subscription";
 
 // Template data types
 interface MusicReleaseData {
@@ -56,7 +59,11 @@ interface MerchandiseData {
   collectionName: string;
 }
 
-type TemplateData = MusicReleaseData | ShowAnnouncementData | MerchandiseData | Record<string, unknown>;
+type TemplateData =
+  | MusicReleaseData
+  | ShowAnnouncementData
+  | MerchandiseData
+  | Record<string, unknown>;
 
 interface Block {
   id: string;
@@ -83,9 +90,7 @@ export function CampaignBuilder() {
 
   // Campaign builder flow state
   const [currentStep, setCurrentStep] = useState<
-    | "template"
-    | "form"
-    | "maily-editor"
+    "template" | "form" | "maily-editor"
   >("template");
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [templateData, setTemplateData] = useState<unknown>(null);
@@ -116,7 +121,7 @@ export function CampaignBuilder() {
   // Email metadata
   const [emailData, setEmailData] = useState({
     subject: "",
-    from: "",
+    fromName: "",
     previewText: "",
     audience: "all-subscribers",
   });
@@ -146,6 +151,18 @@ export function CampaignBuilder() {
         setArtist(artistData);
         const fans = await getFansByArtist(artistData.id);
         setFanCount(fans.length);
+
+        // Set default values if not already set
+        setEmailData((prev) => ({
+          ...prev,
+          fromName:
+            prev.fromName ||
+            artistData.default_from_name ||
+            artistData.name ||
+            "",
+          subject: prev.subject || "My Email Campaign",
+          previewText: prev.previewText || "Check out what's new!",
+        }));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -156,30 +173,33 @@ export function CampaignBuilder() {
   // Handle template selection
   const handleTemplateSelect = (templateId: string, templateData?: any) => {
     setSelectedTemplate(templateId);
-    
+
     // If it's a Spotify-generated template, set the Maily JSON content
-    if (templateId === 'spotify-generated' && templateData) {
-      console.log('Campaign Builder - Received Spotify template data:', templateData);
-      
+    if (templateId === "spotify-generated" && templateData) {
+      console.log(
+        "Campaign Builder - Received Spotify template data:",
+        templateData
+      );
+
       // Store the Maily JSON as the template data
       setTemplateData(templateData);
-      
+
       // Pre-populate email metadata based on Spotify data
       setEmailData((prev) => ({
         ...prev,
-        subject: `🎵 New ${templateData.releaseData.type === 'track' ? 'Track' : 'Album'}: ${templateData.releaseData.title}`,
+        subject: `🎵 New ${templateData.releaseData.type === "track" ? "Track" : "Album"}: ${templateData.releaseData.title}`,
         previewText: `${templateData.releaseData.artist} just released "${templateData.releaseData.title}" - listen now!`,
       }));
-      
-      console.log('Campaign Builder - Template data set:', templateData);
+
+      console.log("Campaign Builder - Template data set:", templateData);
     } else {
       // Clear any existing email HTML to ensure we use the template
-      setEmailHtml('');
+      setEmailHtml("");
     }
-    
+
     // Always go directly to the Maily editor with the selected template
     setCurrentStep("maily-editor");
-    
+
     console.log(`Selected template: ${templateId}`);
   };
 
@@ -190,21 +210,36 @@ export function CampaignBuilder() {
     setCurrentStep("maily-editor");
 
     // Pre-populate email metadata based on template
-    if (selectedTemplate === "music-release" && 'artistName' in data && 'releaseTitle' in data && 'releaseType' in data) {
+    if (
+      selectedTemplate === "music-release" &&
+      "artistName" in data &&
+      "releaseTitle" in data &&
+      "releaseType" in data
+    ) {
       const musicData = data as MusicReleaseData;
       setEmailData((prev) => ({
         ...prev,
         subject: `🎵 ${musicData.artistName} just released "${musicData.releaseTitle}"!`,
         previewText: `New ${musicData.releaseType} from ${musicData.artistName} - listen now!`,
       }));
-    } else if (selectedTemplate === "show-announcement" && 'artistName' in data && 'city' in data && 'date' in data && 'venue' in data) {
+    } else if (
+      selectedTemplate === "show-announcement" &&
+      "artistName" in data &&
+      "city" in data &&
+      "date" in data &&
+      "venue" in data
+    ) {
       const showData = data as ShowAnnouncementData;
       setEmailData((prev) => ({
         ...prev,
         subject: `🎤 ${showData.artistName} live in ${showData.city} - ${showData.date}`,
         previewText: `Don't miss ${showData.artistName} at ${showData.venue}!`,
       }));
-    } else if (selectedTemplate === "merchandise" && 'artistName' in data && 'collectionName' in data) {
+    } else if (
+      selectedTemplate === "merchandise" &&
+      "artistName" in data &&
+      "collectionName" in data
+    ) {
       const merchData = data as MerchandiseData;
       setEmailData((prev) => ({
         ...prev,
@@ -220,6 +255,9 @@ export function CampaignBuilder() {
       const campaignData = {
         title: emailData.subject || "Untitled Campaign",
         subject: emailData.subject || "Untitled Campaign",
+        from_name:
+          emailData.fromName || artist?.default_from_name || artist?.name,
+        from_email: artist?.ses_domain ? `noreply@${artist.ses_domain}` : null,
         message:
           selectedTemplate === "visual-builder"
             ? emailHtml
@@ -246,7 +284,9 @@ export function CampaignBuilder() {
       }
     } catch (error) {
       console.error("Error saving campaign:", error);
-      alert(`Failed to save campaign: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Failed to save campaign: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   };
 
@@ -265,6 +305,11 @@ export function CampaignBuilder() {
         const campaignData = {
           title: emailData.subject,
           subject: emailData.subject,
+          from_name:
+            emailData.fromName || artist?.default_from_name || artist?.name,
+          from_email: artist?.ses_domain
+            ? `noreply@${artist.ses_domain}`
+            : null,
           message:
             selectedTemplate === "visual-builder"
               ? emailHtml
@@ -310,7 +355,9 @@ export function CampaignBuilder() {
         }
       } catch (error) {
         console.error("Error sending campaign:", error);
-        alert(`Failed to send campaign: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        alert(
+          `Failed to send campaign: ${error instanceof Error ? error.message : "Unknown error"}`
+        );
       }
     }
   };
@@ -341,7 +388,10 @@ export function CampaignBuilder() {
         templateId={selectedTemplate || undefined}
         templateData={templateData}
         fanCount={fanCount}
-        subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : 'starter'}
+        subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : "starter"}
+        subject={emailData.subject}
+        previewText={emailData.previewText}
+        fromName={emailData.fromName}
         onBack={() => setCurrentStep("template")}
         onSave={(htmlContent) => {
           setEmailHtml(htmlContent);
@@ -438,9 +488,9 @@ export function CampaignBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
+      <div className="bg-white dark:bg-neutral-800 border-b dark:border-neutral-700 px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => router.back()}>
@@ -448,8 +498,10 @@ export function CampaignBuilder() {
               Back
             </Button>
             <div>
-              <h1 className="text-xl font-semibold">Create Campaign</h1>
-              <p className="text-sm text-gray-600">
+              <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                Create Campaign
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Design your email campaign
               </p>
             </div>
@@ -513,8 +565,10 @@ export function CampaignBuilder() {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Sidebar - Email Settings */}
           <div className="col-span-3 space-y-6">
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-medium mb-4">Email Settings</h3>
+            <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4">
+              <h3 className="font-medium mb-4 text-neutral-900 dark:text-neutral-100">
+                Email Settings
+              </h3>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="subject">Subject Line</Label>
@@ -532,18 +586,22 @@ export function CampaignBuilder() {
                 </div>
 
                 <div>
-                  <Label htmlFor="from">From</Label>
+                  <Label htmlFor="fromName">From Name</Label>
                   <Input
-                    id="from"
-                    value={emailData.from}
+                    id="fromName"
+                    value={emailData.fromName}
                     onChange={(e) =>
                       setEmailData((prev) => ({
                         ...prev,
-                        from: e.target.value,
+                        fromName: e.target.value,
                       }))
                     }
-                    placeholder="your-name@domain.com"
+                    placeholder={`${artist?.name || "Your Name"}`}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    How you'll appear in subscribers' inboxes (e.g., "Sarah from
+                    The Band")
+                  </p>
                 </div>
 
                 <div>
@@ -573,8 +631,10 @@ export function CampaignBuilder() {
             </div>
 
             {/* Campaign Settings */}
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-medium mb-4">Campaign Settings</h3>
+            <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4">
+              <h3 className="font-medium mb-4 text-neutral-900 dark:text-neutral-100">
+                Campaign Settings
+              </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -640,8 +700,10 @@ export function CampaignBuilder() {
 
             {/* Block Library - Only show for block editor */}
             {!selectedTemplate && (
-              <div className="bg-white rounded-lg border p-4">
-                <h3 className="font-medium mb-4">Add Content</h3>
+              <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4">
+                <h3 className="font-medium mb-4 text-neutral-900 dark:text-neutral-100">
+                  Add Content
+                </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
@@ -689,9 +751,9 @@ export function CampaignBuilder() {
 
           {/* Main Editor */}
           <div className="col-span-6">
-            <div className="bg-white rounded-lg border">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700">
               {/* Editor Toolbar */}
-              <div className="border-b p-4">
+              <div className="border-b dark:border-neutral-700 p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm">
@@ -739,7 +801,9 @@ export function CampaignBuilder() {
                     previewMode === "mobile" ? "max-w-sm" : "max-w-2xl"
                   }`}
                 >
-                  {selectedTemplate && templateData && Object.keys(templateData).length > 0 ? (
+                  {selectedTemplate &&
+                  templateData &&
+                  Object.keys(templateData).length > 0 ? (
                     // Show template preview
                     <TemplatePreview
                       templateId={selectedTemplate}
@@ -747,7 +811,7 @@ export function CampaignBuilder() {
                     />
                   ) : (
                     // Show block editor
-                    <div className="bg-white border rounded-lg shadow-sm">
+                    <div className="bg-white dark:bg-neutral-900 border dark:border-neutral-700 rounded-lg shadow-sm">
                       <div className="p-6 space-y-4">
                         {blocks.map((block) => (
                           <BlockEditor
@@ -765,7 +829,7 @@ export function CampaignBuilder() {
                         {/* Add Block Button */}
                         <Button
                           variant="ghost"
-                          className="w-full border-2 border-dashed border-gray-300 h-12 text-gray-500 hover:border-gray-400"
+                          className="w-full border-2 border-dashed border-gray-300 dark:border-neutral-600 h-12 text-gray-500 dark:text-neutral-400 hover:border-gray-400 dark:hover:border-neutral-500"
                           onClick={() => addBlock("text")}
                         >
                           <Plus className="w-4 h-4 mr-2" />
@@ -861,7 +925,9 @@ function BlockEditor({
   return (
     <div
       className={`relative group cursor-pointer rounded-md transition-all ${
-        isSelected ? "ring-2 ring-blue-500 ring-offset-2" : "hover:bg-gray-50"
+        isSelected
+          ? "ring-2 ring-blue-500 ring-offset-2"
+          : "hover:bg-gray-50 dark:hover:bg-neutral-800"
       }`}
       onClick={handleClick}
     >
@@ -969,7 +1035,7 @@ function BlockEditor({
 
 interface BlockPropertiesProps {
   block: Block;
-  onUpdate: (updates: Partial<Block>) => void;
+  onUpdate: (updates: any) => void;
 }
 
 function BlockProperties({ block, onUpdate }: BlockPropertiesProps) {

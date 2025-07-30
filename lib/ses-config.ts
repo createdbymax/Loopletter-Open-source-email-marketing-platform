@@ -143,12 +143,12 @@ export const sesRateLimiter = new SESRateLimiter();
 export function calculateBatchDelay(emailCount: number): number {
   const { maxSendRate } = SES_CONFIG.limits;
   const { size: batchSize } = SES_CONFIG.batch;
-  
+
   // If batch size is within rate limit, use standard interval
   if (batchSize <= maxSendRate) {
     return SES_CONFIG.batch.intervalMs;
   }
-  
+
   // Otherwise, calculate delay to stay within rate limit
   const secondsNeeded = Math.ceil(batchSize / maxSendRate);
   return secondsNeeded * 1000;
@@ -162,11 +162,11 @@ export function estimateCampaignDuration(emailCount: number): {
 } {
   const { maxSendRate, maxDailyQuota } = SES_CONFIG.limits;
   const stats = sesRateLimiter.getStats();
-  
+
   const canSendToday = (stats.remainingToday >= emailCount);
   const estimatedSeconds = Math.ceil(emailCount / maxSendRate);
   const estimatedMinutes = Math.ceil(estimatedSeconds / 60);
-  
+
   return {
     estimatedSeconds,
     estimatedMinutes,

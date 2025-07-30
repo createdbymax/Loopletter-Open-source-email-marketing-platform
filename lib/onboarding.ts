@@ -67,8 +67,8 @@ export function getOnboardingStatus(artist: Artist, fans: Fan[], campaigns: Camp
     completedSteps.push('audience');
   }
   
-  // Check domain setup
-  if (artist.ses_domain_verified) {
+  // Check domain setup - consider it complete if domain is added (even if not verified yet)
+  if (artist.ses_domain && artist.ses_domain.trim() !== '') {
     completedSteps.push('domain');
   }
   
@@ -104,7 +104,7 @@ export function getOnboardingData(artist: Artist, fans: Fan[], campaigns: Campai
   return {
     hasProfile: !!(artist.name && artist.bio && artist.settings?.timezone),
     hasFans: fans.length > 0,
-    hasDomain: artist.ses_domain_verified,
+    hasDomain: !!(artist.ses_domain && artist.ses_domain.trim() !== ''),
     hasCampaigns: campaigns.length > 0,
     hasSettings: !!(artist.settings?.brand_colors || artist.settings?.social_links),
   };
@@ -184,7 +184,7 @@ export function getOnboardingRecommendations(status: OnboardingStatus, data: Onb
     recommendations.push({
       title: 'Set Up Custom Domain',
       description: 'Improve deliverability with domain verification',
-      action: 'Verify Domain',
+      action: 'Add Domain',
       href: '/dashboard/domain',
       priority: 'medium',
     });

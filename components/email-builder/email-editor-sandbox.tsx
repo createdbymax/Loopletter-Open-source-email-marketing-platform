@@ -70,8 +70,14 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
     subscriptionPlan = "starter",
   } = props;
 
-  const [subject, setSubject] = useState(template?.title || "");
-  const [previewText, setPreviewText] = useState(template?.preview_text || "");
+  console.log("🔍 EmailEditorSandbox received template:", template);
+
+  const [subject, setSubject] = useState(
+    template?.title || "My Email Campaign"
+  );
+  const [previewText, setPreviewText] = useState(
+    template?.preview_text || "Check out what's new!"
+  );
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [showReplyTo, setShowReplyTo] = useState(false);
@@ -97,13 +103,25 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
     const trimmedSubject = subject.trim();
     const trimmedPreviewText = previewText.trim();
 
-    if (!trimmedSubject || !json) {
-      toast.error("Subject, Preview Text and Content are required");
+    console.log("🔍 Save validation:", {
+      trimmedSubject,
+      hasJson: !!json,
+      hasContent: !!json?.content,
+    });
+
+    if (!trimmedSubject) {
+      toast.error("Subject is required");
       return;
     }
 
     if (trimmedSubject.length < 3) {
       toast.error("Subject must be at least 3 characters");
+      return;
+    }
+
+    // For now, let's be very lenient with content validation
+    if (!json || !json.content) {
+      toast.error("Please add some content to your email");
       return;
     }
 
@@ -133,13 +151,21 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
     const trimmedSubject = subject.trim();
     const trimmedPreviewText = previewText.trim();
 
-    if (!trimmedSubject || !json) {
-      toast.error("Subject, Preview Text and Content are required");
+    // Check if editor has meaningful content - more lenient validation
+    const hasContent = json && json.content && json.content.length > 0;
+
+    if (!trimmedSubject) {
+      toast.error("Subject is required");
       return;
     }
 
     if (trimmedSubject.length < 3) {
       toast.error("Subject must be at least 3 characters");
+      return;
+    }
+
+    if (!hasContent) {
+      toast.error("Please add some content to your email");
       return;
     }
 
@@ -166,9 +192,62 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
     if (!onSendTest) return;
 
     const json = editor?.getJSON();
+    const trimmedSubject = subject.trim();
+
+    console.log("🔍 Test Email Debug:", {
+      subject,
+      trimmedSubject,
+      hasEditor: !!editor,
+      json: json ? "exists" : "null",
+      jsonContent: json?.content,
+      to,
+    });
 
     if (!json) {
       toast.error("Editor content is empty");
+      return;
+    }
+
+    // Check if editor has meaningful content - more lenient validation
+    const hasContent = json.content && json.content.length > 0;
+
+    // Additional check for text content
+    const hasTextContent =
+      hasContent &&
+      json.content?.some((node: any) => {
+        if (node.type === "paragraph" && node.content) {
+          return node.content.some(
+            (child: any) => child.text && child.text.trim().length > 0
+          );
+        }
+        if (node.type === "heading" && node.content) {
+          return node.content.some(
+            (child: any) => child.text && child.text.trim().length > 0
+          );
+        }
+        return false;
+      });
+
+    console.log("🔍 Content validation:", {
+      hasContent,
+      hasTextContent,
+      contentLength: json.content?.length,
+      firstNode: json.content?.[0],
+    });
+
+    if (!trimmedSubject) {
+      toast.error("Subject is required");
+      return;
+    }
+
+    // For now, let's be very lenient with content validation
+    if (!json || !json.content) {
+      toast.error("Please add some content to your email");
+      return;
+    }
+
+    if (trimmedSubject.length < 3) {
+      toast.error("Subject must be at least 3 characters");
       return;
     }
 
@@ -179,15 +258,19 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
     setIsSendingTest(true);
 
+    const testData = {
+      subject,
+      previewText,
+      from,
+      to,
+      replyTo,
+      content: JSON.stringify(json),
+    };
+
+    console.log("🔍 Sending test email with data:", testData);
+
     try {
-      await onSendTest({
-        subject,
-        previewText,
-        from,
-        to,
-        replyTo,
-        content: JSON.stringify(json),
-      });
+      await onSendTest(testData);
 
       toast.success("Test Email has been sent");
     } catch (error) {
@@ -217,7 +300,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
           />
 
           <button
-            className="flex items-center rounded-md bg-white px-2 py-1 text-sm text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center rounded-md bg-white dark:bg-neutral-700 px-2 py-1 text-sm text-black dark:text-neutral-100 hover:bg-gray-100 dark:hover:bg-neutral-600 disabled:cursor-not-allowed disabled:opacity-50"
             type="button"
             disabled={isSendingTest || !onSendTest}
             onClick={handleSendTestEmail}
@@ -235,7 +318,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
           {showSaveButton && onSave && (
             <button
               className={cn(
-                "flex items-center justify-center rounded-md bg-gray-200 px-3 py-1 text-sm text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                "flex items-center justify-center rounded-md bg-gray-200 dark:bg-neutral-700 px-3 py-1 text-sm text-gray-800 dark:text-neutral-200 hover:bg-gray-300 dark:hover:bg-neutral-600 disabled:cursor-not-allowed disabled:opacity-50"
               )}
               disabled={isSaving}
               onClick={handleSaveTemplate}
@@ -276,11 +359,11 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
         )}
 
         <Label className="flex items-center font-normal">
-          <span className="w-20 shrink-0 font-normal text-gray-600 after:ml-0.5 after:text-red-400 after:content-['*']">
+          <span className="w-20 shrink-0 font-normal text-gray-600 dark:text-neutral-400 after:ml-0.5 after:text-red-400 after:content-['*']">
             Subject
           </span>
           <Input
-            className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent dark:text-neutral-100"
             placeholder="Email Subject"
             type="text"
             value={subject}
@@ -290,11 +373,11 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
         <div className="flex items-center gap-1.5">
           <Label className="flex grow items-center font-normal">
-            <span className="w-20 shrink-0 font-normal text-gray-600">
+            <span className="w-20 shrink-0 font-normal text-gray-600 dark:text-neutral-400">
               From
             </span>
             <Input
-              className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent dark:text-neutral-100"
               placeholder="Your Name <your@email.com>"
               type="text"
               value={from}
@@ -304,7 +387,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
           {!showReplyTo && (
             <button
-              className="inline-block h-full shrink-0 bg-transparent px-1 text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+              className="inline-block h-full shrink-0 bg-transparent px-1 text-sm text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-300 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-gray-400"
               type="button"
               onClick={() => {
                 setShowReplyTo(true);
@@ -317,19 +400,19 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
         {showReplyTo && (
           <Label className="flex items-center font-normal">
-            <span className="w-20 shrink-0 font-normal text-gray-600">
+            <span className="w-20 shrink-0 font-normal text-gray-600 dark:text-neutral-400">
               Reply-To
             </span>
             <div className="align-content-stretch flex grow items-center">
               <Input
-                className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent dark:text-neutral-100"
                 placeholder="reply@email.com"
                 type="text"
                 value={replyTo}
                 onChange={(event) => setReplyTo(event.target.value)}
               />
               <button
-                className="flex h-10 shrink-0 items-center bg-transparent px-1 text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 shrink-0 items-center bg-transparent px-1 text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-neutral-300 disabled:cursor-not-allowed disabled:opacity-50"
                 type="button"
                 onClick={() => {
                   setReplyTo("");
@@ -344,14 +427,16 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
         <div className="flex items-center">
           <Label className="flex items-center font-normal">
-            <span className="w-20 shrink-0 font-normal text-gray-600">To</span>
+            <span className="w-20 shrink-0 font-normal text-gray-600 dark:text-neutral-400">
+              To
+            </span>
             <div className="flex items-center">
-              <Badge className="mr-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
+              <Badge className="mr-2 bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
                 <UsersIcon className="mr-1 h-3 w-3" />
                 All Subscribers ({fanCount.toLocaleString()})
               </Badge>
               <Input
-                className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 w-64"
+                className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 w-64 bg-transparent dark:text-neutral-100"
                 placeholder="Test recipient email"
                 type="text"
                 value={to}
@@ -363,7 +448,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
         <div className="relative my-6">
           <Input
-            className="h-auto rounded-none border-x-0 border-gray-300 px-0 py-2.5 pr-5 text-base focus-visible:border-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="h-auto rounded-none border-x-0 border-gray-300 dark:border-neutral-600 px-0 py-2.5 pr-5 text-base focus-visible:border-gray-400 dark:focus-visible:border-neutral-500 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent dark:text-neutral-100"
             placeholder="Preview Text"
             type="text"
             value={previewText}

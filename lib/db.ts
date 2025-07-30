@@ -10,7 +10,8 @@ function mapArtistFields(artist: any): Artist {
   // Handle null or undefined artist
   if (!artist) {
     console.error('mapArtistFields called with null or undefined artist');
-    return artist;
+    console.trace('Stack trace for null artist:');
+    throw new Error('Cannot map null or undefined artist');
   }
   
   // Create a subscription object from the individual fields
@@ -46,8 +47,11 @@ export async function getArtistBySlug(slug: string) {
 }
 
 export async function updateArtist(id: string, updates: Partial<Artist>) {
-  const { data, error } = await supabase.from('artists').update(updates).eq('id', id).single();
+  const { data, error } = await supabase.from('artists').update(updates).eq('id', id).select().single();
   if (error) throw error;
+  if (!data) {
+    throw new Error('No data returned from artist update');
+  }
   return mapArtistFields(data) as Artist;
 }
 
@@ -232,6 +236,12 @@ export async function getOrCreateArtistByClerkId(clerkUserId: string, email: str
     throw fetchError;
   }
   
+  // This should never happen, but handle the edge case
+  if (!artist) {
+    console.error('Artist is null after successful query - this should not happen');
+    throw new Error('Artist data is unexpectedly null');
+  }
+  
   return mapArtistFields(artist);
 }
 
@@ -249,8 +259,11 @@ export async function getFansByArtist(artist_id: string) {
 }
 
 export async function updateFan(id: string, updates: Partial<Fan>) {
-  const { data, error } = await supabase.from('fans').update(updates).eq('id', id).single();
+  const { data, error } = await supabase.from('fans').update(updates).eq('id', id).select().single();
   if (error) throw error;
+  if (!data) {
+    throw new Error('No data returned from fan update');
+  }
   return data as Fan;
 }
 
@@ -900,6 +913,8 @@ export async function createCampaignWithDefaults(campaignData: CampaignFormData,
     title: campaignData.title,
     subject: campaignData.subject,
     message: campaignData.message,
+    from_name: campaignData.from_name || null,
+    from_email: campaignData.from_email || null,
     artist_id,
     status: 'draft',
     send_date: campaignData.send_date || now,

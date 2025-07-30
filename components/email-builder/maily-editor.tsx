@@ -20,6 +20,9 @@ interface MailyEditorProps {
   templateId?: string;
   fanCount?: number;
   subscriptionPlan?: SubscriptionPlan;
+  subject?: string;
+  previewText?: string;
+  fromName?: string;
 }
 
 export function MailyEditor({ 
@@ -30,7 +33,10 @@ export function MailyEditor({
   templateData, 
   templateId, 
   fanCount = 0,
-  subscriptionPlan = 'starter' 
+  subscriptionPlan = 'starter',
+  subject = '',
+  previewText = '',
+  fromName = ''
 }: MailyEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -103,26 +109,55 @@ export function MailyEditor({
     if (!data.to) {
       throw new Error('Recipient email is required');
     }
+
+    if (!data.subject) {
+      throw new Error('Subject is required');
+    }
+
+    if (!data.content) {
+      throw new Error('Content is required');
+    }
     
-    // In a real implementation, you'd send a test email via API
-    // This is just a mock implementation
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success(`Test email sent to ${data.to}`);
+    try {
+      const response = await fetch('/api/campaigns/test-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: data.subject,
+          previewText: data.previewText,
+          content: data.content,
+          to: data.to,
+          from: data.from,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send test email');
+      }
+
+      toast.success(`Test email sent to ${data.to}`);
+    } catch (error) {
+      console.error('Error sending test email:', error);
+      throw error;
+    }
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-neutral-900">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
+      <div className="bg-white dark:bg-neutral-800 border-b dark:border-neutral-700 px-6 py-4">
         <div className="flex items-center max-w-7xl mx-auto">
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           <div>
-            <h1 className="text-xl font-semibold">Email Designer</h1>
-            <p className="text-sm text-gray-600">
+            <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Email Designer</h1>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">
               Create beautiful emails with Maily.to
             </p>
           </div>
@@ -136,16 +171,14 @@ export function MailyEditor({
             const template = { 
               // Don't set ID for Spotify-generated templates to use EmailEditor instead of DirectTemplateEditor
               id: templateId === 'spotify-generated' ? undefined : templateId,
-              title: templateData && typeof templateData === 'object' && 'subject' in templateData ? 
-                String(templateData.subject) : '',
-              preview_text: templateData && typeof templateData === 'object' && 'previewText' in templateData ? 
-                String(templateData.previewText) : '',
+              title: subject || (templateData && typeof templateData === 'object' && 'subject' in templateData ? 
+                String(templateData.subject) : ''),
+              preview_text: previewText || (templateData && typeof templateData === 'object' && 'previewText' in templateData ? 
+                String(templateData.previewText) : ''),
               content: templateData && typeof templateData === 'object' && 'mailyJson' in templateData ? 
-                JSON.stringify(templateData.mailyJson) : initialHtml
+                JSON.stringify(templateData.mailyJson) : (initialHtml || '<p>Start writing your email content here...</p>')
             };
-            console.log('MailyEditor - Template object:', template);
-            console.log('MailyEditor - Template data:', templateData);
-            console.log('MailyEditor - Initial HTML:', initialHtml);
+
             return template;
           })()}
           onSave={handleSave}

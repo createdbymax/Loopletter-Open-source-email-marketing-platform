@@ -65,21 +65,34 @@ export default function Usage({ artist }: UsageProps) {
 
         // Fetch fans count
         const fansResponse = await fetch("/api/fans");
-        const fans = await fansResponse.json();
+        const fansData = await fansResponse.json();
+        const fans = fansData.fans || []; // Extract fans array from response
+        
+        // Debug logging
+        console.log('Fans API response:', fansData);
+        console.log('Fans array:', fans);
+        console.log('Sample fan:', fans[0]);
 
         // Fetch campaigns
         const campaignsResponse = await fetch("/api/campaigns");
-        const campaigns = await campaignsResponse.json();
+        const campaignsData = await campaignsResponse.json();
+        const campaigns = Array.isArray(campaignsData) ? campaignsData : (campaignsData.campaigns || []);
 
         // Fetch analytics
         const analyticsResponse = await fetch("/api/analytics");
         const analytics = await analyticsResponse.json();
 
+        const subscribedFans = fans.filter(
+          (f: { status: string }) => f.status === "subscribed"
+        );
+        
+        console.log('Total fans:', fans.length);
+        console.log('Subscribed fans:', subscribedFans.length);
+        console.log('Fan statuses:', fans.map((f: any) => ({ email: f.email, status: f.status })));
+
         setStats({
           totalFans: fans.length,
-          activeFans: fans.filter(
-            (f: { status: string }) => f.status === "subscribed"
-          ).length,
+          activeFans: subscribedFans.length,
           totalEmailsSent: analytics.metrics?.emails_delivered || 0,
           monthlyEmailsSent: analytics.metrics?.monthly_emails_sent || 0,
           totalCampaigns: campaigns.length,

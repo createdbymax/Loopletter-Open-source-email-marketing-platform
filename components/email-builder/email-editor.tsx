@@ -47,7 +47,7 @@ export function EmailEditor({
 
   if (!isMounted) {
     return (
-      <div className="flex items-center justify-center h-[600px]">
+      <div className="flex items-center justify-center h-[600px] text-neutral-600 dark:text-neutral-400">
         Loading editor...
       </div>
     );
@@ -55,7 +55,7 @@ export function EmailEditor({
 
   return (
     <div className="max-w-[calc(600px+80px)] mx-auto px-10 pb-10">
-      <div className="min-h-[600px] border border-gray-200 rounded-md">
+      <div className="min-h-[600px] border border-gray-200 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800">
         <Editor
           config={{
             hasMenuBar: false,

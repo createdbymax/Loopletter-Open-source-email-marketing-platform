@@ -1,22 +1,28 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Trash2, 
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Trash2,
   Activity,
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
-} from 'lucide-react';
-import { toast } from 'sonner';
+  AlertCircle,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface QueueStats {
   waiting: number;
@@ -40,27 +46,27 @@ interface JobStatus {
 export function QueueStatus() {
   const [stats, setStats] = useState<QueueStats | null>(null);
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
-  const [selectedJobId, setSelectedJobId] = useState<string>('');
+  const [selectedJobId, setSelectedJobId] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   // Fetch queue statistics
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/queue/status');
+      const response = await fetch("/api/queue/status");
       if (response.ok) {
         const data = await response.json();
         setStats(data);
       }
     } catch (error) {
-      console.error('Error fetching queue stats:', error);
+      console.error("Error fetching queue stats:", error);
     }
   };
 
   // Fetch specific job status
   const fetchJobStatus = async (jobId: string) => {
     if (!jobId) return;
-    
+
     try {
       const response = await fetch(`/api/queue/status?jobId=${jobId}`);
       if (response.ok) {
@@ -68,11 +74,11 @@ export function QueueStatus() {
         setJobStatus(data);
       } else {
         setJobStatus(null);
-        toast.error('Job not found');
+        toast.error("Job not found");
       }
     } catch (error) {
-      console.error('Error fetching job status:', error);
-      toast.error('Failed to fetch job status');
+      console.error("Error fetching job status:", error);
+      toast.error("Failed to fetch job status");
     }
   };
 
@@ -80,9 +86,9 @@ export function QueueStatus() {
   const manageQueue = async (action: string, jobId?: string) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/queue/manage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/queue/manage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, jobId }),
       });
 
@@ -93,11 +99,11 @@ export function QueueStatus() {
         if (jobId) fetchJobStatus(jobId); // Refresh job status if applicable
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Action failed');
+        toast.error(error.error || "Action failed");
       }
     } catch (error) {
-      console.error('Error managing queue:', error);
-      toast.error('Failed to perform action');
+      console.error("Error managing queue:", error);
+      toast.error("Failed to perform action");
     } finally {
       setLoading(false);
     }
@@ -105,13 +111,15 @@ export function QueueStatus() {
 
   // Auto-refresh effect
   useEffect(() => {
+    // Only fetch stats once on mount, no auto-refresh
     fetchStats();
-    
-    if (autoRefresh) {
-      const interval = setInterval(fetchStats, 5000); // Refresh every 5 seconds
-      return () => clearInterval(interval);
-    }
-  }, [autoRefresh]);
+
+    // Disabled auto-refresh to prevent unnecessary API calls
+    // if (autoRefresh) {
+    //   const interval = setInterval(fetchStats, 5000);
+    //   return () => clearInterval(interval);
+    // }
+  }, []); // Empty dependency array - only run once on mount
 
   return (
     <div className="space-y-6">
@@ -134,7 +142,7 @@ export function QueueStatus() {
                 size="sm"
                 onClick={() => setAutoRefresh(!autoRefresh)}
               >
-                {autoRefresh ? 'Disable' : 'Enable'} Auto-refresh
+                {autoRefresh ? "Disable" : "Enable"} Auto-refresh
               </Button>
               <Button
                 variant="outline"
@@ -151,40 +159,52 @@ export function QueueStatus() {
           {stats ? (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">{stats.waiting}</div>
+                <div className="text-2xl font-bold text-yellow-600">
+                  {stats.waiting}
+                </div>
                 <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                   <Clock className="w-4 h-4" />
                   Waiting
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {stats.active}
+                </div>
                 <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                   <Activity className="w-4 h-4" />
                   Active
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {stats.completed}
+                </div>
                 <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                   <CheckCircle className="w-4 h-4" />
                   Completed
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
+                <div className="text-2xl font-bold text-red-600">
+                  {stats.failed}
+                </div>
                 <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                   <XCircle className="w-4 h-4" />
                   Failed
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {stats.total}
+                </div>
                 <div className="text-sm text-gray-600">Total</div>
               </div>
             </div>
           ) : (
-            <div className="text-center text-gray-500">Loading queue statistics...</div>
+            <div className="text-center text-gray-500">
+              Loading queue statistics...
+            </div>
           )}
 
           {/* Queue Management Actions */}
@@ -192,7 +212,7 @@ export function QueueStatus() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => manageQueue('pause')}
+              onClick={() => manageQueue("pause")}
               disabled={loading}
             >
               <Pause className="w-4 h-4 mr-2" />
@@ -201,7 +221,7 @@ export function QueueStatus() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => manageQueue('resume')}
+              onClick={() => manageQueue("resume")}
               disabled={loading}
             >
               <Play className="w-4 h-4 mr-2" />
@@ -210,7 +230,7 @@ export function QueueStatus() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => manageQueue('cleanup')}
+              onClick={() => manageQueue("cleanup")}
               disabled={loading}
             >
               <Trash2 className="w-4 h-4 mr-2" />
@@ -249,14 +269,20 @@ export function QueueStatus() {
             <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold">Job: {jobStatus.name}</h4>
-                <Badge variant={
-                  jobStatus.finishedOn ? 'default' : 
-                  jobStatus.failedReason ? 'destructive' : 
-                  'secondary'
-                }>
-                  {jobStatus.finishedOn ? 'Completed' : 
-                   jobStatus.failedReason ? 'Failed' : 
-                   'Processing'}
+                <Badge
+                  variant={
+                    jobStatus.finishedOn
+                      ? "default"
+                      : jobStatus.failedReason
+                        ? "destructive"
+                        : "secondary"
+                  }
+                >
+                  {jobStatus.finishedOn
+                    ? "Completed"
+                    : jobStatus.failedReason
+                      ? "Failed"
+                      : "Processing"}
                 </Badge>
               </div>
 
@@ -293,7 +319,7 @@ export function QueueStatus() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => manageQueue('retry', jobStatus.id)}
+                  onClick={() => manageQueue("retry", jobStatus.id)}
                   disabled={loading || !jobStatus.failedReason}
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
@@ -302,7 +328,7 @@ export function QueueStatus() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => manageQueue('remove', jobStatus.id)}
+                  onClick={() => manageQueue("remove", jobStatus.id)}
                   disabled={loading}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />

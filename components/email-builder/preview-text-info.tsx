@@ -13,7 +13,7 @@ export function PreviewTextInfo() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <InfoIcon className="h-4 w-4 text-gray-400 cursor-help" />
+          <InfoIcon className="h-4 w-4 text-gray-400 dark:text-neutral-500 cursor-help" />
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs">
           <p>

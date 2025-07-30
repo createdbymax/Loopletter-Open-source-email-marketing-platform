@@ -93,13 +93,13 @@ export function Campaigns() {
     switch (status) {
       case "sent":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
+          <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
             Sent
           </Badge>
         );
       case "scheduled":
         return (
-          <Badge variant="default" className="bg-blue-100 text-blue-800">
+          <Badge variant="default" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
             Scheduled
           </Badge>
         );
@@ -176,8 +176,8 @@ export function Campaigns() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-600">Loading campaigns...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-neutral-100 mx-auto"></div>
+          <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">Loading campaigns...</p>
         </div>
       </div>
     );
@@ -186,7 +186,7 @@ export function Campaigns() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600">Error: {error}</p>
+        <p className="text-red-600 dark:text-red-400">Error: {error}</p>
       </div>
     );
   }
@@ -196,14 +196,14 @@ export function Campaigns() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Campaigns</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-neutral-100">Campaigns</h1>
+          <p className="text-gray-600 dark:text-neutral-400">
             Create and manage your email campaigns
           </p>
         </div>
         <Button
           onClick={() => (window.location.href = "/dashboard/campaigns/create")}
-          className="bg-black hover:bg-gray-800"
+          className="bg-black hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Campaign
@@ -212,38 +212,38 @@ export function Campaigns() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg border">
+        <div className="bg-white dark:bg-neutral-800 p-6 rounded-lg border dark:border-neutral-700">
           <div className="flex items-center">
             <Mail className="w-5 h-5 text-blue-600" />
-            <h3 className="ml-2 text-sm font-medium text-gray-900">
+            <h3 className="ml-2 text-sm font-medium text-gray-900 dark:text-neutral-100">
               Total Campaigns
             </h3>
           </div>
-          <p className="mt-2 text-3xl font-bold text-gray-900">
+          <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-neutral-100">
             {campaigns.length}
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border">
+        <div className="bg-white dark:bg-neutral-800 p-6 rounded-lg border dark:border-neutral-700">
           <div className="flex items-center">
             <Users className="w-5 h-5 text-green-600" />
-            <h3 className="ml-2 text-sm font-medium text-gray-900">
+            <h3 className="ml-2 text-sm font-medium text-gray-900 dark:text-neutral-100">
               Total Subscribers
             </h3>
           </div>
-          <p className="mt-2 text-3xl font-bold text-gray-900">
+          <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-neutral-100">
             {fanCount.toLocaleString()}
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border">
+        <div className="bg-white dark:bg-neutral-800 p-6 rounded-lg border dark:border-neutral-700">
           <div className="flex items-center">
             <Calendar className="w-5 h-5 text-purple-600" />
-            <h3 className="ml-2 text-sm font-medium text-gray-900">
+            <h3 className="ml-2 text-sm font-medium text-gray-900 dark:text-neutral-100">
               This Month
             </h3>
           </div>
-          <p className="mt-2 text-3xl font-bold text-gray-900">
+          <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-neutral-100">
             {
               campaigns.filter((c) => {
                 const campaignDate = new Date(c.created_at);
@@ -259,21 +259,21 @@ export function Campaigns() {
       </div>
 
       {/* Campaigns Table */}
-      <div className="bg-white rounded-lg border">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700">
         {campaigns.length === 0 ? (
           <div className="text-center py-12">
-            <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <Mail className="w-12 h-12 text-gray-400 dark:text-neutral-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-neutral-100 mb-2">
               No campaigns yet
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-neutral-400 mb-6">
               Get started by creating your first email campaign
             </p>
             <Button
               onClick={() =>
                 (window.location.href = "/dashboard/campaigns/create")
               }
-              className="bg-black hover:bg-gray-800"
+              className="bg-black hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Campaign
@@ -293,28 +293,28 @@ export function Campaigns() {
             </TableHeader>
             <TableBody>
               {campaigns.map((campaign) => (
-                <TableRow key={campaign.id} className="hover:bg-gray-50">
+                <TableRow key={campaign.id} className="hover:bg-gray-50 dark:hover:bg-neutral-700">
                   <TableCell>
                     <div>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 dark:text-neutral-100">
                         {campaign.title || "Untitled Campaign"}
                       </div>
-                      <div className="text-sm text-gray-500 truncate max-w-xs">
+                      <div className="text-sm text-gray-500 dark:text-neutral-400 truncate max-w-xs">
                         {campaign.message?.substring(0, 60)}...
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(campaign.status)}</TableCell>
                   <TableCell>
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-neutral-400">
                       <Users className="w-4 h-4 mr-1" />
                       {fanCount.toLocaleString()}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-gray-600 dark:text-neutral-400">
                     {formatDate(campaign.created_at)}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-gray-600 dark:text-neutral-400">
                     {campaign.send_date ? formatDate(campaign.send_date) : "-"}
                   </TableCell>
                   <TableCell>
@@ -338,7 +338,7 @@ export function Campaigns() {
                           Duplicate
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600"
+                          className="text-red-600 dark:text-red-400"
                           onClick={() => handleDeleteCampaign(campaign.id)}
                         >
                           <Trash2 className="w-4 h-4 mr-2" />

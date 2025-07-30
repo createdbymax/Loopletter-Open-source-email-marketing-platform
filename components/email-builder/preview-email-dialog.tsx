@@ -38,7 +38,7 @@ export function PreviewEmailDialog({ subject, previewText, editor, subscriptionP
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button
-          className="flex items-center rounded-md bg-white px-2 py-1 text-sm text-black hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center rounded-md bg-white dark:bg-neutral-700 px-2 py-1 text-sm text-black dark:text-neutral-100 hover:bg-gray-100 dark:hover:bg-neutral-600 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!editor}
         >
           <EyeIcon className="mr-1 inline-block size-4" />
@@ -53,7 +53,7 @@ export function PreviewEmailDialog({ subject, previewText, editor, subscriptionP
           <iframe
             srcDoc={generatePreviewHtml()}
             title="Email Preview"
-            className="w-full h-full border rounded"
+            className="w-full h-full border dark:border-neutral-700 rounded bg-white"
           />
         </div>
       </DialogContent>

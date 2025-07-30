@@ -152,8 +152,8 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-600">Loading campaign...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-neutral-100 mx-auto"></div>
+          <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">Loading campaign...</p>
         </div>
       </div>
     );
@@ -162,15 +162,15 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
   if (!campaign) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600">Campaign not found</p>
+        <p className="text-red-600 dark:text-red-400">Campaign not found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
+      <div className="bg-white dark:bg-neutral-800 border-b dark:border-neutral-700 px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <Button 
@@ -182,8 +182,8 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
               Back to Campaigns
             </Button>
             <div>
-              <h1 className="text-xl font-semibold">Edit Campaign</h1>
-              <p className="text-sm text-gray-600">
+              <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Edit Campaign</h1>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
                 {campaign.status === 'sent' ? 'View sent campaign' : 'Edit your campaign'}
               </p>
             </div>
@@ -212,7 +212,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
               </>
             )}
             {campaign.status === 'sent' && (
-              <Badge variant="default" className="bg-green-100 text-green-800">
+              <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                 Sent
               </Badge>
             )}
@@ -224,8 +224,8 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Sidebar - Email Settings */}
           <div className="col-span-3 space-y-6">
-            <div className="bg-white rounded-lg border p-4">
-              <h3 className="font-medium mb-4">Email Settings</h3>
+            <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4">
+              <h3 className="font-medium mb-4 text-neutral-900 dark:text-neutral-100">Email Settings</h3>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="subject">Subject Line</Label>
@@ -243,7 +243,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
                   <div className="mt-2">
                     <Badge 
                       variant={campaign.status === 'sent' ? 'default' : 'secondary'}
-                      className={campaign.status === 'sent' ? 'bg-green-100 text-green-800' : ''}
+                      className={campaign.status === 'sent' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : ''}
                     >
                       {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
                     </Badge>
@@ -262,7 +262,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
 
           {/* Main Editor */}
           <div className="col-span-6">
-            <div className="bg-white rounded-lg border">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700">
               <div className="p-6">
                 {campaign.template_id && campaign.template_data ? (
                   <TemplatePreview 
@@ -270,7 +270,7 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
                     templateData={campaign.template_data as unknown as MusicReleaseTemplateProps | ShowAnnouncementTemplateProps | MerchandiseTemplateProps}
                   />
                 ) : (
-                  <div className="text-center py-12 text-gray-500">
+                  <div className="text-center py-12 text-gray-500 dark:text-neutral-400">
                     <p>No template data available</p>
                   </div>
                 )}
@@ -287,9 +287,9 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
                 onUpdate={updateTemplateData}
               />
             ) : (
-              <div className="bg-white rounded-lg border p-4">
-                <h3 className="font-medium mb-2">Campaign Info</h3>
-                <div className="space-y-2 text-sm text-gray-600">
+              <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4">
+                <h3 className="font-medium mb-2 text-neutral-900 dark:text-neutral-100">Campaign Info</h3>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-neutral-400">
                   <p>Created: {new Date(campaign.created_at).toLocaleDateString()}</p>
                   {campaign.send_date && (
                     <p>Sent: {new Date(campaign.send_date).toLocaleDateString()}</p>

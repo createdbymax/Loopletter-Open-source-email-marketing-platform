@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     );
 
     const body = await request.json();
-    const { title, subject, message, status, template_id, settings } = body;
+    const { title, subject, message, status, template_id, settings, from_name, from_email } = body;
 
     // Validate required fields
     if (!title || !subject || !message) {
@@ -32,6 +32,8 @@ export async function POST(request: NextRequest) {
       title,
       subject,
       message,
+      from_name: from_name || artist.default_from_name || artist.name,
+      from_email: from_email || (artist.ses_domain ? `noreply@${artist.ses_domain}` : null),
       status: status || 'draft',
       template_id,
       artist_id: artist.id,

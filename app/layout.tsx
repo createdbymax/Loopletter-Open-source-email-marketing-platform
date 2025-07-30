@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs';
 import { defaultMetadata, generateSiteStructuredData } from "@/lib/metadata";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 
 const geistSans = Geist({
@@ -39,8 +40,15 @@ export default function RootLayout({
         <body
          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Toaster position="top-center" />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster position="top-center" />
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
