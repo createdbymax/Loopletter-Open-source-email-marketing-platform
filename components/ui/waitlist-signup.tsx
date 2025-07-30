@@ -74,10 +74,10 @@ export function WaitlistSignup({
             >
               <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-green-900 dark:text-green-100 mb-2">
-                You're on the list! 🎉
+                Request submitted! 🎉
               </h3>
               <p className="text-green-700 dark:text-green-300">
-                We'll notify you as soon as Loopletter is ready for you.
+                We'll review your request and get back to you soon with early access.
               </p>
             </motion.div>
           ) : (
@@ -95,10 +95,10 @@ export function WaitlistSignup({
                   Early Access
                 </div>
                 <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-                  Join the Waitlist
+                  Request Early Access
                 </h3>
                 <p className="text-neutral-600 dark:text-neutral-400">
-                  Be the first to know when Loopletter launches and get exclusive early access.
+                  Get priority access to the email marketing platform built for artists.
                 </p>
               </div>
 
@@ -136,14 +136,14 @@ export function WaitlistSignup({
                   </>
                 ) : (
                   <>
-                    Join Waitlist
+                    Request Access
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
 
               <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center">
-                No spam, ever. Unsubscribe at any time.
+                No spam, ever. We'll only contact you about early access.
               </p>
             </motion.form>
           )}
@@ -237,11 +237,11 @@ export function WaitlistSignup({
             <div className="flex items-center gap-2 mb-4">
               <Mail className="w-5 h-5 text-blue-600" />
               <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                Join the Waitlist
+                Request Early Access
               </h3>
             </div>
             <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-4">
-              Get early access to Loopletter and be among the first to transform your music career.
+              Get priority access to the email marketing platform built for artists.
             </p>
             
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -272,7 +272,7 @@ export function WaitlistSignup({
                   </>
                 ) : (
                   <>
-                    Join Waitlist
+                    Request Access
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

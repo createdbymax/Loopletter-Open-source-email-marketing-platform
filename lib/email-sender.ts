@@ -26,78 +26,165 @@ interface WaitlistConfirmationEmailProps {
   waitlistCount?: number;
 }
 
+interface EarlyAccessConfirmationEmailProps {
+  to: string;
+  name: string;
+  requestCount?: number;
+}
+
 export async function sendWaitlistConfirmationEmail({
   to,
   waitlistCount
 }: WaitlistConfirmationEmailProps): Promise<void> {
   const html = `
-    <html>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <!-- Header -->
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #1e293b; font-size: 28px; margin: 0; font-weight: bold;">
-                🎉 Welcome to the Loopletter Waitlist!
-              </h1>
-            </div>
-            
-            <!-- Main Content -->
-            <div style="margin-bottom: 30px;">
-              <p style="font-size: 16px; margin-bottom: 20px;">
-                Thanks for joining the waitlist! You're now part of an exclusive group of artists who are ready to own their audience and transform their music careers.
-              </p>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome to the Loopletter Waitlist</title>
+      <style type="text/css">
+        #outlook a {padding: 0}
+        .ExternalClass {width: 100%}
+        .ExternalClass,.ExternalClass p,.ExternalClass span,.ExternalClass font,.ExternalClass td,.ExternalClass div {line-height: 100%}
+        body,table,td,a {-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%}
+        table,td {mso-table-lspace: 0;mso-table-rspace: 0}
+        img {-ms-interpolation-mode: bicubic}
+        img {border: 0;outline: none;text-decoration: none}
+        a img {border: none}
+        td img {vertical-align: top}
+        table,table td {border-collapse: collapse}
+        body {margin: 0;padding: 0;width: 100% !important}
+        .mobile-spacer {width: 0;display: none}
+        @media all and (max-width:639px) {
+          .container {width: 100% !important;max-width: 600px !important}
+          .mobile {width: auto !important;max-width: 100% !important;display: block !important}
+          .mobile-center {text-align: center !important}
+          .mobile-right {text-align: right !important}
+          .mobile-left {text-align: left !important;}
+          .mobile-hidden {max-height: 0;display: none !important;mso-hide: all;overflow: hidden}
+          .mobile-spacer {width: auto !important;display: table !important}
+          .mobile-image,.mobile-image img {height: auto !important;max-width: 600px !important;width: 100% !important}
+        }
+      </style>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td, a { font-family: Arial, Helvetica, sans-serif !important; }
+      </style>
+      <![endif]-->
+    </head>
+    <body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+      <span style="color: transparent; display: none; height: 0px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; visibility: hidden; width: 0px;">Welcome to the Loopletter Waitlist</span>
+      
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" class="body" style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="center" valign="top" style="vertical-align: top; line-height: 1; padding: 48px 32px;">
               
-              ${waitlistCount ? `
-                <div style="background: #f1f5f9; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
-                  <p style="margin: 0; font-size: 18px; color: #475569;">
-                    You're <strong style="color: #3b82f6;">#${waitlistCount}</strong> on the waitlist
-                  </p>
-                </div>
-              ` : ''}
+              <!-- Header with Logo -->
+              <table cellpadding="0" cellspacing="0" border="0" width="600" class="header container" style="width: 600px;">
+                <tbody>
+                  <tr>
+                    <td align="left" valign="top" style="vertical-align: top; line-height: 1; padding: 16px 32px;">
+                      <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 24px; line-height: 36px;">
+                        <img width="128" src="https://loopletter.s3.us-east-1.amazonaws.com/assets/loopletteremail.png" alt="Loopletter Logo" style="max-width: 128px; width: 128px;">
+                      </p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
               
-              <h3 style="color: #1e293b; font-size: 20px; margin: 30px 0 15px 0;">
-                What happens next?
-              </h3>
+              <!-- Main Content -->
+              <table cellpadding="0" cellspacing="0" border="0" width="600" class="main container" style="width: 600px; border-collapse: separate;">
+                <tbody>
+                  <tr>
+                    <td align="left" valign="top" bgcolor="#fff" style="vertical-align: top; line-height: 1; background-color: #ffffff; border-radius: 0px;">
+                      <table cellpadding="0" cellspacing="0" border="0" width="100%" class="block" style="width: 100%; border-collapse: separate;">
+                        <tbody>
+                          <tr>
+                            <td align="left" valign="top" bgcolor="#ffffff" style="vertical-align: top; line-height: 1; padding: 32px 32px 48px; background-color: #ffffff; border-radius: 0px;">
+                              
+                              <h1 class="h1" align="left" style="padding: 0px; margin: 0px; font-style: normal; font-family: Helvetica, Arial, sans-serif; font-size: 32px; line-height: 39px; color: #000000; font-weight: bold;">
+                                🎉 You're on the waitlist!
+                              </h1>
+                              
+                              <p align="left" style="padding: 0px; margin: 16px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                Thanks for joining the waitlist! You're now part of an exclusive group of artists who are ready to own their audience and transform their music careers.
+                              </p>
+                              
+                              ${waitlistCount ? `
+                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 24px 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td align="center" valign="top" style="vertical-align: top; line-height: 1; padding: 20px; background-color: #f1f5f9; border-radius: 8px;">
+                                      <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #475569; font-size: 16px; line-height: 24px; font-weight: normal;">
+                                        You're <strong style="color: #3b82f6;">#${waitlistCount}</strong> on the waitlist
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              ` : ''}
+                              
+                              <h2 align="left" style="padding: 0px; margin: 24px 0px 16px 0px; font-style: normal; font-family: Helvetica, Arial, sans-serif; font-size: 20px; line-height: 24px; color: #000000; font-weight: bold;">
+                                What happens next?
+                              </h2>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                📧 We'll email you as soon as Loopletter launches
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                🎯 You'll get exclusive early access before the general public
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                💰 Special founder pricing (50% off for your first year)
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                🚀 Free migration help from your current email platform
+                              </p>
+                              
+                              <h2 align="left" style="padding: 0px; margin: 24px 0px 16px 0px; font-style: normal; font-family: Helvetica, Arial, sans-serif; font-size: 20px; line-height: 24px; color: #000000; font-weight: bold;">
+                                Why Loopletter?
+                              </h2>
+                              
+                              <p align="left" style="padding: 0px; margin: 16px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                Stop chasing algorithms that don't care about your music. Build a fanbase that shows up, buys tickets, and streams your songs because they genuinely love what you create.
+                              </p>
+                              
+                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 24px 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td align="left" valign="top" style="vertical-align: top; line-height: 1; padding: 16px; background-color: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px;">
+                                      <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #475569; font-size: 14px; line-height: 21px; font-style: italic;">
+                                        "The moment everything changes is when you own your audience."
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              
+                              <p align="center" style="padding: 0px; margin: 24px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #64748b; font-size: 14px; line-height: 21px;">
+                                Thanks for believing in artist independence,<br>
+                                <strong>The Loopletter Team</strong>
+                              </p>
+                              
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
               
-              <ul style="padding-left: 20px; margin-bottom: 30px;">
-                <li style="margin-bottom: 10px;">📧 We'll email you as soon as Loopletter launches</li>
-                <li style="margin-bottom: 10px;">🎯 You'll get exclusive early access before the general public</li>
-                <li style="margin-bottom: 10px;">💰 Special founder pricing (50% off for your first year)</li>
-                <li style="margin-bottom: 10px;">🚀 Free migration help from your current email platform</li>
-              </ul>
-              
-              <h3 style="color: #1e293b; font-size: 20px; margin: 30px 0 15px 0;">
-                Why Loopletter?
-              </h3>
-              
-              <p style="font-size: 16px; margin-bottom: 15px;">
-                Stop chasing algorithms that don't care about your music. Build a fanbase that shows up, buys tickets, and streams your songs because they genuinely love what you create.
-              </p>
-              
-              <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;">
-                <p style="margin: 0; font-style: italic; color: #475569;">
-                  "The moment everything changes is when you own your audience."
-                </p>
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
-              <p style="font-size: 14px; color: #64748b; margin: 0;">
-                Thanks for believing in artist independence,<br>
-                <strong>The Loopletter Team</strong>
-              </p>
-              
-              <div style="margin-top: 20px;">
-                <a href="https://loopletter.com" style="color: #3b82f6; text-decoration: none; font-size: 14px;">
-                  loopletter.com
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </body>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </body>
     </html>
   `;
 
@@ -195,7 +282,7 @@ export async function sendTeamInvitationEmail({
   `;
 
   const params = {
-    Source: `Loopletter <noreply@loopletter.com>`,
+    Source: `Loopletter <noreply@loopletter.co>`,
     Destination: {
       ToAddresses: [to],
     },
@@ -254,23 +341,23 @@ export async function sendCampaignEmail(
       personalizedMessage = personalizedMessage.replace(/\{name\}/g, fan.name);
       personalizedMessage = personalizedMessage.replace(/\{first_name\}/g, fan.name.split(' ')[0]);
     }
-    
+
     // Replace artist placeholders
     personalizedMessage = personalizedMessage.replace(/\{artist_name\}/g, artist.name);
-    
+
     // Create unsubscribe link
     const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?fan=${fan.id}&campaign=${campaign.id}`;
-    
+
     // Add unsubscribe link to message if not already present
     if (!personalizedMessage.includes('unsubscribe')) {
       personalizedMessage += `\n\n---\nTo unsubscribe from these emails, click here: ${unsubscribeUrl}`;
     }
-    
+
     // Determine sender email - use campaign's from_name if available
     const fromName = campaign.from_name || artist.default_from_name || artist.name;
-    const senderEmail = artist.ses_domain_verified && artist.ses_domain 
+    const senderEmail = artist.ses_domain_verified && artist.ses_domain
       ? `${fromName} <noreply@${artist.ses_domain}>`
-      : `${fromName} via Loopletter <noreply@loopletter.com>`;
+      : `${fromName} via Loopletter <noreply@loopletter.co>`;
 
     const params = {
       Source: senderEmail,
@@ -344,7 +431,7 @@ export async function sendCampaignEmail(
     };
   } catch (error) {
     console.error('Error sending campaign email:', error);
-    
+
     // Log the failed email attempt
     try {
       await logEmailSent({
@@ -364,4 +451,203 @@ export async function sendCampaignEmail(
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
+}
+
+export async function sendEarlyAccessConfirmationEmail({
+  to,
+  name,
+  requestCount
+}: EarlyAccessConfirmationEmailProps): Promise<void> {
+  const html = `
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Early Access Request Received - Loopletter</title>
+      <style type="text/css">
+        #outlook a {padding: 0}
+        .ExternalClass {width: 100%}
+        .ExternalClass,.ExternalClass p,.ExternalClass span,.ExternalClass font,.ExternalClass td,.ExternalClass div {line-height: 100%}
+        body,table,td,a {-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%}
+        table,td {mso-table-lspace: 0;mso-table-rspace: 0}
+        img {-ms-interpolation-mode: bicubic}
+        img {border: 0;outline: none;text-decoration: none}
+        a img {border: none}
+        td img {vertical-align: top}
+        table,table td {border-collapse: collapse}
+        body {margin: 0;padding: 0;width: 100% !important}
+        .mobile-spacer {width: 0;display: none}
+        @media all and (max-width:639px) {
+          .container {width: 100% !important;max-width: 600px !important}
+          .mobile {width: auto !important;max-width: 100% !important;display: block !important}
+          .mobile-center {text-align: center !important}
+          .mobile-right {text-align: right !important}
+          .mobile-left {text-align: left !important;}
+          .mobile-hidden {max-height: 0;display: none !important;mso-hide: all;overflow: hidden}
+          .mobile-spacer {width: auto !important;display: table !important}
+          .mobile-image,.mobile-image img {height: auto !important;max-width: 600px !important;width: 100% !important}
+        }
+      </style>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td, a { font-family: Arial, Helvetica, sans-serif !important; }
+      </style>
+      <![endif]-->
+    </head>
+    <body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+      <span style="color: transparent; display: none; height: 0px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; visibility: hidden; width: 0px;">Early Access Request Received - Loopletter</span>
+      
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" class="body" style="width: 100%;">
+        <tbody>
+          <tr>
+            <td align="center" valign="top" style="vertical-align: top; line-height: 1; padding: 48px 32px;">
+              
+              <!-- Header with Logo -->
+              <table cellpadding="0" cellspacing="0" border="0" width="600" class="header container" style="width: 600px;">
+                <tbody>
+                  <tr>
+                    <td align="left" valign="top" style="vertical-align: top; line-height: 1; padding: 16px 32px;">
+                      <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 24px; line-height: 36px;">
+                        <img width="128" src="https://loopletter.s3.us-east-1.amazonaws.com/assets/loopletteremail.png" alt="Loopletter Logo" style="max-width: 128px; width: 128px;">
+                      </p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <!-- Main Content -->
+              <table cellpadding="0" cellspacing="0" border="0" width="600" class="main container" style="width: 600px; border-collapse: separate;">
+                <tbody>
+                  <tr>
+                    <td align="left" valign="top" bgcolor="#fff" style="vertical-align: top; line-height: 1; background-color: #ffffff; border-radius: 0px;">
+                      <table cellpadding="0" cellspacing="0" border="0" width="100%" class="block" style="width: 100%; border-collapse: separate;">
+                        <tbody>
+                          <tr>
+                            <td align="left" valign="top" bgcolor="#ffffff" style="vertical-align: top; line-height: 1; padding: 32px 32px 48px; background-color: #ffffff; border-radius: 0px;">
+                              
+                              <h1 class="h1" align="left" style="padding: 0px; margin: 0px; font-style: normal; font-family: Helvetica, Arial, sans-serif; font-size: 32px; line-height: 39px; color: #000000; font-weight: bold;">
+                                🎉 Early Access Request Received!
+                              </h1>
+                              
+                              <p align="left" style="padding: 0px; margin: 16px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                Hi ${name},
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 16px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                Thanks for requesting early access to Loopletter! We're excited to have you join our community of artists who are ready to own their audience and transform their music careers.
+                              </p>
+                              
+                              ${requestCount ? `
+                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 24px 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td align="center" valign="top" style="vertical-align: top; line-height: 1; padding: 20px; background-color: #f1f5f9; border-radius: 8px;">
+                                      <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #475569; font-size: 16px; line-height: 24px; font-weight: normal;">
+                                        You're <strong style="color: #3b82f6;">#${requestCount}</strong> in line for early access
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              ` : ''}
+                              
+                              <h2 align="left" style="padding: 0px; margin: 24px 0px 16px 0px; font-style: normal; font-family: Helvetica, Arial, sans-serif; font-size: 20px; line-height: 24px; color: #000000; font-weight: bold;">
+                                What happens next?
+                              </h2>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                <strong>Review Process:</strong> Our team will review your request and music within 1-2 business days
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                <strong>Priority Access:</strong> We'll send you an invitation to join Loopletter based on your profile and our current capacity
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                <strong>Onboarding:</strong> Once approved, you'll get a personalized onboarding experience tailored to your goals
+                              </p>
+                              
+                              <p align="left" style="padding: 0px; margin: 8px 0px 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 14px; line-height: 21px;">
+                                <strong>Beta Feedback:</strong> Help us build the perfect platform for artists like you
+                              </p>
+                              
+                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 24px 0px;">
+                                <tbody>
+                                  <tr>
+                                    <td align="left" valign="top" style="vertical-align: top; line-height: 1; padding: 16px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+                                      <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #92400e; font-size: 14px; line-height: 21px;">
+                                        <strong>Pro Tip:</strong> Follow us on social media for updates and tips while you wait!
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const text = `
+🎉 Early Access Request Received!
+
+Hi ${name},
+
+Thanks for requesting early access to Loopletter! We're excited to have you join our community of artists who are ready to own their audience and transform their music careers.
+
+${requestCount ? `You're #${requestCount} in line for early access` : ''}
+
+What happens next?
+
+• Review Process: Our team will review your request and music within 1-2 business days
+• Priority Access: We'll send you an invitation to join Loopletter based on your profile and our current capacity  
+• Onboarding: Once approved, you'll get a personalized onboarding experience tailored to your goals
+• Beta Feedback: Help us build the perfect platform for artists like you
+
+Pro Tip: Follow us on social media for updates and tips while you wait!
+
+
+---
+Loopletter - Email Marketing for Artists
+You're receiving this because you requested early access to our platform.
+  `;
+
+  const params = {
+    Source: `Loopletter <noreply@loopletter.co>`,
+    Destination: {
+      ToAddresses: [to],
+    },
+    Message: {
+      Subject: {
+        Data: `🎉 Early Access Request Received - Welcome to Loopletter!`,
+        Charset: 'UTF-8',
+      },
+      Body: {
+        Html: {
+          Data: html,
+          Charset: 'UTF-8',
+        },
+        Text: {
+          Data: text,
+          Charset: 'UTF-8',
+        },
+      },
+    },
+  };
+
+  const command = new SendEmailCommand(params);
+  await ses.send(command);
 }

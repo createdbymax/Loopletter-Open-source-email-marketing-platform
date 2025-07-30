@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 
-interface UseWaitlistOptions {
+interface UseEarlyAccessOptions {
   onSuccess?: (email: string) => void;
   onError?: (error: string) => void;
 }
 
-export function useWaitlist(options: UseWaitlistOptions = {}) {
+// Simple waitlist hook for email-only signups (backward compatibility)
+export function useWaitlist(options: UseEarlyAccessOptions = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -53,9 +54,9 @@ export function useWaitlist(options: UseWaitlistOptions = {}) {
   };
 
   const reset = () => {
-    setIsLoading(false);
     setError(null);
     setIsSuccess(false);
+    setIsLoading(false);
   };
 
   return {
@@ -67,8 +68,69 @@ export function useWaitlist(options: UseWaitlistOptions = {}) {
   };
 }
 
-// Hook for fetching waitlist stats (admin use)
-export function useWaitlistStats() {
+// Full early access hook for detailed form submissions
+export function useEarlyAccess(options: UseEarlyAccessOptions = {}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const requestEarlyAccess = async (email: string) => {
+    if (!email || !email.includes('@')) {
+      const errorMsg = 'Please enter a valid email address';
+      setError(errorMsg);
+      options.onError?.(errorMsg);
+      return false;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setIsSuccess(false);
+
+    try {
+      const response = await fetch('/api/early-access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      setIsSuccess(true);
+      options.onSuccess?.(email);
+      return true;
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to submit early access request';
+      setError(errorMsg);
+      options.onError?.(errorMsg);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const reset = () => {
+    setIsLoading(false);
+    setError(null);
+    setIsSuccess(false);
+  };
+
+  return {
+    requestEarlyAccess,
+    isLoading,
+    error,
+    isSuccess,
+    reset,
+  };
+}
+
+// Hook for fetching early access stats (admin use)
+export function useEarlyAccessStats() {
   const [stats, setStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,10 +140,10 @@ export function useWaitlistStats() {
     setError(null);
 
     try {
-      const response = await fetch('/api/waitlist');
+      const response = await fetch('/api/early-access');
       
       if (!response.ok) {
-        throw new Error('Failed to fetch waitlist stats');
+        throw new Error('Failed to fetch early access stats');
       }
 
       const data = await response.json();
@@ -96,7 +158,7 @@ export function useWaitlistStats() {
 
   const updateEntryStatus = async (id: string, status: 'approved' | 'rejected', notes?: string) => {
     try {
-      const response = await fetch(`/api/waitlist/${id}`, {
+      const response = await fetch(`/api/early-access/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +182,7 @@ export function useWaitlistStats() {
 
   const deleteEntry = async (id: string) => {
     try {
-      const response = await fetch(`/api/waitlist/${id}`, {
+      const response = await fetch(`/api/early-access/${id}`, {
         method: 'DELETE',
       });
 

@@ -15,8 +15,8 @@ interface InlineWaitlistProps {
 
 export function InlineWaitlist({
   placeholder = "Enter your email",
-  buttonText = "Join Waitlist",
-  successMessage = "Thanks! We'll be in touch soon.",
+  buttonText = "Request Access",
+  successMessage = "Request submitted! We'll review and get back to you soon.",
   className = "",
   size = 'md'
 }: InlineWaitlistProps) {
@@ -101,7 +101,7 @@ export function InlineWaitlist({
                 ) : (
                   <>
                     <span className="hidden sm:inline">{buttonText}</span>
-                    <span className="sm:hidden">Join</span>
+                    <span className="sm:hidden">Request</span>
                     <ArrowRight className={`${classes.icon} group-hover:translate-x-1 transition-transform`} />
                   </>
                 )}

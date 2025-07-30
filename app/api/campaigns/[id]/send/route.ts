@@ -293,7 +293,7 @@ export async function POST(
         
         // Create the email parameters
         const fromName = campaign.from_name || artist.default_from_name || artist.name;
-        const fromEmail = campaign.from_email || (artist.ses_domain ? `noreply@${artist.ses_domain}` : `noreply@loopletter.com`);
+        const fromEmail = campaign.from_email || (artist.ses_domain ? `noreply@${artist.ses_domain}` : `noreply@loopletter.co`);
         
         const params = {
           Source: `${fromName} <${fromEmail}>`,

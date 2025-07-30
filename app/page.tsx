@@ -908,7 +908,7 @@ export default function Home() {
             </div>
 
             {/* Success Stories */}
-            <div className="grid lg:grid-cols-2 gap-8">
+            {/* <div className="grid lg:grid-cols-2 gap-8">
               <div className="bg-neutral-50 dark:bg-neutral-800 p-8 rounded-xl">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
@@ -958,7 +958,7 @@ export default function Home() {
                   </span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -1126,165 +1126,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* Testimonials */}
-        <section className="px-6 lg:px-12 py-32 bg-neutral-50 dark:bg-neutral-950">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-neutral-100 mb-8">
-                Artists who transformed their careers
-              </h2>
-              <p className="text-xl text-neutral-600 dark:text-neutral-400">
-                Real stories from musicians who took control of their audience
-                and never looked back.
-              </p>
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-8 mb-16">
-              {/* Testimonial 1 */}
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-8 shadow-sm border dark:border-neutral-700">
-                <div className="flex items-center gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <blockquote className="text-lg text-neutral-700 dark:text-neutral-300 mb-6 italic">
-                  "I went from 200 monthly listeners to selling out a 500-person
-                  venue in 6 months. My email list became my most valuable
-                  asset."
-                </blockquote>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                    <Music className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                      Luna Martinez
-                    </div>
-                    <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                      Indie Pop • 2,847 fans
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-700">
-                  <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
-                    Result: $12k revenue last month
-                  </div>
-                </div>
-              </div>
-
-              {/* Testimonial 2 */}
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-8 shadow-sm border dark:border-neutral-700">
-                <div className="flex items-center gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <blockquote className="text-lg text-neutral-700 dark:text-neutral-300 mb-6 italic">
-                  "My email list of 1,200 fans generates more revenue than my
-                  45k Instagram followers. It's not even close."
-                </blockquote>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <Headphones className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                      Marcus Chen
-                    </div>
-                    <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                      Electronic Producer • 1,200 fans
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-700">
-                  <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
-                    Result: +340% revenue growth
-                  </div>
-                </div>
-              </div>
-
-              {/* Testimonial 3 */}
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-8 shadow-sm border dark:border-neutral-700">
-                <div className="flex items-center gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <blockquote className="text-lg text-neutral-700 dark:text-neutral-300 mb-6 italic">
-                  "I went from playing coffee shops to headlining festivals. My
-                  email list made the difference."
-                </blockquote>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                    <Mic className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                      Sarah Williams
-                    </div>
-                    <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                      Singer-Songwriter • 3,100 fans
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-700">
-                  <div className="text-sm text-green-600 dark:text-green-400 font-semibold">
-                    Result: Sold out 12-city tour
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Proof Stats */}
-            <div className="bg-white dark:bg-neutral-800 rounded-2xl p-12 shadow-sm border dark:border-neutral-700">
-              <div className="grid md:grid-cols-4 gap-8 text-center">
-                <div>
-                  <div className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-                    5,000+
-                  </div>
-                  <div className="text-neutral-600 dark:text-neutral-400">
-                    Artists building careers
-                  </div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-                    67%
-                  </div>
-                  <div className="text-neutral-600 dark:text-neutral-400">
-                    Average open rate
-                  </div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-                    3x
-                  </div>
-                  <div className="text-neutral-600 dark:text-neutral-400">
-                    More ticket sales
-                  </div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-                    $47k
-                  </div>
-                  <div className="text-neutral-600 dark:text-neutral-400">
-                    Avg. additional revenue
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Pricing Section */}
         <section
           id="pricing"
