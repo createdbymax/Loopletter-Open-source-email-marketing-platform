@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
-import { getOrCreateArtistByClerkId, updateArtist } from '@/lib/db';
-import { isDomainAlreadyClaimed } from '@/lib/domain-security';
+import { getOrCreateArtistByClerkId } from '@/lib/db';
+import { canClaimDomain, claimDomainWithVerification } from '@/lib/domain-ownership-verification';
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,27 +30,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid domain format' }, { status: 400 });
     }
 
-    // Check if domain is already claimed by another user
-    const isAlreadyClaimed = await isDomainAlreadyClaimed(domain, artist.id);
-    if (isAlreadyClaimed) {
+    // Check if domain can be claimed
+    const claimCheck = await canClaimDomain(domain, artist.id);
+    if (!claimCheck.canClaim) {
       return NextResponse.json(
-        { error: 'This domain is already claimed by another user' },
+        { error: claimCheck.reason || 'Domain cannot be claimed' },
         { status: 409 }
       );
     }
 
-    // For now, return mock DNS records
-    // In a real implementation, this would integrate with AWS SES
+    // Claim domain and get real AWS SES verification token
+    const claimResult = await claimDomainWithVerification(artist.id, domain);
+    
+    if (!claimResult.success) {
+      return NextResponse.json(
+        { error: claimResult.error || 'Failed to initiate domain verification' },
+        { status: 400 }
+      );
+    }
+
+    // Return real DNS records with the actual verification token
     const dnsRecords = [
       {
         type: 'TXT',
         name: `_amazonses.${domain}`,
-        value: 'mock-verification-token-12345'
-      },
-      {
-        type: 'CNAME',
-        name: `mock-dkim._domainkey.${domain}`,
-        value: 'mock-dkim.dkim.amazonses.com'
+        value: claimResult.verificationToken
       },
       {
         type: 'TXT',
@@ -63,7 +67,8 @@ export async function POST(request: NextRequest) {
       success: true,
       domain,
       dnsRecords,
-      message: 'DNS records generated. Add these to your domain DNS settings.'
+      verificationToken: claimResult.verificationToken,
+      message: 'Domain claimed successfully. Add these DNS records to complete verification.'
     });
 
   } catch (error) {

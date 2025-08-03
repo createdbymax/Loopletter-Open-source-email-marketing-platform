@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from '@clerk/nextjs/server';
 import { getOrCreateArtistByClerkId, updateArtist } from '@/lib/db';
 import { canAccessFeature } from '@/lib/subscription';
-import { isDomainAlreadyClaimed } from '@/lib/domain-security';
+import { canClaimDomain, claimDomainWithVerification } from '@/lib/domain-ownership-verification';
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,27 +55,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if domain is already claimed by another user
-    const isAlreadyClaimed = await isDomainAlreadyClaimed(domain, artist.id);
-    if (isAlreadyClaimed) {
+    // Check if domain can be claimed
+    const claimCheck = await canClaimDomain(domain, artist.id);
+    if (!claimCheck.canClaim) {
       return NextResponse.json(
-        { error: 'This domain is already claimed by another user' },
+        { error: claimCheck.reason || 'Domain cannot be claimed' },
         { status: 409 }
       );
     }
 
-    // Update artist with custom domain (unverified initially)
-    await updateArtist(artist.id, {
-      ses_domain: domain,
-      ses_domain_verified: false, // Always start as unverified
-      ses_status: 'pending_verification',
-    });
+    // Claim domain with immediate AWS SES verification initiation
+    const claimResult = await claimDomainWithVerification(artist.id, domain);
+    
+    if (!claimResult.success) {
+      return NextResponse.json(
+        { error: claimResult.error || 'Failed to claim domain' },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Custom domain added successfully',
+      message: 'Domain claimed successfully. Please add the DNS records to complete verification.',
       domain,
       status: 'pending_verification',
+      verificationToken: claimResult.verificationToken,
     });
   } catch (error) {
     console.error('Error updating custom domain:', error);

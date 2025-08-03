@@ -9,6 +9,9 @@ export type Artist = {
   ses_domain_verified: boolean;
   ses_domain?: string | null;
   ses_status?: string | null;
+  ses_verification_token?: string | null;
+  domain_claim_timestamp?: string | null;
+  domain_verified_timestamp?: string | null;
   default_from_name?: string | null;
   default_from_email?: string | null;
   clerk_user_id: string;

@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { SESClient, GetIdentityVerificationAttributesCommand } from '@aws-sdk/client-ses';
-
-const ses = new SESClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
+import { getOrCreateArtistByClerkId } from '@/lib/db';
+import { verifyDomainOwnership } from '@/lib/domain-ownership-verification';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,26 +10,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get artist to ensure they own this domain claim
+    const artist = await getOrCreateArtistByClerkId(
+      userId,
+      '', // Email will be fetched from Clerk
+      '' // Name will be fetched from Clerk
+    );
+
     const { domain } = await request.json();
     
     if (!domain) {
       return NextResponse.json({ error: 'Domain is required' }, { status: 400 });
     }
 
-    // Check verification status
-    const command = new GetIdentityVerificationAttributesCommand({
-      Identities: [domain],
-    });
+    // Use enhanced verification that checks ownership
+    const verificationResult = await verifyDomainOwnership(artist.id, domain);
     
-    const result = await ses.send(command);
-    const attributes = result.VerificationAttributes?.[domain];
-    
-    const verified = attributes?.VerificationStatus === 'Success';
+    if (!verificationResult.success) {
+      return NextResponse.json(
+        { error: verificationResult.error || 'Verification failed' },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json({
       domain,
-      verified,
-      status: attributes?.VerificationStatus || 'NotStarted',
+      verified: verificationResult.verified,
+      status: verificationResult.verified ? 'Success' : 'Pending',
     });
   } catch (error: unknown) {
     console.error('Error checking domain verification:', error);
