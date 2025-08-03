@@ -34,9 +34,24 @@ export function EmailEditor({
       debugTemplateLoading("custom", parsedContent);
       return parsedContent;
     } catch (e) {
-      // If it's not valid JSON, return as is
-      console.warn("Failed to parse default content as JSON:", e);
-      return defaultEmailJSON;
+      // If it's not valid JSON, it might be HTML content
+      // Convert HTML to a basic Tiptap JSON structure
+      console.warn("Content is not JSON, treating as HTML and converting to basic structure");
+      return {
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            attrs: { textAlign: "left" },
+            content: [
+              {
+                type: "text",
+                text: "Loading your content..."
+              }
+            ]
+          }
+        ]
+      };
     }
   };
 

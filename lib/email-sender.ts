@@ -87,7 +87,7 @@ export async function sendWaitlistConfirmationEmail({
                   <tr>
                     <td align="left" valign="top" style="vertical-align: top; line-height: 1; padding: 16px 32px;">
                       <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 24px; line-height: 36px;">
-                        <img width="128" src="https://loopletter.s3.us-east-1.amazonaws.com/assets/loopletteremail.png" alt="Loopletter Logo" style="max-width: 128px; width: 128px;">
+                        <img width="128" src="https://loopletter.s3.us-east-1.amazonaws.com/assets/loopletterbimi.png" alt="Loopletter Logo" style="max-width: 128px; width: 128px;">
                       </p>
                     </td>
                   </tr>
@@ -345,18 +345,19 @@ export async function sendCampaignEmail(
     // Replace artist placeholders
     personalizedMessage = personalizedMessage.replace(/\{artist_name\}/g, artist.name);
 
-    // Create unsubscribe link
-    const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?fan=${fan.id}&campaign=${campaign.id}`;
+    // Create unsubscribe and preferences links
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const unsubscribeUrl = `${baseUrl}/unsubscribe?fan_id=${fan.id}&campaign_id=${campaign.id}`;
+    const preferencesUrl = `${baseUrl}/preferences?fan_id=${fan.id}`;
 
-    // Add unsubscribe link to message if not already present
-    if (!personalizedMessage.includes('unsubscribe')) {
-      personalizedMessage += `\n\n---\nTo unsubscribe from these emails, click here: ${unsubscribeUrl}`;
-    }
+    // Add tracking and unsubscribe functionality
+    personalizedMessage = await addEmailTracking(personalizedMessage, campaign, fan, artist, unsubscribeUrl, preferencesUrl);
 
     // Determine sender email - use campaign's from_name if available
     const fromName = campaign.from_name || artist.default_from_name || artist.name;
+    const emailPrefix = artist.default_from_email || "noreply";
     const senderEmail = artist.ses_domain_verified && artist.ses_domain
-      ? `${fromName} <noreply@${artist.ses_domain}>`
+      ? `${fromName} <${emailPrefix}@${artist.ses_domain}>`
       : `${fromName} via Loopletter <noreply@loopletter.co>`;
 
     const params = {
@@ -371,25 +372,11 @@ export async function sendCampaignEmail(
         },
         Body: {
           Html: {
-            Data: `
-              <html>
-                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    ${personalizedMessage.replace(/\n/g, '<br>')}
-                    ${campaign.artwork_url ? `<br><br><img src="${campaign.artwork_url}" alt="Campaign artwork" style="max-width: 100%; height: auto;">` : ''}
-                    <br><br>
-                    <div style="font-size: 12px; color: #666; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
-                      <p>You're receiving this email because you subscribed to updates from ${artist.name}.</p>
-                      <p><a href="${unsubscribeUrl}" style="color: #666;">Unsubscribe</a> | <a href="${process.env.NEXT_PUBLIC_APP_URL}/f/${artist.slug}" style="color: #666;">Update preferences</a></p>
-                    </div>
-                  </div>
-                </body>
-              </html>
-            `,
+            Data: personalizedMessage, // Use the complete HTML as-is
             Charset: 'UTF-8',
           },
           Text: {
-            Data: `${personalizedMessage}\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nTo unsubscribe: ${unsubscribeUrl}`,
+            Data: `${campaign.subject}\n\n${personalizedMessage.replace(/<[^>]*>/g, '')}\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`,
             Charset: 'UTF-8',
           },
         },
@@ -409,21 +396,34 @@ export async function sendCampaignEmail(
       }),
     };
 
+    // Generate a unique tracking ID for this email
+    const trackingId = `${campaign.id}-${fan.id}-${Date.now()}`;
+
+    // Replace messageId placeholder with tracking ID
+    if (params.Message.Body.Html?.Data) {
+      params.Message.Body.Html.Data = params.Message.Body.Html.Data.replace(/\{\{messageId\}\}/g, trackingId);
+    }
+
     const command = new SendEmailCommand(params);
     const result = await ses.send(command);
 
     // Record the email as sent for rate limiting
     sesRateLimiter.recordEmailSent();
 
-    // Log the sent email
-    await logEmailSent({
-      fan_id: fan.id,
-      campaign_id: campaign.id,
-      email_address: fan.email,
-      status: 'sent',
-      sent_at: new Date().toISOString(),
-      message_id: result.MessageId,
-    });
+    // Log the sent email (handle RLS policy errors gracefully)
+    try {
+      await logEmailSent({
+        fan_id: fan.id,
+        campaign_id: campaign.id,
+        email_address: fan.email,
+        status: 'sent',
+        sent_at: new Date().toISOString(),
+        message_id: result.MessageId || trackingId, // Use SES MessageId if available, otherwise tracking ID
+      });
+    } catch (logError) {
+      // Don't fail the email send if logging fails due to RLS policies
+      console.warn('Failed to log email sent (RLS policy issue):', logError);
+    }
 
     return {
       success: true,
@@ -432,7 +432,7 @@ export async function sendCampaignEmail(
   } catch (error) {
     console.error('Error sending campaign email:', error);
 
-    // Log the failed email attempt
+    // Log the failed email attempt (handle RLS policy errors gracefully)
     try {
       await logEmailSent({
         fan_id: fan.id,
@@ -443,7 +443,8 @@ export async function sendCampaignEmail(
         error_message: error instanceof Error ? error.message : 'Unknown error',
       });
     } catch (logError) {
-      console.error('Error logging failed email:', logError);
+      // Don't fail the email send if logging fails due to RLS policies
+      console.warn('Failed to log failed email (RLS policy issue):', logError);
     }
 
     return {
@@ -509,7 +510,7 @@ export async function sendEarlyAccessConfirmationEmail({
                   <tr>
                     <td align="left" valign="top" style="vertical-align: top; line-height: 1; padding: 16px 32px;">
                       <p style="padding: 0px; margin: 0px; font-family: Helvetica, Arial, sans-serif; color: #000000; font-size: 24px; line-height: 36px;">
-                        <img width="128" src="https://loopletter.s3.us-east-1.amazonaws.com/assets/loopletteremail.png" alt="Loopletter Logo" style="max-width: 128px; width: 128px;">
+                        <img width="128" src="https://loopletter.s3.us-east-1.amazonaws.com/assets/loopletterbimi.png" alt="Loopletter Logo" style="max-width: 128px; width: 128px;">
                       </p>
                     </td>
                   </tr>
@@ -650,4 +651,101 @@ You're receiving this because you requested early access to our platform.
 
   const command = new SendEmailCommand(params);
   await ses.send(command);
+}
+
+/**
+ * Adds email tracking (open pixel, click tracking) and unsubscribe links to email content
+ */
+async function addEmailTracking(
+  message: string,
+  campaign: Campaign,
+  fan: Fan,
+  artist: Artist,
+  unsubscribeUrl: string,
+  preferencesUrl: string
+): Promise<string> {
+  let processedMessage = message;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+
+  // Check if this is HTML content
+  const isHtml = message.includes('<html>') || message.includes('<!DOCTYPE');
+
+  if (isHtml) {
+    // Add click tracking to all links if enabled
+    if (campaign.settings?.track_clicks) {
+      processedMessage = addClickTracking(processedMessage, campaign.id, fan.id);
+    }
+
+    // Add open tracking pixel if enabled
+    if (campaign.settings?.track_opens) {
+      const trackingPixel = `<img src="${baseUrl}/api/track/open?mid={{messageId}}&cid=${campaign.id}&fid=${fan.id}" width="1" height="1" style="display:none;" alt="" />`;
+
+      // Insert tracking pixel before closing body tag
+      processedMessage = processedMessage.replace(
+        /<\/body>/i,
+        `${trackingPixel}\n</body>`
+      );
+    }
+
+    // Add unsubscribe footer if not already present
+    if (!processedMessage.includes('unsubscribe')) {
+      const loopletterFooterRegex = /<div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">/;
+
+      const unsubscribeFooter = `
+        <div style="font-size: 12px; color: #666; text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+          <p style="margin: 0 0 10px 0;">You're receiving this email because you subscribed to updates from ${artist.name}.</p>
+          <p style="margin: 0;">
+            <a href="${unsubscribeUrl}" style="color: #666; text-decoration: none;">Unsubscribe</a> | 
+            <a href="${preferencesUrl}" style="color: #666; text-decoration: none;">Update preferences</a>
+          </p>
+        </div>
+      `;
+
+      if (loopletterFooterRegex.test(processedMessage)) {
+        // Insert before Loopletter footer
+        processedMessage = processedMessage.replace(loopletterFooterRegex, unsubscribeFooter + '\n    <div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">');
+      } else {
+        // Add before closing container div
+        processedMessage = processedMessage.replace(
+          /<\/div>\s*<\/body>/,
+          unsubscribeFooter + '\n  </div>\n</body>'
+        );
+      }
+    }
+  } else {
+    // For plain text emails, just add unsubscribe footer
+    if (!processedMessage.includes('unsubscribe')) {
+      processedMessage += `\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`;
+    }
+  }
+
+  return processedMessage;
+}
+
+/**
+ * Adds click tracking to all links in HTML content
+ */
+function addClickTracking(html: string, campaignId: string, fanId: string): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+
+  // Regular expression to find all href attributes
+  const linkRegex = /href=["']([^"']+)["']/gi;
+
+  return html.replace(linkRegex, (match, url) => {
+    // Skip tracking for unsubscribe and preference links
+    if (url.includes('/unsubscribe') || url.includes('/f/') || url.includes('mailto:')) {
+      return match;
+    }
+
+    // Skip if already a tracking link
+    if (url.includes('/api/track/click')) {
+      return match;
+    }
+
+    // Create tracking URL
+    const encodedUrl = encodeURIComponent(url);
+    const trackingUrl = `${baseUrl}/api/track/click?mid={{messageId}}&cid=${campaignId}&fid=${fanId}&url=${encodedUrl}`;
+
+    return `href="${trackingUrl}"`;
+  });
 }

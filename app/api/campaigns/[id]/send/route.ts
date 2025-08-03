@@ -1,405 +1,180 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import {
-  getOrCreateArtistByClerkId,
-  getCampaignById,
-  updateCampaign,
-  getFansByArtist,
-  logEmailSent,
-  getTemplateById
-} from "@/lib/db";
-// Import the email templates
-import {
-  MusicReleaseTemplate,
-  ShowAnnouncementTemplate,
-  MerchandiseTemplate
-} from "@/app/dashboard/email-templates";
-// Note: TypeScript resolves to .tsx file for template components
-import { render } from "@react-email/render";
-
-// Import SES config and email queue
-import { SES_CONFIG, isEmailVerifiedInSandbox } from '@/lib/ses-config';
-import { emailQueue } from '@/lib/email-queue';
-
-import { EmailContent, TemplateData } from '@/lib/email-types';
-import { Campaign } from '@/lib/types';
-
-// Helper function to add tracking to HTML content
-function addTracking(
-  html: string,
-  messageId: string,
-  campaignId: string,
-  fanId: string,
-  baseUrl: string
-): string {
-  // Add tracking pixel for opens
-  const trackingPixel = `<img src="${baseUrl}/api/track/open?mid=${messageId}&cid=${campaignId}&fid=${fanId}" width="1" height="1" alt="" style="display:none;"/>`;
-
-  // Add tracking to links
-  let trackedHtml = html.replace(/<a\s+(?:[^>]*?\s+)?href=["']([^"']*)["']/gi, (match, url) => {
-    // Skip tracking for unsubscribe links and anchors
-    if (url.includes('unsubscribe') || url.startsWith('#')) {
-      return match;
-    }
-
-    const encodedUrl = encodeURIComponent(url);
-    return `<a href="${baseUrl}/api/track/click?mid=${messageId}&cid=${campaignId}&fid=${fanId}&url=${encodedUrl}"`;
-  });
-
-  // Add tracking pixel before closing body tag
-  trackedHtml = trackedHtml.replace('</body>', `${trackingPixel}</body>`);
-
-  return trackedHtml;
-}
-
-// Helper function to generate email content
-async function generateEmailContent(campaign: Campaign, templateData: TemplateData): Promise<EmailContent> {
-  // If using a template from the database
-  if (campaign.template_id) {
-    try {
-      const template = await getTemplateById(campaign.template_id);
-      // Here you would process the template with the template data
-      // For now, we'll just return a simple HTML email
-      return {
-        html: template.html_content,
-        text: "Please view this email in a HTML-capable email client."
-      };
-    } catch (error) {
-      console.error("Error fetching template:", error);
-    }
-  }
-
-  // If using a predefined template type
-  if (templateData && templateData.templateName) {
-    try {
-      console.log(`Generating email content for template: ${templateData.templateName}`);
-      console.log("Template data:", JSON.stringify(templateData, null, 2));
-
-      // Generate HTML based on template type
-      switch (templateData.templateName) {
-        case 'music-release': {
-          // Map the template data to the expected props
-          const props = {
-            artistName: templateData.artistName || 'Artist',
-            releaseTitle: templateData.releaseTitle || 'New Release',
-            releaseType: templateData.releaseType || 'Single',
-            releaseDate: templateData.releaseDate || 'Now Available',
-            coverArtUrl: templateData.artwork,
-            streamingLinks: {
-              spotify: templateData.spotifyUrl,
-              apple: templateData.appleMusicUrl,
-              youtube: templateData.youtubeUrl
-            },
-            artistMessage: templateData.description || 'Check out my latest release!',
-            unsubscribe_url: '/unsubscribe'
-          };
-
-          // Render the React component to HTML
-          const html = await render(MusicReleaseTemplate(props));
-
-          // Create a plain text version
-          const text = `New ${props.releaseType} from ${props.artistName}: "${props.releaseTitle}"\n\n${props.artistMessage}\n\nListen now:\n${props.streamingLinks.spotify ? `Spotify: ${props.streamingLinks.spotify}\n` : ''}${props.streamingLinks.apple ? `Apple Music: ${props.streamingLinks.apple}\n` : ''}${props.streamingLinks.youtube ? `YouTube: ${props.streamingLinks.youtube}` : ''}`;
-
-          return { html, text };
-        }
-
-        case 'show-announcement': {
-          // Map the template data to the expected props
-          const props = {
-            artistName: templateData.artistName || 'Artist',
-            venue: templateData.venue || 'Venue',
-            city: templateData.city || 'City',
-            date: templateData.date || 'Date',
-            time: templateData.time || 'Time',
-            ticketUrl: templateData.ticketUrl,
-            eventImageUrl: templateData.posterImage,
-            supportingActs: templateData.supportingActs ? [templateData.supportingActs] : [],
-            ticketPrice: templateData.ticketPrice,
-            unsubscribe_url: '/unsubscribe'
-          };
-
-          // Render the React component to HTML
-          const html = await render(ShowAnnouncementTemplate(props));
-
-          // Create a plain text version
-          const text = `${props.artistName} Live in ${props.city}\n\nVenue: ${props.venue}\nDate: ${props.date} at ${props.time}\n\n${props.supportingActs.length > 0 ? `Special Guests: ${props.supportingActs.join(', ')}\n\n` : ''}${props.ticketUrl ? `Get tickets: ${props.ticketUrl}` : ''}`;
-
-          return { html, text };
-        }
-
-        case 'merchandise': {
-          // Map the template data to the expected props
-          const props = {
-            artistName: templateData.artistName || 'Artist',
-            collectionName: templateData.collectionName || 'New Collection',
-            items: templateData.items?.map((item: {
-              name: string;
-              price: string;
-              image?: string;
-            }) => ({
-              name: item.name,
-              price: item.price,
-              imageUrl: item.image,
-              url: templateData.shopUrl
-            })) || [],
-            shopUrl: templateData.shopUrl,
-            discountCode: templateData.discountCode,
-            discountPercent: templateData.discountPercent ? parseInt(templateData.discountPercent) : undefined,
-            unsubscribe_url: '/unsubscribe'
-          };
-
-          // Render the React component to HTML
-          const html = await render(MerchandiseTemplate(props));
-
-          // Create a plain text version
-          const text = `New ${props.artistName} Merch Drop: ${props.collectionName}\n\n${props.discountCode ? `${props.discountPercent}% OFF with code: ${props.discountCode}\n\n` : ''}Shop now: ${props.shopUrl}`;
-
-          return { html, text };
-        }
-
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error("Error rendering email template:", error);
-      // Fall back to a simple template
-      return {
-        html: `
-          <html>
-            <body>
-              <h1>${campaign.subject}</h1>
-              <p>${campaign.message || 'Check out our latest update!'}</p>
-            </body>
-          </html>
-        `,
-        text: `${campaign.subject}\n\n${campaign.message || 'Check out our latest update!'}`
-      };
-    }
-  }
-
-  // Default to using the campaign message
-  return {
-    html: `<html><body>
-      <h1>${campaign.subject}</h1>
-      <div>${campaign.message ? campaign.message.replace(/\n/g, '<br>') : ''}</div>
-    </body></html>`,
-    text: `${campaign.subject}\n\n${campaign.message || ''}`
-  };
-}
+import { NextRequest, NextResponse } from 'next/server';
+import { currentUser } from '@clerk/nextjs/server';
+import { getOrCreateArtistByClerkId, getCampaignById, updateCampaign, getFansByArtist } from '@/lib/db';
+import { sendCampaignEmail } from '@/lib/email-sender';
+import { serverAnalytics } from '@/lib/server-analytics';
 
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const user = await currentUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Await params in Next.js 13+ App Router
-    const { id: campaignId } = await params;
-    if (!campaignId) {
-      return NextResponse.json({ error: "Campaign ID is required" }, { status: 400 });
-    }
+    const { id } = await params;
 
-    // Get the artist associated with the current user
-    const artist = await getOrCreateArtistByClerkId(userId, "", "");
+    // Get artist to verify ownership
+    const artist = await getOrCreateArtistByClerkId(
+      user.id,
+      user.primaryEmailAddress?.emailAddress || '',
+      user.fullName || 'Artist'
+    );
 
-    // Get the campaign
-    const campaign = await getCampaignById(campaignId);
-
-    // Verify the campaign belongs to this artist
-    if (campaign.artist_id !== artist.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Verify the artist has a verified domain
-    if (!artist.ses_domain || !artist.ses_domain_verified) {
-      return NextResponse.json({
-        error: "You must have a verified domain to send emails",
-        details: "Please set up and verify your domain in the Domain Settings"
-      }, { status: 400 });
-    }
-
-    // Get all fans for this artist
-    const fans = await getFansByArtist(artist.id);
-
-    // Filter to only subscribed fans
-    const subscribedFans = fans.filter(fan => fan.status === 'subscribed');
-
-    if (subscribedFans.length === 0) {
-      return NextResponse.json({
-        error: "No subscribers to send to",
-        details: "You need to add subscribers before sending a campaign"
-      }, { status: 400 });
-    }
-
-    // Generate email content
-    // Ensure template_data is properly typed - provide default if undefined/null
-    const templateData: TemplateData = {
-      templateId: campaign.template_id || 'default',
-      data: campaign.template_data || {}
-    };
-    const emailContent = await generateEmailContent(campaign, templateData);
-
-    // Log the subscribers we're about to send to
-    console.log(`Attempting to send to ${subscribedFans.length} subscribers:`,
-      subscribedFans.map(fan => ({ id: fan.id, email: fan.email })));
-
-    // Check if we're in SES sandbox mode
-    const isSandbox = SES_CONFIG.isSandbox;
-    if (isSandbox) {
-      console.log("WARNING: Running in SES sandbox mode. Only verified email addresses will receive emails.");
-    }
-
-    // Use the email queue for sending emails
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const results = [];
-    const queuedEmails = [];
+    // Fetch campaign
+    const campaign = await getCampaignById(id);
     
-    // Process each fan and queue their email
-    for (const fan of subscribedFans) {
+    if (!campaign) {
+      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
+    }
+
+    // Verify ownership
+    if (campaign.artist_id !== artist.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Check if campaign can be sent
+    if (campaign.status === 'sent') {
+      return NextResponse.json({ error: 'Campaign already sent' }, { status: 400 });
+    }
+
+    if (!campaign.subject) {
+      return NextResponse.json({ error: 'Campaign must have a subject' }, { status: 400 });
+    }
+
+    // Check if campaign has content (either message or template data)
+    if (!campaign.message && !campaign.template_data) {
+      return NextResponse.json({ error: 'Campaign must have message content or template data' }, { status: 400 });
+    }
+
+    // Check if artist has proper email configuration for production
+    if (process.env.NODE_ENV === 'production' && (!artist.ses_domain || !artist.ses_domain_verified)) {
+      return NextResponse.json({ 
+        error: 'You must have a verified domain to send campaigns',
+        details: 'Please set up and verify your domain in the Domain Settings before sending campaigns.'
+      }, { status: 400 });
+    }
+
+    // Get fans to send to
+    const fans = await getFansByArtist(artist.id);
+    const fanCount = fans.length;
+
+    if (fanCount === 0) {
+      return NextResponse.json({ error: 'No subscribers to send to' }, { status: 400 });
+    }
+
+    console.log(`Starting to send campaign "${campaign.title}" to ${fanCount} subscribers`);
+
+    // For template-based campaigns, the message should be generated from the editor
+    // The editor will have already converted template data to HTML and saved it
+    if (!campaign.message || campaign.message === 'Template-based email content') {
+      return NextResponse.json({ 
+        error: 'Campaign content is required',
+        details: 'Please ensure the campaign has been saved with content from the editor.'
+      }, { status: 400 });
+    }
+
+    // Update campaign status to sending
+    await updateCampaign(id, {
+      status: 'sending',
+      send_date: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    });
+
+    // Add a small delay to show the preparing step in the UI
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Send emails to all fans
+    let successCount = 0;
+    let failureCount = 0;
+    const errors: string[] = [];
+
+    for (const fan of fans) {
       try {
-        // In sandbox mode, check if the email is verified
-        if (isSandbox) {
-          const isVerified = await isEmailVerifiedInSandbox(fan.email);
-          if (!isVerified) {
-            console.log(`Skipping unverified email in sandbox mode: ${fan.email}`);
-            results.push({ 
-              success: false, 
-              fanId: fan.id, 
-              email: fan.email, 
-              error: 'Email not verified in sandbox mode' 
-            });
-            continue;
+        const result = await sendCampaignEmail(campaign, fan, artist);
+        if (result.success) {
+          successCount++;
+          console.log(`✅ Sent to ${fan.email} (${successCount}/${fanCount})`);
+        } else {
+          failureCount++;
+          const errorMsg = `Failed to send to ${fan.email}: ${result.error}`;
+          errors.push(errorMsg);
+          console.error(`❌ ${errorMsg}`);
+        }
+      } catch (error) {
+        failureCount++;
+        let errorMessage = 'Unknown error';
+        
+        if (error instanceof Error) {
+          errorMessage = error.message;
+          
+          // Handle specific AWS SES errors
+          if (errorMessage.includes('MessageRejected')) {
+            errorMessage = 'Email rejected by SES (possibly invalid email address)';
+          } else if (errorMessage.includes('Throttling')) {
+            errorMessage = 'Rate limit exceeded, please try again later';
+          } else if (errorMessage.includes('SendingQuotaExceeded')) {
+            errorMessage = 'Daily sending quota exceeded';
           }
         }
         
-        // Generate a tracking message ID
-        const trackingMessageId = `${campaignId}_${fan.id}_${Date.now()}`;
-        
-        // Add tracking to HTML content if tracking is enabled
-        let htmlContent = emailContent.html;
-        if (campaign.settings?.track_opens || campaign.settings?.track_clicks) {
-          htmlContent = addTracking(
-            emailContent.html,
-            trackingMessageId,
-            campaignId,
-            fan.id,
-            baseUrl
-          );
-        }
-        
-        // Create the email parameters
-        const fromName = campaign.from_name || artist.default_from_name || artist.name;
-        const fromEmail = campaign.from_email || (artist.ses_domain ? `noreply@${artist.ses_domain}` : `noreply@loopletter.co`);
-        
-        const params = {
-          Source: `${fromName} <${fromEmail}>`,
-          Destination: {
-            ToAddresses: [fan.email],
-          },
-          Message: {
-            Subject: {
-              Data: campaign.subject,
-              Charset: 'UTF-8',
-            },
-            Body: {
-              Html: {
-                Data: htmlContent,
-                Charset: 'UTF-8',
-              },
-              Text: {
-                Data: emailContent.text,
-                Charset: 'UTF-8',
-              },
-            },
-          },
-          // Add custom headers for tracking and identification
-          Headers: [
-            {
-              Name: 'X-Campaign-ID',
-              Value: campaignId
-            },
-            {
-              Name: 'X-Fan-ID',
-              Value: fan.id
-            },
-            ...(campaign.settings?.track_opens ? [{
-              Name: 'X-SES-CONFIGURATION-SET',
-              Value: SES_CONFIG.configurationSet,
-            }] : [])
-          ],
-        };
-        
-        // Queue the email for sending
-        const job = await emailQueue.add('campaign-email', {
-          campaignId,
-          fanId: fan.id,
-          artistId: campaign.artist_id
-        }, {
-          priority: 0
-        });
-        const queueId = job.id;
-        
-        queuedEmails.push({
-          queueId,
-          fanId: fan.id,
-          email: fan.email
-        });
-        
-        // For immediate feedback, we'll consider queued emails as successful
-        results.push({ 
-          success: true, 
-          fanId: fan.id, 
-          email: fan.email, 
-          queueId,
-          status: 'queued'
-        });
-        
-        // Log the email as sent in the database
-        await logEmailSent({
-          fan_id: fan.id,
-          campaign_id: campaignId,
-          email_address: fan.email,
-          status: 'sent',
-          sent_at: new Date().toISOString()
-        });
-      } catch (error: unknown) {
-        console.error(`Error queueing email to ${fan.email}:`, error);
-        
-        results.push({ 
-          success: false, 
-          fanId: fan.id, 
-          email: fan.email, 
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
+        const errorMsg = `Failed to send to ${fan.email}: ${errorMessage}`;
+        errors.push(errorMsg);
+        console.error(`❌ Error sending to ${fan.email}:`, error);
+      }
+
+      // Add a small delay between emails to respect rate limits
+      if (fans.indexOf(fan) < fans.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay
       }
     }
 
-    // Count successful sends
-    const successfulSends = results.filter(r => r.success).length;
-
     // Update campaign status to sent
-    await updateCampaign(campaignId, {
+    await updateCampaign(id, {
       status: 'sent',
-      stats: {
-        ...campaign.stats,
-        total_sent: subscribedFans.length,
-        delivered: successfulSends
-      }
+      updated_at: new Date().toISOString()
     });
 
-    return NextResponse.json({
-      success: true,
-      sentCount: successfulSends,
-      totalAttempted: subscribedFans.length
+    console.log(`Campaign sending completed: ${successCount} successful, ${failureCount} failed`);
+
+    // Track campaign sent event
+    await serverAnalytics.track(user.id, 'Campaign Sent', {
+      campaign_id: id,
+      campaign_title: campaign.title || campaign.subject,
+      recipient_count: successCount,
+      failed_count: failureCount,
+      total_count: fanCount,
+      success_rate: (successCount / fanCount) * 100,
+      campaign_type: campaign.template_data ? 'template' : 'custom',
     });
-  } catch (error: unknown) {
-    console.error("Failed to send campaign:", error);
+
+    // Return results with detailed information for the modal
+    const response = {
+      success: true,
+      sentCount: successCount,
+      failedCount: failureCount,
+      totalCount: fanCount,
+      message: `Campaign sent to ${successCount} of ${fanCount} subscribers`,
+      campaignId: id,
+      campaignTitle: campaign.title || campaign.subject
+    };
+
+    // Include errors if there were any failures
+    if (errors.length > 0) {
+      (response as any).errors = errors.slice(0, 10); // Limit to first 10 errors
+      if (errors.length > 10) {
+        (response as any).additionalErrors = errors.length - 10;
+      }
+    }
+
+    return NextResponse.json(response);
+
+  } catch (error) {
+    console.error('Error sending campaign:', error);
     return NextResponse.json(
-      { error: "Failed to send campaign", details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to send campaign' },
       { status: 500 }
     );
   }

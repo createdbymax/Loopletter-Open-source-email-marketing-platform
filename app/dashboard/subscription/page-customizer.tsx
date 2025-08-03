@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RefreshCw, Save, X } from "lucide-react";
 
@@ -45,49 +45,50 @@ interface SubscriptionPageSettings {
 
 interface PageCustomizerProps {
   artist: Artist;
-  onSave: (settings: SubscriptionPageSettings) => Promise<void>;
+  onSave: () => Promise<void>;
+  onClose?: () => void;
 }
 
 export default function PageCustomizer({
   artist,
   onSave,
+  onClose,
 }: PageCustomizerProps) {
-  // Default settings if none are saved
+  // Default settings if none are saved - Updated for dark theme
   const DEFAULT_SETTINGS: SubscriptionPageSettings = {
-    theme: "gradient",
+    theme: "dark",
     colors: {
-      primary: artist.settings?.brand_colors?.primary || "#3b82f6",
-      secondary: artist.settings?.brand_colors?.secondary || "#1d4ed8",
-      accent: "#8b5cf6",
+      primary: "#2563eb", // Blue-600
+      secondary: "#0891b2", // Cyan-600  
+      accent: "#06b6d4", // Cyan-500
     },
-    layout: "default",
+    layout: "modern",
     header: {
-      title: `Join ${artist.name}'s Inner Circle`,
+      title: `Join {artist_name}'s Inner Circle`,
       subtitle:
-        "Get exclusive updates, early access to new music, and personal messages",
+        "Get exclusive access to unreleased tracks, behind-the-scenes content, and priority event access.",
       show_social_links: true,
       show_artist_image: false,
       artist_image_url: null,
     },
     form: {
-      button_text: "Join the Family",
+      button_text: "Request Access",
       button_style: "gradient",
       show_name_field: true,
       placeholder_email: "your@email.com",
-      placeholder_name: "Your first name",
+      placeholder_name: "Enter your first name",
     },
     benefits: {
       show_benefits: true,
       custom_benefits: [
-        "Early access to new releases",
-        "Exclusive behind-the-scenes content",
-        "Personal updates and stories",
-        "Tour announcements and presale access",
+        "Early Access - First to experience new releases",
+        "Exclusive Content - Behind-the-scenes and unreleased material", 
+        "Priority Events - VIP access to shows and experiences",
       ],
     },
     success_message: {
-      title: "Welcome to the family! 🎉",
-      message: `You're now part of ${artist.name}'s inner circle. Get ready for exclusive content, early access to new music, and behind-the-scenes updates.`,
+      title: "Access Granted 🎉",
+      message: `You're now part of the exclusive network. Prepare for early access to unreleased content and behind-the-scenes experiences.`,
     },
   };
 
@@ -180,7 +181,7 @@ export default function PageCustomizer({
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await onSave(settings);
+      await onSave();
     } catch (error) {
       console.error("Error saving settings:", error);
     } finally {
@@ -189,16 +190,12 @@ export default function PageCustomizer({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Customize Subscription Page</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-4"
-        >
+    <div className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
           <TabsList>
             <TabsTrigger value="header">Header</TabsTrigger>
             <TabsTrigger value="form">Form</TabsTrigger>
@@ -209,16 +206,24 @@ export default function PageCustomizer({
 
           {/* Header Tab */}
           <TabsContent value="header" className="space-y-4">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-purple-900 mb-2">Modern Dark Theme Header</h4>
+              <p className="text-sm text-purple-800">
+                Your header features a large, elegant title with gradient text effects. 
+                The "Inner Circle" branding creates an exclusive feel that encourages signups.
+              </p>
+            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="header-title">Header Title</Label>
               <Input
                 id="header-title"
                 value={settings.header.title}
                 onChange={(e) => updateHeaderSetting("title", e.target.value)}
-                placeholder="Join the Inner Circle"
+                placeholder="Join {artist_name}'s Inner Circle"
               />
               <p className="text-xs text-gray-500">
-                Use {"{artist_name}"} to include your artist name
+                Use {"{artist_name}"} to include your artist name. The second line will be styled with a gradient effect.
               </p>
             </div>
 
@@ -274,6 +279,14 @@ export default function PageCustomizer({
 
           {/* Form Tab */}
           <TabsContent value="form" className="space-y-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-green-900 mb-2">Glass Morphism Form</h4>
+              <p className="text-sm text-green-800">
+                The form uses a modern glass morphism design with dark inputs and gradient buttons. 
+                The button will use your selected gradient colors for maximum visual impact.
+              </p>
+            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="button-text">Button Text</Label>
               <Input
@@ -282,8 +295,11 @@ export default function PageCustomizer({
                 onChange={(e) =>
                   updateFormSetting("button_text", e.target.value)
                 }
-                placeholder="Join Now"
+                placeholder="Request Access"
               />
+              <p className="text-xs text-gray-500">
+                This text appears on the gradient button with an arrow icon
+              </p>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -326,6 +342,14 @@ export default function PageCustomizer({
 
           {/* Benefits Tab */}
           <TabsContent value="benefits" className="space-y-4">
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-orange-900 mb-2">Feature Highlights</h4>
+              <p className="text-sm text-orange-800">
+                Benefits are displayed with elegant gradient dot icons in a clean grid layout. 
+                Use format "Title - Description" for best results (e.g., "Early Access - First to experience new releases").
+              </p>
+            </div>
+            
             <div className="flex items-center space-x-2">
               <Switch
                 id="show-benefits"
@@ -339,7 +363,7 @@ export default function PageCustomizer({
 
             {settings.benefits.show_benefits && (
               <div className="space-y-4">
-                <Label>Custom Benefits</Label>
+                <Label>Custom Benefits (Top 3 will be featured)</Label>
                 {settings.benefits.custom_benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input
@@ -371,6 +395,14 @@ export default function PageCustomizer({
 
           {/* Success Message Tab */}
           <TabsContent value="success" className="space-y-4">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-emerald-900 mb-2">Success Celebration</h4>
+              <p className="text-sm text-emerald-800">
+                After signup, users see a beautiful celebration screen with a gradient check icon 
+                and your custom message, followed by their top benefits with dot indicators.
+              </p>
+            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="success-title">Success Title</Label>
               <Input
@@ -379,7 +411,7 @@ export default function PageCustomizer({
                 onChange={(e) =>
                   updateSettings(["success_message", "title"], e.target.value)
                 }
-                placeholder="Welcome to the family! 🎉"
+                placeholder="Access Granted 🎉"
               />
             </div>
 
@@ -402,6 +434,15 @@ export default function PageCustomizer({
 
           {/* Colors Tab */}
           <TabsContent value="colors" className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h4 className="font-medium text-blue-900 mb-2">Dark Theme Color System</h4>
+              <p className="text-sm text-blue-800">
+                Your subscription page uses a modern dark theme with gradient effects. 
+                The primary and secondary colors create the gradient for buttons and accents, 
+                while maintaining excellent readability on the dark background.
+              </p>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="primary-color">Primary Color</Label>
@@ -470,36 +511,83 @@ export default function PageCustomizer({
               </div>
             </div>
 
-            <div
-              className="mt-4 p-4 rounded-lg"
-              style={{
-                background: `linear-gradient(135deg, ${settings.colors.primary}, ${settings.colors.secondary})`,
-                color: "white",
-              }}
-            >
-              <h3 className="font-semibold mb-2">Preview</h3>
-              <p>This is how your gradient will look</p>
-              <div className="mt-4 flex justify-center">
-                <Button
-                  className="bg-white text-gray-900 hover:bg-gray-100"
-                  style={{
-                    boxShadow: `0 0 0 2px ${settings.colors.accent}`,
-                  }}
-                >
-                  Button Preview
-                </Button>
+            {/* Dark Theme Preview */}
+            <div className="mt-6 p-6 bg-gray-950 rounded-xl border border-gray-800 relative overflow-hidden">
+              {/* Background grid effect */}
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+              
+              <div className="relative z-10">
+                <h3 className="font-semibold mb-4 text-white">Dark Theme Preview</h3>
+                
+                {/* Mini header preview */}
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full mb-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span className="text-xs text-blue-300 font-medium">Exclusive Access</span>
+                  </div>
+                  <h4 className="text-lg font-light text-white mb-2">
+                    Join {artist.name}'s
+                    <span 
+                      className="block bg-gradient-to-r bg-clip-text text-transparent"
+                      style={{
+                        backgroundImage: `linear-gradient(to right, ${settings.colors.primary}, ${settings.colors.secondary})`
+                      }}
+                    >
+                      Inner Circle
+                    </span>
+                  </h4>
+                </div>
+
+                {/* Button preview */}
+                <div className="flex justify-center">
+                  <button
+                    className="px-6 py-3 text-white font-medium rounded-xl transition-all duration-300 shadow-lg"
+                    style={{
+                      background: `linear-gradient(to right, ${settings.colors.primary}, ${settings.colors.secondary})`,
+                      boxShadow: `0 10px 25px -5px ${settings.colors.primary}40, 0 4px 6px -2px ${settings.colors.primary}20`
+                    }}
+                  >
+                    {settings.form.button_text}
+                  </button>
+                </div>
+
+                {/* Mini benefits preview */}
+                <div className="mt-4 space-y-2">
+                  {settings.benefits.custom_benefits.slice(0, 2).map((benefit, index) => (
+                    <div key={index} className="flex items-center gap-3 text-sm">
+                      <div 
+                        className="w-2 h-2 rounded-full"
+                        style={{
+                          background: `linear-gradient(to right, ${settings.colors.primary}, ${settings.colors.secondary})`
+                        }}
+                      ></div>
+                      <span className="text-gray-300">{benefit.split(' - ')[0]}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end mt-6 gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setSettings(DEFAULT_SETTINGS)}
-          >
-            Reset to Default
-          </Button>
+      <div className="flex justify-between mt-6">
+        <Button
+          variant="outline"
+          onClick={() => setSettings(DEFAULT_SETTINGS)}
+        >
+          Reset to Default
+        </Button>
+        
+        <div className="flex gap-2">
+          {onClose && (
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={isSaving}>
             {isSaving ? (
               <>
@@ -514,7 +602,7 @@ export default function PageCustomizer({
             )}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -6,23 +6,30 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { preferences, tracking_preferences } = await req.json();
+    const { status } = await req.json();
     const { id: fanId } = await params;
 
-    // Update fan preferences
+    // Validate status
+    if (!['subscribed', 'unsubscribed'].includes(status)) {
+      return NextResponse.json(
+        { error: 'Invalid status. Must be "subscribed" or "unsubscribed"' },
+        { status: 400 }
+      );
+    }
+
+    // Update fan status
     const { error } = await supabase
       .from('fans')
       .update({
-        preferences,
-        tracking_preferences,
+        status,
         updated_at: new Date().toISOString(),
       })
       .eq('id', fanId);
 
     if (error) {
-      console.error('Error updating fan preferences:', error);
+      console.error('Error updating fan status:', error);
       return NextResponse.json(
-        { error: 'Failed to update preferences' },
+        { error: 'Failed to update subscription status' },
         { status: 500 }
       );
     }

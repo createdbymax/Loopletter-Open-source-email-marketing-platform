@@ -1,97 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth, currentUser } from '@clerk/nextjs/server';
-import { supabase } from '@/lib/supabase';
+import { currentUser } from '@clerk/nextjs/server';
+import { getOrCreateArtistByClerkId, updateArtist } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request);
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
-
     const user = await currentUser();
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { slug } = await request.json();
+    const body = await request.json();
+    const { slug } = body;
 
-    if (!slug) {
+    if (!slug || typeof slug !== 'string') {
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
     }
 
-    // Clean the slug
-    const cleanSlug = slug
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-
-    if (!cleanSlug) {
-      return NextResponse.json({ error: 'Invalid slug format' }, { status: 400 });
-    }
-
-    // Check for reserved slugs
-    const reservedSlugs = [
-      'api', 'dashboard', 'admin', 'www', 'mail', 'ftp', 'localhost',
-      'sign-in', 'signin', 'login', 'signup', 'register', 'auth',
-      'help', 'support', 'contact', 'about', 'terms', 'privacy',
-      'blog', 'news', 'app', 'mobile', 'web', 'site', 'home',
-      'user', 'users', 'account', 'profile', 'settings', 'config'
-    ];
-
-    if (reservedSlugs.includes(cleanSlug)) {
+    // Validate slug format
+    const slugRegex = /^[a-z0-9-]+$/;
+    if (!slugRegex.test(slug)) {
       return NextResponse.json({ 
-        error: 'This slug is reserved and cannot be used' 
+        error: 'Invalid slug format. Use only lowercase letters, numbers, and hyphens.' 
       }, { status: 400 });
     }
 
-    // Check if slug is already taken by another artist
-    const { data: existingArtist, error: checkError } = await supabase
-      .from('artists')
-      .select('id, clerk_user_id')
-      .eq('slug', cleanSlug)
-      .single();
-
-    if (checkError && checkError.code !== 'PGRST116') {
-      console.error('Error checking existing slug:', checkError);
-      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    // Check length
+    if (slug.length < 2 || slug.length > 50) {
+      return NextResponse.json({ 
+        error: 'Slug must be between 2 and 50 characters long.' 
+      }, { status: 400 });
     }
 
-    // If slug exists and belongs to a different user, it's not available
-    if (existingArtist && existingArtist.clerk_user_id !== userId) {
+    // Get current artist
+    const artist = await getOrCreateArtistByClerkId(
+      user.id,
+      user.primaryEmailAddress?.emailAddress || '',
+      user.fullName || 'Artist'
+    );
+
+    // Check if slug is already the same
+    if (artist.slug === slug) {
       return NextResponse.json({ 
-        error: 'This slug is already taken by another artist' 
+        success: true, 
+        message: 'Slug is already set to this value.',
+        artist: { ...artist, slug }
+      });
+    }
+
+    // Double-check availability before updating
+    const checkResponse = await fetch(`${request.nextUrl.origin}/api/check-slug?slug=${encodeURIComponent(slug)}`, {
+      headers: {
+        'Cookie': request.headers.get('Cookie') || ''
+      }
+    });
+    
+    const checkData = await checkResponse.json();
+    if (!checkData.available) {
+      return NextResponse.json({ 
+        error: checkData.error || 'Slug is not available' 
       }, { status: 400 });
     }
 
     // Update the artist's slug
-    const { data: updatedArtist, error: updateError } = await supabase
-      .from('artists')
-      .update({ 
-        slug: cleanSlug,
-        updated_at: new Date().toISOString()
-      })
-      .eq('clerk_user_id', userId)
-      .select()
-      .single();
+    const updatedArtist = await updateArtist(artist.id, { slug });
 
-    if (updateError) {
-      console.error('Error updating slug:', updateError);
-      return NextResponse.json({ error: 'Failed to update slug' }, { status: 500 });
-    }
-
-    return NextResponse.json({
-      success: true,
-      artist: updatedArtist,
-      message: `Slug updated to: ${cleanSlug}`,
-      newUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/f/${cleanSlug}/subscribe`
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Slug updated successfully!',
+      artist: updatedArtist
     });
 
   } catch (error) {
-    console.error('Update slug error:', error);
+    console.error('Error updating slug:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

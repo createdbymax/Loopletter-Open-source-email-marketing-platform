@@ -70,7 +70,7 @@ export default function EmailDesignerPage() {
         <EmailEditorSandbox
           template={{
             title: "My Email Campaign",
-            preview_text: "Check out what's new!",
+            preview_text: "",
             content: JSON.stringify({
               type: "doc",
               content: [
@@ -86,12 +86,12 @@ export default function EmailDesignerPage() {
               ]
             })
           }}
-          onSave={async (data) => {
-            console.log('Saved:', data);
+          onSave={async () => {
+            console.log('Saved');
             toast.success("Email saved as draft");
           }}
-          onUpdate={async (data) => {
-            console.log('Sent:', data);
+          onUpdate={async () => {
+            console.log('Sent');
             toast.success("Email sent successfully!");
           }}
           onSendTest={handleSendTest}

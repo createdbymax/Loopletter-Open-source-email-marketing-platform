@@ -75,17 +75,40 @@ export async function POST(request: NextRequest) {
     // Get the artist associated with the current user
     const artist = await getOrCreateArtistByClerkId(userId, "", "");
 
-    // Verify the artist has a verified domain
-    if (!artist.ses_domain || !artist.ses_domain_verified) {
+    // Verify the artist has a verified domain (skip in development)
+    if (process.env.NODE_ENV === 'production' && (!artist.ses_domain || !artist.ses_domain_verified)) {
       return NextResponse.json({
         error: "You must have a verified domain to send test emails",
         details: "Please set up and verify your domain in the Domain Settings"
       }, { status: 400 });
     }
 
-    // Determine sender email
-    const fromName = from || artist.default_from_name || artist.name;
-    const senderEmail = `${fromName} <noreply@${artist.ses_domain}>`;
+    // Parse the from field - it might already contain email format
+    const fromName = artist.default_from_name || artist.name;
+    let senderEmail = "";
+    
+    if (from && from.includes('<') && from.includes('>')) {
+      // From field already contains email format like "Name <email@domain.com>"
+      senderEmail = from;
+    } else {
+      // Construct email from components
+      const displayName = from || fromName;
+      const emailPrefix = artist.default_from_email || "noreply";
+      
+      senderEmail = artist.ses_domain_verified && artist.ses_domain
+        ? `${displayName} <${emailPrefix}@${artist.ses_domain}>`
+        : `${displayName} via Loopletter <noreply@loopletter.co>`;
+    }
+    
+    console.log("🔍 Domain check:", {
+      ses_domain: artist.ses_domain,
+      ses_domain_verified: artist.ses_domain_verified,
+      default_from_email: artist.default_from_email,
+      from: from,
+      hasVerifiedDomain: artist.ses_domain_verified && artist.ses_domain
+    });
+      
+    console.log("🔍 Using sender email:", senderEmail);
 
     // Parse content - it might be JSON from the editor
     let htmlContent = content;

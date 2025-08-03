@@ -3,13 +3,13 @@
 import { useState } from "react";
 import type { Editor, FocusPosition } from "@tiptap/core";
 import {
-  FileCogIcon,
   Loader2Icon,
   SaveIcon,
   XIcon,
   AsteriskIcon,
   SendIcon,
   UsersIcon,
+  InfoIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/classname";
@@ -21,9 +21,16 @@ import { CopyEmailHtml } from "./copy-email-html";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import defaultEmailJSON from "@/lib/default-editor-json.json";
 import { SubscriptionPlan } from "@/lib/subscription";
 import { FooterPreview } from "./footer-preview";
+import { CustomImageButton } from "./custom-image-button";
 
 interface EmailEditorSandboxProps {
   template?: {
@@ -55,6 +62,7 @@ interface EmailEditorSandboxProps {
   fanCount?: number;
   setEditor?: (editor: Editor | null) => void;
   subscriptionPlan?: SubscriptionPlan;
+  artist?: any; // Add artist data
 }
 
 export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
@@ -68,17 +76,30 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
     fanCount = 0,
     setEditor: setParentEditor,
     subscriptionPlan = "starter",
+    artist,
   } = props;
 
-  console.log("🔍 EmailEditorSandbox received template:", template);
+  // Remove excessive logging
 
   const [subject, setSubject] = useState(
     template?.title || "My Email Campaign"
   );
-  const [previewText, setPreviewText] = useState(
-    template?.preview_text || "Check out what's new!"
-  );
-  const [from, setFrom] = useState("");
+  const [previewText, setPreviewText] = useState(template?.preview_text || "");
+  const [fromName, setFromName] = useState(() => {
+    return artist?.default_from_name || artist?.name || "";
+  });
+
+  const [fromEmail] = useState(() => {
+    if (!artist) return "noreply@loopletter.co";
+
+    const emailPrefix = artist.default_from_email || "noreply";
+
+    if (artist.ses_domain_verified && artist.ses_domain) {
+      return `${emailPrefix}@${artist.ses_domain}`;
+    } else {
+      return "noreply@loopletter.co";
+    }
+  });
   const [to, setTo] = useState("");
   const [showReplyTo, setShowReplyTo] = useState(false);
   const [replyTo, setReplyTo] = useState("");
@@ -99,14 +120,13 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
   const handleSaveTemplate = async () => {
     if (!onSave) return;
 
-    const json = editor?.getJSON();
     const trimmedSubject = subject.trim();
     const trimmedPreviewText = previewText.trim();
 
     console.log("🔍 Save validation:", {
       trimmedSubject,
-      hasJson: !!json,
-      hasContent: !!json?.content,
+      hasEditor: !!editor,
+      editorContent: editor ? editor.getHTML().substring(0, 100) : "No editor",
     });
 
     if (!trimmedSubject) {
@@ -119,8 +139,18 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
       return;
     }
 
-    // For now, let's be very lenient with content validation
-    if (!json || !json.content) {
+    if (!editor) {
+      toast.error(
+        "Editor not initialized. Please wait for the editor to load."
+      );
+      return;
+    }
+
+    // Check if editor has meaningful content
+    const editorHtml = editor.getHTML();
+    const textContent = editor.getText().trim();
+
+    if (!textContent || textContent.length === 0) {
       toast.error("Please add some content to your email");
       return;
     }
@@ -131,7 +161,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
       await onSave({
         title: trimmedSubject,
         previewText: trimmedPreviewText,
-        content: JSON.stringify(json),
+        content: editorHtml, // Pass HTML content directly
       });
 
       toast.success("Campaign saved as draft");
@@ -147,12 +177,18 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
   const handleUpdateTemplate = async () => {
     if (!onUpdate) return;
 
-    const json = editor?.getJSON();
     const trimmedSubject = subject.trim();
     const trimmedPreviewText = previewText.trim();
 
-    // Check if editor has meaningful content - more lenient validation
-    const hasContent = json && json.content && json.content.length > 0;
+    if (!editor) {
+      toast.error(
+        "Editor not initialized. Please wait for the editor to load."
+      );
+      return;
+    }
+
+    const editorHtml = editor.getHTML();
+    const editorText = editor.getText();
 
     if (!trimmedSubject) {
       toast.error("Subject is required");
@@ -164,7 +200,10 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
       return;
     }
 
-    if (!hasContent) {
+    // Check if editor has meaningful content
+    const textContent = editorText.trim();
+
+    if (!textContent || textContent.length === 0) {
       toast.error("Please add some content to your email");
       return;
     }
@@ -175,10 +214,10 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
       await onUpdate({
         title: trimmedSubject,
         previewText: trimmedPreviewText,
-        content: JSON.stringify(json),
+        content: editorHtml, // Pass HTML content directly
       });
 
-      toast.success("Campaign sent successfully!");
+      // Don't show success toast here - let the campaign editor handle the final result
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to send campaign"
@@ -191,58 +230,18 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
   const handleSendTestEmail = async () => {
     if (!onSendTest) return;
 
-    const json = editor?.getJSON();
     const trimmedSubject = subject.trim();
 
     console.log("🔍 Test Email Debug:", {
       subject,
       trimmedSubject,
       hasEditor: !!editor,
-      json: json ? "exists" : "null",
-      jsonContent: json?.content,
+      editorContent: editor ? editor.getHTML().substring(0, 100) : "No editor",
       to,
-    });
-
-    if (!json) {
-      toast.error("Editor content is empty");
-      return;
-    }
-
-    // Check if editor has meaningful content - more lenient validation
-    const hasContent = json.content && json.content.length > 0;
-
-    // Additional check for text content
-    const hasTextContent =
-      hasContent &&
-      json.content?.some((node: any) => {
-        if (node.type === "paragraph" && node.content) {
-          return node.content.some(
-            (child: any) => child.text && child.text.trim().length > 0
-          );
-        }
-        if (node.type === "heading" && node.content) {
-          return node.content.some(
-            (child: any) => child.text && child.text.trim().length > 0
-          );
-        }
-        return false;
-      });
-
-    console.log("🔍 Content validation:", {
-      hasContent,
-      hasTextContent,
-      contentLength: json.content?.length,
-      firstNode: json.content?.[0],
     });
 
     if (!trimmedSubject) {
       toast.error("Subject is required");
-      return;
-    }
-
-    // For now, let's be very lenient with content validation
-    if (!json || !json.content) {
-      toast.error("Please add some content to your email");
       return;
     }
 
@@ -256,15 +255,31 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
       return;
     }
 
+    if (!editor) {
+      toast.error(
+        "Editor not initialized. Please wait for the editor to load."
+      );
+      return;
+    }
+
+    // Check if editor has meaningful content
+    const editorHtml = editor.getHTML();
+    const textContent = editor.getText().trim();
+
+    if (!textContent || textContent.length === 0) {
+      toast.error("Please add some content to your email");
+      return;
+    }
+
     setIsSendingTest(true);
 
     const testData = {
       subject,
       previewText,
-      from,
+      from: `${fromName} <${fromEmail}>`,
       to,
       replyTo,
-      content: JSON.stringify(json),
+      content: editorHtml, // Pass HTML content directly
     };
 
     console.log("🔍 Sending test email with data:", testData);
@@ -284,8 +299,8 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
 
   return (
     <>
-      <div className="max-w-[calc(600px+80px)] mx-auto flex items-center justify-between gap-1.5 px-10 pt-5">
-        <div className="flex items-center gap-1.5">
+      <div className="max-w-[calc(600px+80px)] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-1.5 px-4 sm:px-10 pt-5">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
           <PreviewEmailDialog
             subject={subject}
             previewText={previewText}
@@ -314,7 +329,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
           {showSaveButton && onSave && (
             <button
               className={cn(
@@ -351,7 +366,7 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
         </div>
       </div>
 
-      <div className="max-w-[calc(600px+80px)] mx-auto px-10">
+      <div className="max-w-[calc(600px+80px)] mx-auto px-4 sm:px-10">
         {subscriptionPlan === "starter" && (
           <div className="mb-4">
             <FooterPreview subscriptionPlan={subscriptionPlan} />
@@ -371,18 +386,42 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
           />
         </Label>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-1.5">
           <Label className="flex grow items-center font-normal">
             <span className="w-20 shrink-0 font-normal text-gray-600 dark:text-neutral-400">
               From
             </span>
-            <Input
-              className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent dark:text-neutral-100"
-              placeholder="Your Name <your@email.com>"
-              type="text"
-              value={from}
-              onChange={(event) => setFrom(event.target.value)}
-            />
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Input
+                className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent dark:text-neutral-100 flex-1"
+                placeholder="Your Name"
+                type="text"
+                value={fromName}
+                onChange={(event) => setFromName(event.target.value)}
+              />
+              <span className="text-gray-500 dark:text-neutral-400">&lt;</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1 flex-1">
+                      <Input
+                        className="h-auto rounded-none border-none py-2.5 font-normal focus-visible:ring-0 focus-visible:ring-offset-0 bg-gray-50 dark:bg-neutral-700 dark:text-neutral-300 cursor-not-allowed flex-1"
+                        value={fromEmail}
+                        readOnly
+                        disabled
+                      />
+                      <InfoIcon className="w-4 h-4 text-gray-400 dark:text-neutral-500" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      To change your sending email, go to Settings → Profile
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <span className="text-gray-500 dark:text-neutral-400">&gt;</span>
+            </div>
           </Label>
 
           {!showReplyTo && (
@@ -457,6 +496,13 @@ export function EmailEditorSandbox(props: EmailEditorSandboxProps) {
           <span className="absolute right-0 top-0 flex h-full items-center">
             <PreviewTextInfo />
           </span>
+        </div>
+
+        {/* Image Upload Button */}
+        <div className="mb-6">
+          <div className="w-full sm:w-auto">
+            <CustomImageButton editor={editor} />
+          </div>
         </div>
       </div>
 

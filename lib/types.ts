@@ -14,6 +14,10 @@ export type Artist = {
   clerk_user_id: string;
   created_at: string;
   updated_at: string;
+  sending_suspended?: boolean;
+  suspension_reason?: string;
+  compliance_flags?: string[];
+  last_reputation_check?: string;
   settings?: ArtistSettings;
   subscription?: {
     plan: 'starter' | 'independent' | 'label';
@@ -83,7 +87,7 @@ export type Fan = {
   name?: string | null;
   tags?: string[] | null;
   custom_fields?: Record<string, string | number | boolean>;
-  status: 'subscribed' | 'unsubscribed' | 'bounced' | 'pending';
+  status: 'subscribed' | 'unsubscribed' | 'bounced' | 'pending' | 'rejected';
   source: string; // 'manual', 'import', 'signup', 'api'
   location?: {
     country?: string;
@@ -98,6 +102,14 @@ export type Fan = {
     allow_open_tracking: boolean;
     allow_click_tracking: boolean;
   };
+  // Quarantine/Review fields
+  review_status?: 'pending' | 'approved' | 'rejected';
+  quarantine_reason?: string;
+  quarantined_at?: string;
+  reviewed_at?: string;
+  reviewed_by?: string;
+  review_notes?: string;
+  risk_score?: number;
   created_at: string;
   updated_at: string;
   confirmed_at?: string;
@@ -109,6 +121,7 @@ export type Campaign = {
   title: string;
   subject: string;
   message: string;
+  preview_text?: string | null;
   from_name?: string | null;
   from_email?: string | null;
   artwork_url?: string | null;
@@ -347,4 +360,29 @@ export type SegmentFormData = {
   name: string;
   description?: string;
   conditions: SegmentCondition[];
-}; 
+};
+
+// Review and quarantine types
+export type FanReview = {
+  id: string;
+  fan_id: string;
+  artist_id: string;
+  review_type: 'spam_detection' | 'manual_flag' | 'bulk_import';
+  risk_score: number;
+  flags: string[];
+  recommendations: string[];
+  original_data: Record<string, any>;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  reviewed_at?: string;
+  review_notes?: string;
+  auto_flagged_at: string;
+  created_at: string;
+};
+
+export type ReviewStats = {
+  pending: number;
+  approved: number;
+  rejected: number;
+  total: number;
+};

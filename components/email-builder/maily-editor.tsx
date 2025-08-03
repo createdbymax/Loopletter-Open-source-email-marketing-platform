@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmailEditorSandbox } from './email-editor-sandbox';
@@ -14,7 +14,7 @@ import { generateEmailHtml } from '@/lib/email-generator';
 interface MailyEditorProps {
   onBack: () => void;
   onSave: (htmlContent: string) => void;
-  onSend: (htmlContent: string) => void;
+  onSend: (data: { subject: string; previewText: string; content: string }) => void;
   initialHtml?: string;
   templateData?: unknown;
   templateId?: string;
@@ -23,6 +23,7 @@ interface MailyEditorProps {
   subject?: string;
   previewText?: string;
   fromName?: string;
+  artist?: any; // Add artist data
 }
 
 export function MailyEditor({ 
@@ -36,14 +37,24 @@ export function MailyEditor({
   subscriptionPlan = 'starter',
   subject = '',
   previewText = '',
-  fromName = ''
+  artist
 }: MailyEditorProps) {
-  const [isSaving, setIsSaving] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  const [, setIsSaving] = useState(false);
+  const [, setIsSending] = useState(false);
   const [editor, setEditorInstance] = useState<TiptapEditor | null>(null);
+  
+  // Debug editor instance changes
+  const handleSetEditor = (newEditor: TiptapEditor | null) => {
+      // Editor instance changed
+    setEditorInstance(newEditor);
+  };
 
   const handleSave = async (data: { title: string; previewText: string; content: string }) => {
+    console.log('MailyEditor - handleSave called with data:', data);
+    console.log('MailyEditor - Editor instance exists:', !!editor);
+    
     if (!editor) {
+      console.error('MailyEditor - Editor not initialized');
       toast.error('Editor not initialized');
       return;
     }
@@ -52,16 +63,12 @@ export function MailyEditor({
     try {
       // Get HTML directly from the editor
       const editorHtml = editor.getHTML();
+      console.log('MailyEditor - Editor HTML length:', editorHtml.length);
+      console.log('MailyEditor - Editor HTML preview:', editorHtml.substring(0, 200) + '...');
       
-      // Generate the complete HTML email with footer if on starter plan
-      const html = generateEmailHtml({
-        title: data.title,
-        previewText: data.previewText,
-        content: editorHtml,
-        subscriptionPlan
-      });
-      
-      onSave(html);
+      // Use the editor HTML content directly - don't wrap it in generateEmailHtml
+      // The campaign editor will handle the final HTML generation
+      onSave(editorHtml);
     } catch (error) {
       console.error('Error saving email:', error);
       toast.error('Failed to save email');
@@ -70,7 +77,7 @@ export function MailyEditor({
     }
   };
 
-  const handleSend = async (data: { title: string; previewText: string; content: string }) => {
+  const handleSend = async (data?: { title: string; previewText: string; content: string }) => {
     if (!editor) {
       toast.error('Editor not initialized');
       return;
@@ -81,15 +88,14 @@ export function MailyEditor({
       // Get HTML directly from the editor
       const editorHtml = editor.getHTML();
       
-      // Generate the complete HTML email with footer if on starter plan
-      const html = generateEmailHtml({
-        title: data.title,
-        previewText: data.previewText,
-        content: editorHtml,
-        subscriptionPlan
-      });
+      console.log('Sending campaign with content length:', editorHtml.length);
       
-      onSend(html);
+      // Pass the subject, preview text, and content to the campaign editor
+      await onSend({
+        subject: data?.title || subject,
+        previewText: data?.previewText || previewText,
+        content: editorHtml
+      });
     } catch (error) {
       console.error('Error sending email:', error);
       toast.error('Failed to send email');
@@ -119,6 +125,14 @@ export function MailyEditor({
     }
     
     try {
+      // Generate the complete HTML email for the test
+      const completeHtml = generateEmailHtml({
+        title: data.subject,
+        previewText: data.previewText,
+        content: data.content,
+        subscriptionPlan
+      });
+      
       const response = await fetch('/api/campaigns/test-email', {
         method: 'POST',
         headers: {
@@ -127,7 +141,7 @@ export function MailyEditor({
         body: JSON.stringify({
           subject: data.subject,
           previewText: data.previewText,
-          content: data.content,
+          content: completeHtml,
           to: data.to,
           from: data.from,
         }),
@@ -149,8 +163,8 @@ export function MailyEditor({
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-neutral-900">
       {/* Header */}
-      <div className="bg-white dark:bg-neutral-800 border-b dark:border-neutral-700 px-6 py-4">
-        <div className="flex items-center max-w-7xl mx-auto">
+      <div className="bg-white dark:bg-neutral-800 border-b dark:border-neutral-700 px-4 sm:px-6 py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0 max-w-7xl mx-auto">
           <Button variant="ghost" size="sm" onClick={onBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -167,27 +181,47 @@ export function MailyEditor({
       {/* Editor */}
       <div className="flex-1 overflow-y-auto">
         <EmailEditorSandbox
-          template={(() => {
-            const template = { 
+          template={useMemo(() => {
+            let content = initialHtml;
+            
+            // If no initial HTML, try to use template data
+            if (!content && templateData && typeof templateData === 'object' && 'mailyJson' in templateData) {
+              try {
+                // Validate that mailyJson has the expected structure
+                const mailyJson = templateData.mailyJson as any;
+                if (mailyJson && typeof mailyJson === 'object' && mailyJson.type === 'doc' && Array.isArray(mailyJson.content)) {
+                  content = JSON.stringify(mailyJson);
+                } else {
+                  content = '<p>Start writing your email content here...</p>';
+                }
+              } catch (error) {
+                content = '<p>Start writing your email content here...</p>';
+              }
+            }
+            
+            // Final fallback
+            if (!content) {
+              content = '<p>Start writing your email content here...</p>';
+            }
+            
+            return { 
               // Don't set ID for Spotify-generated templates to use EmailEditor instead of DirectTemplateEditor
               id: templateId === 'spotify-generated' ? undefined : templateId,
               title: subject || (templateData && typeof templateData === 'object' && 'subject' in templateData ? 
                 String(templateData.subject) : ''),
               preview_text: previewText || (templateData && typeof templateData === 'object' && 'previewText' in templateData ? 
                 String(templateData.previewText) : ''),
-              content: templateData && typeof templateData === 'object' && 'mailyJson' in templateData ? 
-                JSON.stringify(templateData.mailyJson) : (initialHtml || '<p>Start writing your email content here...</p>')
+              content: content
             };
-
-            return template;
-          })()}
+          }, [initialHtml, templateData, templateId, subject, previewText])}
           onSave={handleSave}
           onUpdate={handleSend}
           onSendTest={handleSendTest}
-          setEditor={setEditorInstance}
+          setEditor={handleSetEditor}
           autofocus="end"
           fanCount={fanCount}
           subscriptionPlan={subscriptionPlan}
+          artist={artist}
         />
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { generateDashboardMetadata } from "@/lib/metadata";
+import { getOrCreateArtistByClerkId } from "@/lib/db";
 import SubscriptionManager from "./subscription-manager";
 
 export const metadata = generateDashboardMetadata(
@@ -20,32 +21,12 @@ export default async function SubscriptionPage() {
     redirect("/sign-in");
   }
 
-  // For now, use the known artist data directly to avoid database issues
-  const artist = {
-    id: "7c4028fd-da9c-4baa-bc72-211fb72d9885",
-    clerk_user_id: userId,
-    name: "Third Vibes",
-    email: user.primaryEmailAddress?.emailAddress || "maxjasper@icloud.com",
-    slug: "max-boorsma",
-    bio: "",
-    ses_domain_verified: false,
-    ses_domain: null,
-    ses_status: null,
-    settings: {
-      timezone: "UTC",
-      brand_colors: { primary: "#3b82f6", secondary: "#64748b" },
-      social_links: {
-        spotify:
-          "https://open.spotify.com/artist/08FHB0pa7F05yP7c7eQp5u?si=iPQCE4gkSiaqNkBl_xowCw",
-        website: "https://thirdvibes.com",
-        instagram: "@thirdvibes",
-      },
-      double_opt_in: false,
-      send_time_optimization: false,
-    },
-    created_at: "2025-07-15T16:53:42.550538+00:00",
-    updated_at: "2025-07-15T16:53:42.550538+00:00",
-  };
+  // Get the actual artist data from the database
+  const artist = await getOrCreateArtistByClerkId(
+    userId,
+    user.primaryEmailAddress?.emailAddress || '',
+    user.fullName || 'Artist'
+  );
 
   return (
     <div className="space-y-8">

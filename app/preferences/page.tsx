@@ -6,24 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Shield, Eye, MousePointer, Mail, Bell, Globe } from 'lucide-react';
+import { Mail, CheckCircle, XCircle } from 'lucide-react';
 
 function PreferencesContent() {
   const searchParams = useSearchParams();
-  const fanId = searchParams.get('fan_id');
+  const fanId = searchParams.get('fan_id') || searchParams.get('fan');
   
   const [fan, setFan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   
-  const [preferences, setPreferences] = useState({
-    frequency: 'weekly' as 'daily' | 'weekly' | 'monthly',
-    content_types: [] as string[],
-    allow_open_tracking: true,
-    allow_click_tracking: true,
-  });
+  const [isSubscribed, setIsSubscribed] = useState(true);
 
   useEffect(() => {
     async function fetchFanData() {
@@ -35,13 +29,8 @@ function PreferencesContent() {
           const fanData = await response.json();
           setFan(fanData);
           
-          // Set current preferences
-          setPreferences({
-            frequency: fanData.preferences?.frequency || 'weekly',
-            content_types: fanData.preferences?.content_types || [],
-            allow_open_tracking: fanData.tracking_preferences?.allow_open_tracking ?? true,
-            allow_click_tracking: fanData.tracking_preferences?.allow_click_tracking ?? true,
-          });
+          // Set current subscription status
+          setIsSubscribed(fanData.status === 'subscribed');
         }
       } catch (error) {
         console.error('Error fetching fan data:', error);
@@ -64,14 +53,7 @@ function PreferencesContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          preferences: {
-            frequency: preferences.frequency,
-            content_types: preferences.content_types,
-          },
-          tracking_preferences: {
-            allow_open_tracking: preferences.allow_open_tracking,
-            allow_click_tracking: preferences.allow_click_tracking,
-          },
+          status: isSubscribed ? 'subscribed' : 'unsubscribed',
         }),
       });
       
@@ -121,175 +103,57 @@ function PreferencesContent() {
           <p className="text-gray-600">
             Manage how you receive emails from {fan.artist?.name || 'this artist'}
           </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Email: {fan.email}
+          </p>
+          {saved && (
+            <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-lg inline-block">
+              ✓ Your preferences have been saved successfully!
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">
-          {/* Email Frequency */}
+          {/* Simple Subscription Toggle */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Mail className="w-5 h-5" />
-                Email Frequency
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-3">
-                {[
-                  { value: 'daily', label: 'Daily', desc: 'Get emails every day' },
-                  { value: 'weekly', label: 'Weekly', desc: 'Get emails once a week' },
-                  { value: 'monthly', label: 'Monthly', desc: 'Get emails once a month' },
-                ].map((option) => (
-                  <label
-                    key={option.value}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                      preferences.frequency === option.value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="frequency"
-                      value={option.value}
-                      checked={preferences.frequency === option.value}
-                      onChange={(e) =>
-                        setPreferences(prev => ({
-                          ...prev,
-                          frequency: e.target.value as any
-                        }))
-                      }
-                      className="sr-only"
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium">{option.label}</div>
-                      <div className="text-sm text-gray-600">{option.desc}</div>
-                    </div>
-                    <div className={`w-4 h-4 rounded-full border-2 ${
-                      preferences.frequency === option.value
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-300'
-                    }`}>
-                      {preferences.frequency === option.value && (
-                        <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
-                      )}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Content Types */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                Content Types
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                { value: 'music_releases', label: 'Music Releases', desc: 'New songs, albums, and EPs' },
-                { value: 'show_announcements', label: 'Show Announcements', desc: 'Concert and tour dates' },
-                { value: 'merchandise', label: 'Merchandise', desc: 'New merch and special offers' },
-                { value: 'newsletters', label: 'Newsletters', desc: 'General updates and news' },
-              ].map((type) => (
-                <div key={type.value} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label htmlFor={type.value} className="font-medium">
-                      {type.label}
-                    </Label>
-                    <p className="text-sm text-gray-600">{type.desc}</p>
-                  </div>
-                  <Switch
-                    id={type.value}
-                    checked={preferences.content_types.includes(type.value)}
-                    onCheckedChange={(checked) => {
-                      setPreferences(prev => ({
-                        ...prev,
-                        content_types: checked
-                          ? [...prev.content_types, type.value]
-                          : prev.content_types.filter(t => t !== type.value)
-                      }));
-                    }}
-                  />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Privacy & Tracking */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Privacy & Tracking
+                Email Subscription
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label htmlFor="open-tracking" className="font-medium flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
-                      Email Open Tracking
-                    </Label>
-                    <p className="text-sm text-gray-600">
-                      Allow us to know when you open our emails to improve our content
-                    </p>
-                  </div>
-                  <Switch
-                    id="open-tracking"
-                    checked={preferences.allow_open_tracking}
-                    onCheckedChange={(checked) =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        allow_open_tracking: checked
-                      }))
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Label htmlFor="subscription" className="font-medium flex items-center gap-2">
+                    {isSubscribed ? (
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-red-600" />
+                    )}
+                    {isSubscribed ? 'Subscribed' : 'Unsubscribed'}
+                  </Label>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {isSubscribed 
+                      ? `You'll receive emails from ${fan.artist?.name || 'this artist'}`
+                      : `You won't receive any emails from ${fan.artist?.name || 'this artist'}`
                     }
-                  />
+                  </p>
                 </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Label htmlFor="click-tracking" className="font-medium flex items-center gap-2">
-                      <MousePointer className="w-4 h-4" />
-                      Link Click Tracking
-                    </Label>
-                    <p className="text-sm text-gray-600">
-                      Allow us to track which links you click to understand your interests
-                    </p>
-                  </div>
-                  <Switch
-                    id="click-tracking"
-                    checked={preferences.allow_click_tracking}
-                    onCheckedChange={(checked) =>
-                      setPreferences(prev => ({
-                        ...prev,
-                        allow_click_tracking: checked
-                      }))
-                    }
-                  />
-                </div>
+                <Switch
+                  id="subscription"
+                  checked={isSubscribed}
+                  onCheckedChange={setIsSubscribed}
+                />
               </div>
 
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Globe className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-blue-900 mb-1">
-                      Why we use tracking
-                    </p>
-                    <p className="text-blue-800">
-                      Tracking helps us understand what content you enjoy most, 
-                      so we can send you more relevant emails and improve your experience. 
-                      You can disable tracking at any time.
-                    </p>
-                  </div>
+              {!isSubscribed && (
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Note:</strong> You can resubscribe at any time by toggling this switch back on.
+                  </p>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
@@ -302,19 +166,6 @@ function PreferencesContent() {
             >
               {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Preferences'}
             </Button>
-          </div>
-
-          {/* Unsubscribe Link */}
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-2">
-              Don't want to receive any emails?
-            </p>
-            <a
-              href={`/unsubscribe?fan_id=${fanId}`}
-              className="text-sm text-red-600 hover:text-red-700 underline"
-            >
-              Unsubscribe from all emails
-            </a>
           </div>
         </div>
       </div>

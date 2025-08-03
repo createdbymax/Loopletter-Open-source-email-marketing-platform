@@ -63,23 +63,22 @@ async function recordClickEvent(
         ip_address: ip
       });
     
-    // Update the email_sent record if this is the first click
+    // Update the email_sent record if this is the first click (try both messageId and campaign/fan combo)
     const { data: emailSent } = await supabase
       .from('email_sent')
-      .select('clicked_at')
-      .eq('message_id', messageId)
-      .eq('fan_id', fanId)
+      .select('clicked_at, id')
+      .or(`message_id.eq.${messageId},and(campaign_id.eq.${campaignId},fan_id.eq.${fanId})`)
+      .limit(1)
       .single();
     
-    if (!emailSent?.clicked_at) {
+    if (!emailSent?.clicked_at && emailSent?.id) {
       await supabase
         .from('email_sent')
         .update({
           clicked_at: new Date().toISOString(),
           status: 'clicked'
         })
-        .eq('message_id', messageId)
-        .eq('fan_id', fanId);
+        .eq('id', emailSent.id);
       
       // Update campaign stats for unique clicks
       await supabase.rpc('increment_campaign_clicks', {

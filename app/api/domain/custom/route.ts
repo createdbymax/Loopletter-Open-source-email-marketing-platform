@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from '@clerk/nextjs/server';
 import { getOrCreateArtistByClerkId, updateArtist } from '@/lib/db';
 import { canAccessFeature } from '@/lib/subscription';
+import { isDomainAlreadyClaimed } from '@/lib/domain-security';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,9 +46,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update artist with custom domain
+    // Validate domain format
+    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+    if (!domainRegex.test(domain)) {
+      return NextResponse.json(
+        { error: 'Invalid domain format' },
+        { status: 400 }
+      );
+    }
+
+    // Check if domain is already claimed by another user
+    const isAlreadyClaimed = await isDomainAlreadyClaimed(domain, artist.id);
+    if (isAlreadyClaimed) {
+      return NextResponse.json(
+        { error: 'This domain is already claimed by another user' },
+        { status: 409 }
+      );
+    }
+
+    // Update artist with custom domain (unverified initially)
     await updateArtist(artist.id, {
       ses_domain: domain,
+      ses_domain_verified: false, // Always start as unverified
       ses_status: 'pending_verification',
     });
 

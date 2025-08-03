@@ -1,9 +1,29 @@
 import { SubscriptionPlan } from './subscription';
+import { generateEnhancedEmailHtml } from './enhanced-email-generator';
 
 /**
  * Generates the complete HTML email with optional footer based on subscription plan
+ * @deprecated Use generateEnhancedEmailHtml for better styling preservation
  */
 export function generateEmailHtml({
+  title,
+  previewText,
+  content,
+  subscriptionPlan = 'starter'
+}: {
+  title: string;
+  previewText?: string;
+  content: string;
+  subscriptionPlan?: SubscriptionPlan;
+}): string {
+  // Use the enhanced generator by default
+  return generateEnhancedEmailHtml({ title, previewText, content, subscriptionPlan });
+}
+
+/**
+ * Legacy basic email generator - kept for compatibility
+ */
+export function generateBasicEmailHtml({
   title,
   previewText,
   content,
@@ -103,3 +123,6 @@ export function generateEmailHtml({
 </body>
 </html>`;
 }
+
+// Re-export the enhanced generator
+export { generateEnhancedEmailHtml } from './enhanced-email-generator';

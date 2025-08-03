@@ -252,8 +252,15 @@ export async function addFan(fan: Omit<Fan, 'id'>) {
   return data as Fan;
 }
 
-export async function getFansByArtist(artist_id: string) {
-  const { data, error } = await supabase.from('fans').select('*').eq('artist_id', artist_id);
+export async function getFansByArtist(artist_id: string, includeQuarantined: boolean = false) {
+  let query = supabase.from('fans').select('*').eq('artist_id', artist_id);
+  
+  // By default, exclude quarantined fans unless specifically requested
+  if (!includeQuarantined) {
+    query = query.neq('review_status', 'pending');
+  }
+  
+  const { data, error } = await query;
   if (error) throw error;
   return data as Fan[];
 }
@@ -449,6 +456,33 @@ export async function getFansBySegment(_segment_id: string) {
   // This would need complex logic to evaluate segment conditions
   // For now, return empty array - implement based on your segment logic
   return [] as Fan[];
+}
+
+// Get approved fans only (exclude quarantined/rejected)
+export async function getApprovedFansByArtist(artist_id: string) {
+  const { data, error } = await supabase
+    .from('fans')
+    .select('*')
+    .eq('artist_id', artist_id)
+    .eq('status', 'subscribed')
+    .in('review_status', ['approved', null]) // Include null for legacy fans
+    .neq('review_status', 'pending')
+    .neq('review_status', 'rejected');
+  
+  if (error) throw error;
+  return data as Fan[];
+}
+
+// Get quarantined fans for admin review
+export async function getQuarantinedFansByArtist(artist_id: string) {
+  const { data, error } = await supabase
+    .from('fans')
+    .select('*')
+    .eq('artist_id', artist_id)
+    .eq('review_status', 'pending');
+  
+  if (error) throw error;
+  return data as Fan[];
 }
 
 // AUTOMATIONS
@@ -816,6 +850,18 @@ export async function resubscribeFan(fan_id: string) {
       unsubscribed_at: null,
       updated_at: new Date().toISOString(),
     })
+    .eq('id', fan_id)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data as Fan;
+}
+
+export async function deleteFan(fan_id: string) {
+  const { data, error } = await supabase
+    .from('fans')
+    .delete()
     .eq('id', fan_id)
     .select()
     .single();

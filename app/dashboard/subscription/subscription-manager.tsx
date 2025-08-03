@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useToast, ToastContainer } from '@/components/ui/toast';
 import { Artist } from '@/lib/types';
 import { 
   Copy, 
@@ -20,6 +21,7 @@ import {
   RefreshCw,
   Settings
 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import PageCustomizer from './page-customizer';
 import SlugManager from './slug-manager';
 
@@ -34,6 +36,12 @@ export default function SubscriptionManager({ artist }: SubscriptionManagerProps
   const [isFixingSlug, setIsFixingSlug] = useState(false);
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [currentArtist, setCurrentArtist] = useState(artist);
+  const { toasts, removeToast, success, error } = useToast();
+
+  // Update currentArtist when the artist prop changes
+  useEffect(() => {
+    setCurrentArtist(artist);
+  }, [artist]);
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
   
@@ -84,7 +92,9 @@ export default function SubscriptionManager({ artist }: SubscriptionManagerProps
 </iframe>`;
 
   return (
-    <div className="space-y-8">
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <div className="space-y-8">
       {/* Slug Issue Warning */}
       {(artist.slug === 'sign-in' || artist.slug === 'signin' || !artist.slug) && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
@@ -415,33 +425,40 @@ export default function SubscriptionManager({ artist }: SubscriptionManagerProps
         </div>
       </div>
 
-      {/* Page Customizer */}
-      {showCustomizer && (
-        <PageCustomizer 
-          artist={artist} 
-          onSave={async (settings) => {
-            try {
-              const response = await fetch('/api/subscription-page-settings', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ settings }),
-              });
-              
-              if (response.ok) {
-                alert('Page customization saved successfully!');
-                setShowCustomizer(false);
-              } else {
-                alert('Failed to save customization settings');
+      {/* Page Customizer Modal */}
+      <Dialog open={showCustomizer} onOpenChange={setShowCustomizer}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Customize Subscription Page</DialogTitle>
+          </DialogHeader>
+          <PageCustomizer 
+            artist={artist}
+            onClose={() => setShowCustomizer(false)}
+            onSave={async () => {
+              try {
+                // TODO: Get settings from the customizer component
+                const response = await fetch('/api/subscription-page-settings', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ settings: {} }),
+                });
+                
+                if (response.ok) {
+                  success('Settings saved!', 'Your subscription page customization has been updated.');
+                  setShowCustomizer(false);
+                } else {
+                  error('Save failed', 'Failed to save customization settings. Please try again.');
+                }
+              } catch (err) {
+                console.error('Error saving settings:', err);
+                error('Save failed', 'An error occurred while saving. Please try again.');
               }
-            } catch (error) {
-              console.error('Error saving settings:', error);
-              alert('Error saving settings');
-            }
-          }}
-        />
-      )}
+            }}
+          />
+        </DialogContent>
+      </Dialog>
 
       {/* Quick Actions */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -488,5 +505,6 @@ export default function SubscriptionManager({ artist }: SubscriptionManagerProps
         </div>
       </div>
     </div>
+    </>
   );
 }

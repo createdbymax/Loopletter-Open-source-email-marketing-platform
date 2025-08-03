@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{song_title}} - {{artist_name}}</title>
+  </head>
+  <body
+    style="background-color: #f3f4f6; font-family: sans-serif; padding: 40px 0"
+  >
+    <div
+      style="
+        max-width: 600px;
+        background: #ffffff;
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 8px;
+      "
+    >
+      <!-- Header -->
+      <div style="text-align: center; margin-bottom: 48px">
+        <p
+          style="
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 16px 0;
+          "
+        >
+          {{release_type}} • OUT NOW
+        </p>
+      </div>
+
+      <!-- Main Title -->
+      <div style="text-align: center; margin-bottom: 48px">
+        <h1
+          style="
+            font-size: 48px;
+            font-weight: bold;
+            color: #000000;
+            margin: 0 0 16px 0;
+            line-height: 1.1;
+          "
+        >
+          {{song_title}}
+        </h1>
+        <p style="font-size: 24px; color: #374151; margin: 0; font-weight: 300">
+          {{artist_name}}
+        </p>
+      </div>
+
+      <!-- Album Artwork (Optional) -->
+      {{#if artwork_url}}
+      <div style="text-align: center; margin-bottom: 48px">
+        <img
+          src="{{artwork_url}}"
+          alt="{{song_title}} artwork"
+          style="
+            width: 280px;
+            height: 280px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          "
+        />
+      </div>
+      {{/if}}
+
+      <!-- Release Info -->
+      <div style="text-align: center; margin-bottom: 48px">
+        <p style="font-size: 16px; color: #4b5563; margin: 0 0 8px 0">
+          {{release_type}} • {{release_date}}
+        </p>
+      </div>
+
+      <!-- Stream Section -->
+      <div style="text-align: center; margin-bottom: 48px">
+        <h2
+          style="
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            margin: 0 0 24px 0;
+          "
+        >
+          Stream Everywhere
+        </h2>
+        <p style="font-size: 16px; color: #4b5563; margin: 0 0 32px 0">
+          Available on all major platforms
+        </p>
+        <div style="margin-bottom: 16px">
+          {{#if spotify_url}}<a
+            href="{{spotify_url}}"
+            style="
+              background: #000;
+              color: #fff;
+              padding: 16px 32px;
+              border-radius: 8px;
+              font-size: 16px;
+              font-weight: 600;
+              margin: 0 8px 16px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >Spotify</a
+          >{{/if}} {{#if apple_music_url}}<a
+            href="{{apple_music_url}}"
+            style="
+              background: #000;
+              color: #fff;
+              padding: 16px 32px;
+              border-radius: 8px;
+              font-size: 16px;
+              font-weight: 600;
+              margin: 0 8px 16px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >Apple Music</a
+          >{{/if}}
+        </div>
+        <div>
+          {{#if youtube_music_url}}<a
+            href="{{youtube_music_url}}"
+            style="
+              background: #000;
+              color: #fff;
+              padding: 16px 32px;
+              border-radius: 8px;
+              font-size: 16px;
+              font-weight: 600;
+              margin: 0 8px 16px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >YouTube Music</a
+          >{{/if}} {{#if soundcloud_url}}<a
+            href="{{soundcloud_url}}"
+            style="
+              background: #000;
+              color: #fff;
+              padding: 16px 32px;
+              border-radius: 8px;
+              font-size: 16px;
+              font-weight: 600;
+              margin: 0 8px 16px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >SoundCloud</a
+          >{{/if}}
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <hr style="border: 1px solid #e5e7eb; margin: 48px 0" />
+
+      <!-- Share Section -->
+      <div style="text-align: center; margin-bottom: 48px">
+        <h2
+          style="
+            font-size: 24px;
+            font-weight: bold;
+            color: #000000;
+            margin: 0 0 16px 0;
+          "
+        >
+          Share the Vibe
+        </h2>
+        <p
+          style="
+            font-size: 16px;
+            color: #4b5563;
+            margin: 0 0 24px 0;
+            line-height: 1.6;
+          "
+        >
+          {{share_message}}
+        </p>
+        <div>
+          <a
+            href="{{twitter_share_url}}"
+            style="
+              background: #111827;
+              color: #fff;
+              padding: 12px 24px;
+              border-radius: 6px;
+              font-size: 14px;
+              font-weight: 500;
+              margin: 0 8px 12px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >Share on Twitter</a
+          >
+          <a
+            href="{{instagram_share_url}}"
+            style="
+              background: #111827;
+              color: #fff;
+              padding: 12px 24px;
+              border-radius: 6px;
+              font-size: 14px;
+              font-weight: 500;
+              margin: 0 8px 12px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >Share on Instagram</a
+          >
+          <a
+            href="{{copy_link_url}}"
+            style="
+              background: #111827;
+              color: #fff;
+              padding: 12px 24px;
+              border-radius: 6px;
+              font-size: 14px;
+              font-weight: 500;
+              margin: 0 8px 12px 8px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >Copy Link</a
+          >
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div
+        style="
+          text-align: center;
+          border-top: 1px solid #e5e7eb;
+          padding-top: 32px;
+        "
+      >
+        <p style="font-size: 14px; color: #6b7280; margin: 0 0 16px 0">
+          © {{current_year}} {{artist_name}}. Thank you for supporting
+          independent music.
+        </p>
+        <p style="font-size: 12px; color: #9ca3af; margin: 0">
+          {{artist_address}}
+        </p>
+        <p style="font-size: 12px; color: #9ca3af; margin: 8px 0 0 0">
+          <a
+            href="{{unsubscribe_url}}"
+            style="color: #9ca3af; text-decoration: underline"
+            >Unsubscribe</a
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

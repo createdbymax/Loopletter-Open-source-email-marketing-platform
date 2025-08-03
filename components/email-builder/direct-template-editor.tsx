@@ -31,7 +31,7 @@ export function DirectTemplateEditor({
 
     // Special handling for blank template
     if (templateId === "blank") {
-      console.log("Using blank template");
+      // Using blank template
       return {
         type: "doc",
         content: [
@@ -98,16 +98,18 @@ export function DirectTemplateEditor({
             immediatelyRender: false,
           }}
           contentJson={getTemplateContent()}
-          onCreate={() => {
-            // Editor creation handled internally
+          onCreate={(editor) => {
+            // Editor created
+            // Pass the editor instance to the parent
             if (setEditor) {
-              setEditor(null);
+              setEditor(editor);
             }
           }}
-          onUpdate={() => {
-            // Editor updates handled internally
+          onUpdate={(editor) => {
+            // Editor updated
+            // Pass the editor instance to the parent
             if (setEditor) {
-              setEditor(null);
+              setEditor(editor);
             }
           }}
         />

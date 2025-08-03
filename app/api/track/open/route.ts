@@ -51,12 +51,11 @@ async function recordOpenEvent(messageId: string, campaignId: string, fanId: str
     const userAgent = request.headers.get('user-agent') || '';
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
     
-    // Check if this open has already been recorded
+    // Check if this open has already been recorded (use both messageId and fan/campaign combo)
     const { data: existingOpen } = await supabase
       .from('email_opens')
       .select('id')
-      .eq('message_id', messageId)
-      .eq('fan_id', fanId)
+      .or(`message_id.eq.${messageId},and(campaign_id.eq.${campaignId},fan_id.eq.${fanId})`)
       .limit(1);
     
     if (existingOpen && existingOpen.length > 0) {
@@ -93,15 +92,22 @@ async function recordOpenEvent(messageId: string, campaignId: string, fanId: str
           open_count: 1
         });
       
-      // Update the email_sent record
-      await supabase
+      // Update the email_sent record (try both messageId and campaign/fan combo)
+      const { data: emailSentRecords } = await supabase
         .from('email_sent')
-        .update({
-          opened_at: new Date().toISOString(),
-          status: 'opened'
-        })
-        .eq('message_id', messageId)
-        .eq('fan_id', fanId);
+        .select('id')
+        .or(`message_id.eq.${messageId},and(campaign_id.eq.${campaignId},fan_id.eq.${fanId})`)
+        .limit(1);
+      
+      if (emailSentRecords && emailSentRecords.length > 0) {
+        await supabase
+          .from('email_sent')
+          .update({
+            opened_at: new Date().toISOString(),
+            status: 'opened'
+          })
+          .eq('id', emailSentRecords[0].id);
+      }
       
       // Update campaign stats
       await supabase.rpc('increment_campaign_opens', {

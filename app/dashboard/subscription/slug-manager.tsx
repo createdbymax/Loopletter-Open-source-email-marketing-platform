@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Artist } from '@/lib/types';
 import { 
   Link as LinkIcon, 
@@ -19,6 +20,7 @@ interface SlugManagerProps {
 }
 
 export default function SlugManager({ artist, onSlugUpdate }: SlugManagerProps) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [newSlug, setNewSlug] = useState(artist.slug || '');
   const [isChecking, setIsChecking] = useState(false);
@@ -84,9 +86,13 @@ export default function SlugManager({ artist, onSlugUpdate }: SlugManagerProps) 
       });
 
       if (response.ok) {
+        const data = await response.json();
         onSlugUpdate(newSlug);
         setIsEditing(false);
         alert('Slug updated successfully!');
+        
+        // Refresh the page to get the updated artist data
+        router.refresh();
       } else {
         const data = await response.json();
         alert(`Failed to update slug: ${data.error}`);

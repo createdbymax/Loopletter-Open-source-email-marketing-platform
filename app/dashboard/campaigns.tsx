@@ -6,6 +6,7 @@ import {
   getOrCreateArtistByClerkId,
   getFansByArtist,
 } from "@/lib/db";
+import type { Campaign } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -41,15 +42,7 @@ interface Artist {
   name: string;
 }
 
-interface Campaign {
-  id: string;
-  title: string;
-  message: string;
-  status: string;
-  created_at: string;
-  send_date?: string;
-  artist_id: string;
-}
+// Campaign type is now imported from lib/types.ts
 
 export function Campaigns() {
   const { user, isLoaded } = useUser();
@@ -297,7 +290,7 @@ export function Campaigns() {
                   <TableCell>
                     <div>
                       <div className="font-medium text-gray-900 dark:text-neutral-100">
-                        {campaign.title || "Untitled Campaign"}
+                        {campaign.subject || campaign.title || "Untitled Campaign"}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-neutral-400 truncate max-w-xs">
                         {campaign.message?.substring(0, 60)}...

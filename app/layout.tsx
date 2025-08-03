@@ -5,6 +5,8 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { defaultMetadata, generateSiteStructuredData } from "@/lib/metadata";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AnalyticsProvider } from "@/components/analytics-provider";
+import { Suspense } from "react";
 
 
 const geistSans = Geist({
@@ -46,8 +48,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Toaster position="top-center" />
-            {children}
+            <Suspense fallback={null}>
+              <AnalyticsProvider>
+                <Toaster position="top-center" />
+                {children}
+              </AnalyticsProvider>
+            </Suspense>
           </ThemeProvider>
         </body>
       </html>

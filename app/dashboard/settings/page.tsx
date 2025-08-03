@@ -166,6 +166,7 @@ function ProfileSettings() {
     bio: "",
     email: "",
     default_from_name: "",
+    default_from_email: "",
     settings: {
       timezone: "UTC",
       send_time_optimization: false,
@@ -199,6 +200,7 @@ function ProfileSettings() {
           bio: a.bio || "",
           email: a.email || "",
           default_from_name: a.default_from_name || "",
+          default_from_email: a.default_from_email || "",
           settings: {
             timezone: a.settings?.timezone || "UTC",
             send_time_optimization: a.settings?.send_time_optimization || false,
@@ -236,6 +238,7 @@ function ProfileSettings() {
         name: formData.name,
         bio: formData.bio,
         default_from_name: formData.default_from_name,
+        default_from_email: formData.default_from_email,
         settings: formData.settings,
       });
 
@@ -354,6 +357,27 @@ function ProfileSettings() {
             />
             <p className="text-xs text-gray-500 mt-1">
               How you'll appear in subscribers' inboxes by default (e.g., "Sarah from The Band", "Sarah Miller", "The Band")
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="default-from-email">Default Sending Email</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="default-from-email"
+                value={formData.default_from_email || ""}
+                onChange={(e) => updateField("default_from_email", e.target.value)}
+                placeholder="hello"
+                className="flex-1"
+              />
+              <span className="text-gray-500">@</span>
+              <span className="text-gray-700 font-mono bg-gray-50 px-2 py-1 rounded border">
+                {artist?.ses_domain || "yourdomain.com"}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              The email address part before @ (e.g., "hello", "noreply", "contact"). 
+              {!artist?.ses_domain && " Set up your domain first to use custom email addresses."}
             </p>
           </div>
 

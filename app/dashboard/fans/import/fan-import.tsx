@@ -29,8 +29,9 @@ export function FanImport() {
   const [result, setResult] = useState<{
     success: boolean;
     imported: number;
-    failed: number;
-    errors: any[];
+    failed?: number;
+    errors?: any[];
+    message?: string;
   } | null>(null);
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -104,8 +105,8 @@ export function FanImport() {
       setResult({
         success: false,
         imported: 0,
-        failed: 0,
-        errors: [{ error: errorMessage }],
+        failed: 1,
+        errors: [{ email: 'N/A', error: errorMessage }],
       });
     } finally {
       setLoading(false);
@@ -173,8 +174,8 @@ export function FanImport() {
       setResult({
         success: false,
         imported: 0,
-        failed: 0,
-        errors: [{ message: errorMessage }],
+        failed: 1,
+        errors: [{ email: 'N/A', error: errorMessage }],
       });
     } finally {
       setLoading(false);
@@ -399,13 +400,21 @@ export function FanImport() {
                 <p className="text-3xl font-bold text-green-600">{result.imported}</p>
                 <p className="text-sm text-gray-600">Successfully Imported</p>
               </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-red-600">{result.failed}</p>
-                <p className="text-sm text-gray-600">Failed to Import</p>
-              </div>
+              {result.failed !== undefined && (
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-red-600">{result.failed}</p>
+                  <p className="text-sm text-gray-600">Failed to Import</p>
+                </div>
+              )}
             </div>
 
-            {result.errors.length > 0 && (
+            {result.message && (
+              <div className="text-center">
+                <p className="text-sm text-gray-600">{result.message}</p>
+              </div>
+            )}
+
+            {result.errors && result.errors.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-medium">Errors</h4>
                 <div className="max-h-60 overflow-y-auto border rounded-lg">
@@ -420,7 +429,7 @@ export function FanImport() {
                       {result.errors.map((error, index) => (
                         <tr key={index}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">{error.email || 'N/A'}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{error.error}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{error.error || error.message}</td>
                         </tr>
                       ))}
                     </tbody>

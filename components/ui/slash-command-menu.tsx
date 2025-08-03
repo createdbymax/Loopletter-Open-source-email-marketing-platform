@@ -299,9 +299,9 @@ export function SlashCommandMenu({
   return (
     <div
       ref={menuRef}
-      className="fixed z-50 h-auto max-h-[330px] w-64 overflow-y-auto bg-white rounded-2xl border border-gray-200 py-1 shadow-lg flex flex-col gap-1"
+      className="fixed z-50 h-auto max-h-[330px] w-64 max-w-[calc(100vw-2rem)] overflow-y-auto bg-white rounded-2xl border border-gray-200 py-1 shadow-lg flex flex-col gap-1"
       style={{
-        left: position.x,
+        left: Math.min(position.x, window.innerWidth - 280),
         top: position.y,
       }}
     >

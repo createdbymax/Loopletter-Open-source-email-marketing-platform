@@ -13,8 +13,8 @@ function UnsubscribeContent() {
 
   useEffect(() => {
     async function handleUnsubscribe() {
-      const fanId = searchParams.get('fan_id');
-      const campaignId = searchParams.get('campaign_id');
+      const fanId = searchParams.get('fan_id') || searchParams.get('fan');
+      const campaignId = searchParams.get('campaign_id') || searchParams.get('campaign');
 
       if (!fanId) {
         setStatus('error');
@@ -61,7 +61,14 @@ function UnsubscribeContent() {
           <CardContent className="text-center py-12">
             <Mail className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h1 className="text-xl font-semibold mb-2">Unsubscribe Failed</h1>
-            <p className="text-gray-600">We&apos;re sorry to see you go! You&apos;ve been unsubscribed from future emails. Please try again or contact support.</p>
+            <p className="text-gray-600 mb-4">We&apos;re sorry, but there was an issue processing your unsubscribe request. This could be due to an invalid or expired link.</p>
+          <Button 
+            variant="outline" 
+            onClick={() => window.history.back()}
+            className="mt-4"
+          >
+            Go Back
+          </Button>
           </CardContent>
         </Card>
       </div>
@@ -84,7 +91,16 @@ function UnsubscribeContent() {
               Instead of unsubscribing completely, you can manage your email preferences 
               to receive only the content you want.
             </p>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                const fanId = searchParams.get('fan_id') || searchParams.get('fan');
+                if (fanId) {
+                  window.location.href = `/preferences?fan_id=${fanId}`;
+                }
+              }}
+            >
               <Settings className="w-4 h-4 mr-2" />
               Manage Preferences
             </Button>

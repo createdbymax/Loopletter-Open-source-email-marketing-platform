@@ -161,7 +161,7 @@ export function CampaignBuilder() {
             artistData.name ||
             "",
           subject: prev.subject || "My Email Campaign",
-          previewText: prev.previewText || "Check out what's new!",
+          previewText: prev.previewText || "",
         }));
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -252,19 +252,23 @@ export function CampaignBuilder() {
   // Save campaign as draft
   const handleSaveDraft = async () => {
     try {
+      // Ensure we have at least basic content for the draft
+      const draftTitle = emailData.subject || "Untitled Campaign";
+      const draftSubject = emailData.subject || "Draft Campaign";
+      const draftMessage = selectedTemplate === "visual-builder"
+        ? emailHtml || "Draft email content"
+        : selectedTemplate
+          ? "Template-based email content"
+          : blocks.map((b) => b.content).join("\n") || "Draft email content";
+
       const campaignData = {
-        title: emailData.subject || "Untitled Campaign",
-        subject: emailData.subject || "Untitled Campaign",
+        title: draftTitle,
+        subject: draftSubject,
         from_name:
-          emailData.fromName || artist?.default_from_name || artist?.name,
-        from_email: artist?.ses_domain ? `noreply@${artist.ses_domain}` : null,
-        message:
-          selectedTemplate === "visual-builder"
-            ? emailHtml
-            : selectedTemplate
-              ? ""
-              : blocks.map((b) => b.content).join("\n"),
-        templateId: selectedTemplate,
+          emailData.fromName || artist?.default_from_name || artist?.name || "Artist",
+        from_email: artist?.ses_domain ? `${artist.default_from_email || "noreply"}@${artist.ses_domain}` : null,
+        message: draftMessage,
+        template_id: selectedTemplate,
         templateData: templateData,
         settings: campaignSettings,
         status: "draft",
@@ -277,9 +281,12 @@ export function CampaignBuilder() {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('Campaign saved successfully:', result);
         alert("Campaign saved as draft!");
       } else {
         const errorData = await response.json();
+        console.error('Campaign save failed:', errorData);
         throw new Error(errorData.error || "Failed to save campaign");
       }
     } catch (error) {
@@ -308,19 +315,25 @@ export function CampaignBuilder() {
           from_name:
             emailData.fromName || artist?.default_from_name || artist?.name,
           from_email: artist?.ses_domain
-            ? `noreply@${artist.ses_domain}`
+            ? `${artist.default_from_email || "noreply"}@${artist.ses_domain}`
             : null,
           message:
             selectedTemplate === "visual-builder"
               ? emailHtml
               : selectedTemplate
-                ? ""
+                ? "Template-based email content" // Provide a placeholder message for template-based campaigns
                 : blocks.map((b) => b.content).join("\n"),
-          templateId: selectedTemplate,
+          template_id: selectedTemplate,
           templateData: templateData,
           settings: campaignSettings,
-          status: "sent",
+          status: "draft", // Create as draft first, then send
         };
+
+        console.log('Creating campaign with data:', {
+          ...campaignData,
+          message: campaignData.message ? `${campaignData.message.substring(0, 100)}...` : 'No message',
+          templateData: campaignData.templateData ? 'Has template data' : 'No template data'
+        });
 
         const response = await fetch("/api/campaigns", {
           method: "POST",
@@ -329,26 +342,11 @@ export function CampaignBuilder() {
         });
 
         if (response.ok) {
-          const campaign = await response.json();
+          const result = await response.json();
+          const campaign = result.campaign;
 
-          // Then send it
-          const sendResponse = await fetch(
-            `/api/campaigns/${campaign.id}/send`,
-            {
-              method: "POST",
-            }
-          );
-
-          if (sendResponse.ok) {
-            const result = await sendResponse.json();
-            alert(
-              `Campaign sent successfully to ${result.sentCount} subscribers!`
-            );
-            router.push("/dashboard/campaigns");
-          } else {
-            const errorData = await sendResponse.json();
-            throw new Error(errorData.error || "Failed to send campaign");
-          }
+          // Redirect to editor for editing and sending
+          router.push(`/dashboard/campaigns/${campaign.id}/edit`);
         } else {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to create campaign");
@@ -392,9 +390,11 @@ export function CampaignBuilder() {
         subject={emailData.subject}
         previewText={emailData.previewText}
         fromName={emailData.fromName}
+        artist={artist}
         onBack={() => setCurrentStep("template")}
-        onSave={(htmlContent) => {
-          setEmailHtml(htmlContent);
+        onSave={() => {
+          // TODO: Get HTML content from editor
+          setEmailHtml("");
           // Update email data with a default subject if not set
           if (!emailData.subject) {
             setEmailData((prev) => ({
@@ -404,8 +404,9 @@ export function CampaignBuilder() {
           }
           handleSaveDraft();
         }}
-        onSend={(htmlContent) => {
-          setEmailHtml(htmlContent);
+        onSend={() => {
+          // TODO: Get HTML content from editor
+          setEmailHtml("");
           // Update email data with a default subject if not set
           if (!emailData.subject) {
             setEmailData((prev) => ({
@@ -539,7 +540,7 @@ export function CampaignBuilder() {
               }
             >
               <Send className="w-4 h-4 mr-2" />
-              Send Campaign
+              Create Campaign
             </Button>
           </div>
         </div>

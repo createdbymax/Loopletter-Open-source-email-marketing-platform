@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Artist } from "@/lib/types";
 import {
   getUserSubscriptionPlan,
@@ -47,7 +47,7 @@ interface Invoice {
   paid_at: string | null;
 }
 
-export default function SubscriptionSettings({
+function SubscriptionSettingsContent({
   artist,
 }: SubscriptionSettingsProps) {
   const searchParams = useSearchParams();
@@ -743,5 +743,15 @@ export default function SubscriptionSettings({
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function SubscriptionSettings({
+  artist,
+}: SubscriptionSettingsProps) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SubscriptionSettingsContent artist={artist} />
+    </Suspense>
   );
 }

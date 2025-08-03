@@ -1,291 +1,419 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArtistBySlug } from '@/lib/db';
-import { Artist } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const artistSlug = searchParams.get('artist');
-  const theme = searchParams.get('theme') || 'light';
-  const size = searchParams.get('size') || 'medium';
-
-  if (!artistSlug) {
-    return new NextResponse('Artist slug is required', { status: 400 });
-  }
-
   try {
+    const { searchParams } = new URL(request.url);
+    const artistSlug = searchParams.get('artist');
+    const theme = searchParams.get('theme') || 'light';
+    const size = searchParams.get('size') || 'medium';
+
+    if (!artistSlug) {
+      return new NextResponse('Artist parameter is required', { status: 400 });
+    }
+
+    // Get artist data
     const artist = await getArtistBySlug(artistSlug);
     if (!artist) {
       return new NextResponse('Artist not found', { status: 404 });
     }
 
-    // Generate widget HTML
-    const widgetHtml = generateWidgetHtml(artist, theme, size);
+    // Get customization settings
+    const settings = artist.settings?.subscription_page_settings || {};
+    const colors = (settings as any).colors || {
+      primary: '#2563eb',
+      secondary: '#0891b2',
+      accent: '#06b6d4'
+    };
+
+    // Size configurations
+    const sizeConfig = {
+      small: { width: '300px', height: '350px', padding: '16px', fontSize: '14px' },
+      medium: { width: '400px', height: '450px', padding: '24px', fontSize: '16px' },
+      large: { width: '500px', height: '550px', padding: '32px', fontSize: '18px' }
+    };
+
+    const config = sizeConfig[size as keyof typeof sizeConfig] || sizeConfig.medium;
+
+    // Generate the widget HTML
+    const widgetHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${artist.name} - Subscribe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: white;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background effects */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .bg-glow-1 {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(6, 182, 212, 0.05);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .widget-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: ${config.width};
+            padding: ${config.padding};
+        }
+
+        .widget-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: ${config.padding};
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 9999px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #93c5fd;
+            font-weight: 500;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: #60a5fa;
+            border-radius: 50%;
+        }
+
+        .title {
+            font-size: ${config.fontSize === '18px' ? '24px' : config.fontSize === '16px' ? '20px' : '18px'};
+            font-weight: 300;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .title-gradient {
+            background: linear-gradient(to right, ${colors.primary}, ${colors.secondary});
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: ${config.fontSize === '18px' ? '16px' : config.fontSize === '16px' ? '14px' : '12px'};
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        .input {
+            height: 48px;
+            padding: 0 16px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 12px;
+            color: white;
+            font-size: ${config.fontSize};
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+        }
+
+        .input::placeholder {
+            color: #64748b;
+        }
+
+        .submit-btn {
+            height: 48px;
+            background: linear-gradient(to right, ${colors.primary}, ${colors.secondary});
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            font-size: ${config.fontSize};
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-state {
+            text-align: center;
+            display: none;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(to bottom right, ${colors.primary}, ${colors.secondary});
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.25);
+        }
+
+        .success-title {
+            font-size: ${config.fontSize === '18px' ? '20px' : config.fontSize === '16px' ? '18px' : '16px'};
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .success-message {
+            color: #94a3b8;
+            font-size: ${config.fontSize === '18px' ? '14px' : config.fontSize === '16px' ? '12px' : '11px'};
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+    
+    <div class="widget-container">
+        <div class="widget-card">
+            <div class="header">
+                <div class="badge">
+                    <div class="badge-dot"></div>
+                    Exclusive Access
+                </div>
+                <h1 class="title">
+                    Join ${artist.name}'s
+                    <span class="title-gradient">Inner Circle</span>
+                </h1>
+                <p class="subtitle">
+                    Get exclusive access to unreleased tracks, behind-the-scenes content, and priority event access.
+                </p>
+            </div>
+
+            <form class="form" id="subscribeForm">
+                <div class="input-group">
+                    <label class="label" for="name">First Name</label>
+                    <input class="input" type="text" id="name" name="name" placeholder="Enter your first name">
+                </div>
+                
+                <div class="input-group">
+                    <label class="label" for="email">Email Address</label>
+                    <input class="input" type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="error" id="error"></div>
+
+                <button class="submit-btn" type="submit" id="submitBtn">
+                    <span id="btnText">Request Access</span>
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <span>Connecting...</span>
+                    </div>
+                </button>
+            </form>
+
+            <div class="success-state" id="successState">
+                <div class="success-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+                <h2 class="success-title">Access Granted!</h2>
+                <p class="success-message">
+                    You're now part of the exclusive network. Check your email for next steps.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('subscribeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const form = document.getElementById('subscribeForm');
+            const successState = document.getElementById('successState');
+            
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            
+            // Show loading state
+            btnText.style.display = 'none';
+            loading.style.display = 'flex';
+            submitBtn.disabled = true;
+            error.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        name: name || undefined,
+                        artist_slug: '${artistSlug}',
+                        source: 'widget'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to subscribe');
+                }
+                
+                // Show success state
+                form.style.display = 'none';
+                successState.style.display = 'block';
+                
+            } catch (err) {
+                // Show error
+                error.textContent = err.message;
+                error.style.display = 'block';
+                
+                // Reset button
+                btnText.style.display = 'inline';
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>`;
 
     return new NextResponse(widgetHtml, {
       headers: {
         'Content-Type': 'text/html',
+        'X-Frame-Options': 'ALLOWALL',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Allow-Headers': 'Content-Type',
       },
     });
+
   } catch (error) {
     console.error('Widget error:', error);
-    return new NextResponse('Internal server error', { status: 500 });
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
-}
-
-function generateWidgetHtml(artist: Artist, theme: string, size: string) {
-  const isDark = theme === 'dark';
-  const isSmall = size === 'small';
-  const isMedium = size === 'medium';
-
-  const colors = {
-    light: {
-      bg: '#ffffff',
-      text: '#1f2937',
-      textSecondary: '#6b7280',
-      border: '#e5e7eb',
-      button: '#7c3aed',
-      buttonHover: '#6d28d9',
-      buttonText: '#ffffff',
-      accent: '#f3f4f6',
-    },
-    dark: {
-      bg: '#1f2937',
-      text: '#f9fafb',
-      textSecondary: '#d1d5db',
-      border: '#374151',
-      button: '#7c3aed',
-      buttonHover: '#6d28d9',
-      buttonText: '#ffffff',
-      accent: '#374151',
-    },
-  };
-
-  const currentColors = colors[isDark ? 'dark' : 'light'];
-
-  const padding = isSmall ? '16px' : isMedium ? '24px' : '32px';
-  const fontSize = isSmall ? '14px' : isMedium ? '16px' : '18px';
-  const titleSize = isSmall ? '18px' : isMedium ? '20px' : '24px';
-
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Subscribe to ${artist.name}</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.5;
-    }
-    
-    .widget-container {
-      background: ${currentColors.bg};
-      border: 1px solid ${currentColors.border};
-      border-radius: 12px;
-      padding: ${padding};
-      max-width: 400px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    .widget-header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    
-    .widget-title {
-      color: ${currentColors.text};
-      font-size: ${titleSize};
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    
-    .widget-subtitle {
-      color: ${currentColors.textSecondary};
-      font-size: ${fontSize};
-    }
-    
-    .widget-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    .widget-input {
-      padding: 12px;
-      border: 1px solid ${currentColors.border};
-      border-radius: 8px;
-      font-size: ${fontSize};
-      background: ${currentColors.bg};
-      color: ${currentColors.text};
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    
-    .widget-input:focus {
-      border-color: ${currentColors.button};
-    }
-    
-    .widget-input::placeholder {
-      color: ${currentColors.textSecondary};
-    }
-    
-    .widget-button {
-      background: ${currentColors.button};
-      color: ${currentColors.buttonText};
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: ${fontSize};
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    .widget-button:hover {
-      background: ${currentColors.buttonHover};
-    }
-    
-    .widget-button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    .widget-message {
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-top: 12px;
-    }
-    
-    .widget-success {
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #bbf7d0;
-    }
-    
-    .widget-error {
-      background: #fef2f2;
-      color: #dc2626;
-      border: 1px solid #fecaca;
-    }
-    
-    .widget-footer {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 12px;
-      color: ${currentColors.textSecondary};
-    }
-    
-    .widget-loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid ${currentColors.buttonText};
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-  <div class="widget-container">
-    <div class="widget-header">
-      <h3 class="widget-title">Join ${artist.name}'s List</h3>
-      <p class="widget-subtitle">Get exclusive updates and early access</p>
-    </div>
-    
-    <form class="widget-form" id="subscribeForm">
-      <input 
-        type="email" 
-        class="widget-input" 
-        placeholder="your@email.com" 
-        required 
-        id="emailInput"
-      >
-      <input 
-        type="text" 
-        class="widget-input" 
-        placeholder="First name (optional)" 
-        id="nameInput"
-      >
-      <button type="submit" class="widget-button" id="submitButton">
-        Subscribe
-      </button>
-    </form>
-    
-    <div id="messageContainer"></div>
-    
-    <div class="widget-footer">
-      Powered by Loopletter
-    </div>
-  </div>
-
-  <script>
-    (function() {
-      const form = document.getElementById('subscribeForm');
-      const emailInput = document.getElementById('emailInput');
-      const nameInput = document.getElementById('nameInput');
-      const submitButton = document.getElementById('submitButton');
-      const messageContainer = document.getElementById('messageContainer');
-      
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const email = emailInput.value.trim();
-        const name = nameInput.value.trim();
-        
-        if (!email) return;
-        
-        // Show loading state
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<span class="widget-loading"></span> Subscribing...';
-        messageContainer.innerHTML = '';
-        
-        try {
-          const response = await fetch(window.location.origin + '/api/subscribe', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: email,
-              name: name || undefined,
-              artist_slug: '${artist.slug}',
-              source: 'widget'
-            })
-          });
-          
-          const data = await response.json();
-          
-          if (response.ok) {
-            messageContainer.innerHTML = '<div class="widget-message widget-success">🎉 Welcome to the family! Check your email for updates.</div>';
-            form.reset();
-          } else {
-            messageContainer.innerHTML = '<div class="widget-message widget-error">' + (data.error || 'Something went wrong') + '</div>';
-          }
-        } catch (error) {
-          messageContainer.innerHTML = '<div class="widget-message widget-error">Network error. Please try again.</div>';
-        } finally {
-          submitButton.disabled = false;
-          submitButton.innerHTML = 'Subscribe';
-        }
-      });
-    })();
-  </script>
-</body>
-</html>`;
 }
