@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test-aws": "node scripts/test-aws-credentials.js",
-    "setup-s3": "node scripts/create-s3-bucket.js"
+    "setup-s3": "node scripts/create-s3-bucket.js",
+    "postinstall": "npm rebuild --build-from-source sharp"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.850.0",
@@ -88,6 +89,7 @@
     "react-router": "^7.7.0",
     "recharts": "^3.1.0",
     "redis": "^5.6.0",
+    "sharp": "^0.34.3",
     "sheet": "^0.2.0",
     "sonner": "^2.0.6",
     "stripe": "^18.3.0",
