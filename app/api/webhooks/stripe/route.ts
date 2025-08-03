@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { updateArtist } from '@/lib/db';
 import { SubscriptionPlan } from '@/lib/subscription';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { StripeSubscription, StripeInvoice, SubscriptionDetails, convertStripeSubscription } from '@/lib/stripe-types';
 
 // Initialize Stripe with the secret key
@@ -71,12 +71,16 @@ export async function POST(req: NextRequest) {
       
       // For development only: Parse the event directly from the body
       // This is NOT secure for production use
-      try {
-        event = JSON.parse(body);
-        console.log('Bypassing signature verification for development');
-      } catch (parseErr) {
-        console.error('Failed to parse webhook body:', parseErr);
-        return NextResponse.json({ error: 'Webhook signature verification failed and could not parse body' }, { status: 400 });
+      if (process.env.NODE_ENV === 'development') {
+        try {
+          event = JSON.parse(body);
+          console.log('Bypassing signature verification for development');
+        } catch (parseErr) {
+          console.error('Failed to parse webhook body:', parseErr);
+          return NextResponse.json({ error: 'Webhook signature verification failed and could not parse body' }, { status: 400 });
+        }
+      } else {
+        return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 });
       }
     }
     
@@ -117,7 +121,7 @@ export async function POST(req: NextRequest) {
             await storeSubscription(subscription);
             
             // Double-check that the artist's subscription_plan is set correctly
-            const { data: artist } = await supabase
+            const { data: artist } = await supabaseAdmin
               .from('artists')
               .select('subscription_plan')
               .eq('id', artistId)
@@ -125,7 +129,7 @@ export async function POST(req: NextRequest) {
             
             if (artist && artist.subscription_plan !== 'independent') {
               console.log('Fixing artist subscription plan:', artist.subscription_plan);
-              await supabase
+              await supabaseAdmin
                 .from('artists')
                 .update({
                   subscription_plan: 'independent',
@@ -188,12 +192,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription | Stri
       !subscription ||
       typeof subscription !== 'object' ||
       !('id' in subscription) ||
-      (
-        !('items' in subscription && Array.isArray((subscription as { items: { data: unknown[] } }).items.data)) &&
-        !('current_period_start' in subscription && 'current_period_end' in subscription)
-      ) ||
-      'json' in subscription ||
-      'status' in subscription
+      'json' in subscription
     ) {
       console.error('handleSubscriptionChange: received an invalid or Response object instead of a Stripe subscription', subscription);
       return;
@@ -217,8 +216,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription | Stri
     // Get artist ID from metadata
     const artistId = stripeSub.metadata?.artist_id;
     if (!artistId) {
-      // Try to find artist by customer ID
-      const { data: artists } = await supabase
+      // Try to find artist by customer ID using admin client
+      const { data: artists } = await supabaseAdmin
         .from('artists')
         .select('id')
         .eq('stripe_customer_id', stripeSub.customer as string)
@@ -256,8 +255,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription | Stri
 // Helper function to handle subscription deletion
 async function handleSubscriptionDeletion(subscription: Stripe.Subscription) {
   try {
-    // Update subscription in database
-    await supabase
+    // Update subscription in database using admin client
+    await supabaseAdmin
       .from('subscriptions')
       .update({
         status: 'canceled',
@@ -268,8 +267,8 @@ async function handleSubscriptionDeletion(subscription: Stripe.Subscription) {
     // Get artist ID from metadata or lookup by customer ID
     let artistId = subscription.metadata?.artist_id;
     if (!artistId) {
-      // Try to find artist by customer ID
-      const { data: artists } = await supabase
+      // Try to find artist by customer ID using admin client
+      const { data: artists } = await supabaseAdmin
         .from('artists')
         .select('id')
         .eq('stripe_customer_id', subscription.customer as string)
@@ -342,8 +341,8 @@ async function handleInvoicePaymentFailed(invoice: StripeInvoice) {
       // Get artist ID from metadata or lookup by customer ID
       let artistId = subscription.metadata?.artist_id;
       if (!artistId) {
-        // Try to find artist by customer ID
-        const { data: artists } = await supabase
+        // Try to find artist by customer ID using admin client
+        const { data: artists } = await supabaseAdmin
           .from('artists')
           .select('id')
           .eq('stripe_customer_id', subscription.customer as string)
@@ -379,8 +378,8 @@ async function storeSubscription(subscription: StripeSubscription | Stripe.Subsc
     // Get artist ID from metadata or lookup by customer ID
     let artistId = stripeSubscription.metadata?.artist_id;
     if (!artistId) {
-      // Try to find artist by customer ID
-      const { data: artists } = await supabase
+      // Try to find artist by customer ID using admin client
+      const { data: artists } = await supabaseAdmin
         .from('artists')
         .select('id')
         .eq('stripe_customer_id', stripeSubscription.customer as string)
@@ -392,8 +391,8 @@ async function storeSubscription(subscription: StripeSubscription | Stripe.Subsc
         return;
       }
     }
-    // Check if subscription already exists in database
-    const { data: existingSubscription } = await supabase
+    // Check if subscription already exists in database using admin client
+    const { data: existingSubscription } = await supabaseAdmin
       .from('subscriptions')
       .select('id')
       .eq('stripe_subscription_id', stripeSubscription.id)
@@ -413,8 +412,8 @@ async function storeSubscription(subscription: StripeSubscription | Stripe.Subsc
       ? stripeSubscription.items.data[0].price.id
       : undefined;
     if (existingSubscription && existingSubscription.length > 0) {
-      // Update existing subscription
-      await supabase
+      // Update existing subscription using admin client
+      await supabaseAdmin
         .from('subscriptions')
         .update({
           plan: planDetails.plan,
@@ -429,8 +428,8 @@ async function storeSubscription(subscription: StripeSubscription | Stripe.Subsc
         })
         .eq('stripe_subscription_id', stripeSubscription.id);
     } else {
-      // Create new subscription
-      await supabase
+      // Create new subscription using admin client
+      await supabaseAdmin
         .from('subscriptions')
         .insert({
           artist_id: artistId,
@@ -454,8 +453,8 @@ async function storeSubscription(subscription: StripeSubscription | Stripe.Subsc
 // Helper function to store invoice in database
 async function storeInvoice(invoice: StripeInvoice) {
   try {
-    // Get artist ID by customer ID
-    const { data: artists } = await supabase
+    // Get artist ID by customer ID using admin client
+    const { data: artists } = await supabaseAdmin
       .from('artists')
       .select('id')
       .eq('stripe_customer_id', invoice.customer as string)
@@ -468,8 +467,8 @@ async function storeInvoice(invoice: StripeInvoice) {
     
     const artistId = artists[0].id;
     
-    // Check if invoice already exists in database
-    const { data: existingInvoice } = await supabase
+    // Check if invoice already exists in database using admin client
+    const { data: existingInvoice } = await supabaseAdmin
       .from('invoices')
       .select('id')
       .eq('stripe_invoice_id', invoice.id)
@@ -485,8 +484,8 @@ async function storeInvoice(invoice: StripeInvoice) {
       : null;
     
     if (existingInvoice && existingInvoice.length > 0) {
-      // Update existing invoice
-      await supabase
+      // Update existing invoice using admin client
+      await supabaseAdmin
         .from('invoices')
         .update({
           status: invoice.status,
@@ -495,8 +494,8 @@ async function storeInvoice(invoice: StripeInvoice) {
         })
         .eq('stripe_invoice_id', invoice.id);
     } else {
-      // Create new invoice
-      await supabase
+      // Create new invoice using admin client
+      await supabaseAdmin
         .from('invoices')
         .insert({
           artist_id: artistId,
