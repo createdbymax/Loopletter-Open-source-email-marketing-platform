@@ -22,6 +22,15 @@ export type Artist = {
   compliance_flags?: string[];
   last_reputation_check?: string;
   settings?: ArtistSettings;
+  // Database subscription columns
+  subscription_plan?: 'starter' | 'independent' | 'label';
+  subscription_status?: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';
+  subscription_current_period_end?: string | null;
+  subscription_cancel_at_period_end?: boolean;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  subscription_metadata?: Record<string, string | number | boolean>;
+  // Mapped subscription object (created by mapArtistFields)
   subscription?: {
     plan: 'starter' | 'independent' | 'label';
     status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete';

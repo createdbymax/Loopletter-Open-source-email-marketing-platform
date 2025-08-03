@@ -102,13 +102,11 @@ export async function POST(req: NextRequest) {
         });
         
         await updateArtist(artistId, {
-          subscription: {
-            plan: 'independent', // Default to independent, will be updated in subscription.created
-            status: 'active',
-            current_period_end: '',
-            stripe_customer_id: session.customer as string,
-            stripe_subscription_id: session.subscription as string,
-          },
+          subscription_plan: 'independent', // Default to independent, will be updated in subscription.created
+          subscription_status: 'active',
+          subscription_current_period_end: null,
+          stripe_customer_id: session.customer as string,
+          stripe_subscription_id: session.subscription as string,
         });
         
         // Store subscription in database
@@ -130,16 +128,14 @@ export async function POST(req: NextRequest) {
               await supabase
                 .from('artists')
                 .update({
-                  subscription: {
-                    plan: 'independent',
-                    status: 'active',
-                    current_period_end:
-                      (subscription && typeof subscription === 'object' && 'current_period_end' in subscription && typeof (subscription as { current_period_end?: number }).current_period_end === 'number')
-                        ? new Date((subscription as { current_period_end: number }).current_period_end * 1000).toISOString()
-                        : '',
-                    stripe_customer_id: session.customer as string,
-                    stripe_subscription_id: session.subscription as string,
-                  },
+                  subscription_plan: 'independent',
+                  subscription_status: 'active',
+                  subscription_current_period_end:
+                    (subscription && typeof subscription === 'object' && 'current_period_end' in subscription && typeof (subscription as { current_period_end?: number }).current_period_end === 'number')
+                      ? new Date((subscription as { current_period_end: number }).current_period_end * 1000).toISOString()
+                      : null,
+                  stripe_customer_id: session.customer as string,
+                  stripe_subscription_id: session.subscription as string,
                 })
                 .eq('id', artistId);
             }
@@ -231,13 +227,11 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription | Stri
         const planDetails = getPlanDetailsFromSubscription(stripeSub);
         // Update artist with subscription details
         await updateArtist(artists[0].id, {
-          subscription: {
-            plan: planDetails.plan,
-            status: planDetails.status as 'active' | 'canceled' | 'incomplete' | 'past_due' | 'trialing',
-            current_period_end: planDetails.currentPeriodEnd,
-            stripe_customer_id: stripeSub.customer as string,
-            stripe_subscription_id: stripeSub.id,
-          },
+          subscription_plan: planDetails.plan,
+          subscription_status: planDetails.status as 'active' | 'canceled' | 'incomplete' | 'past_due' | 'trialing',
+          subscription_current_period_end: planDetails.currentPeriodEnd ? planDetails.currentPeriodEnd : null,
+          stripe_customer_id: stripeSub.customer as string,
+          stripe_subscription_id: stripeSub.id,
         });
       } else {
         console.error('No artist found for customer ID:', stripeSub.customer);
@@ -246,13 +240,11 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription | Stri
       const planDetails = getPlanDetailsFromSubscription(stripeSub);
       // Update artist with subscription details
       await updateArtist(artistId, {
-        subscription: {
-          plan: planDetails.plan,
-          status: planDetails.status as 'active' | 'canceled' | 'incomplete' | 'past_due' | 'trialing',
-          current_period_end: planDetails.currentPeriodEnd,
-          stripe_customer_id: stripeSub.customer as string,
-          stripe_subscription_id: stripeSub.id,
-        },
+        subscription_plan: planDetails.plan,
+        subscription_status: planDetails.status as 'active' | 'canceled' | 'incomplete' | 'past_due' | 'trialing',
+        subscription_current_period_end: planDetails.currentPeriodEnd ? planDetails.currentPeriodEnd : null,
+        stripe_customer_id: stripeSub.customer as string,
+        stripe_subscription_id: stripeSub.id,
       });
     }
   } catch (error) {
@@ -293,10 +285,8 @@ async function handleSubscriptionDeletion(subscription: Stripe.Subscription) {
     
     // Update artist with subscription details
     await updateArtist(artistId, {
-      subscription: {
-        plan: 'starter',
-        status: 'canceled',
-      }
+      subscription_plan: 'starter',
+      subscription_status: 'canceled',
     });
   } catch (error) {
     console.error('Error handling subscription deletion:', error);
@@ -369,10 +359,8 @@ async function handleInvoicePaymentFailed(invoice: StripeInvoice) {
       
       // Update artist with subscription details
       await updateArtist(artistId, {
-        subscription: {
-          plan: (subscription.metadata?.plan as SubscriptionPlan) || 'independent',
-          status: 'past_due',
-        }
+        subscription_plan: (subscription.metadata?.plan as SubscriptionPlan) || 'independent',
+        subscription_status: 'past_due',
       });
     }
   } catch (error) {
