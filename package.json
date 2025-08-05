@@ -9,6 +9,12 @@
     "lint": "next lint",
     "test-aws": "node scripts/test-aws-credentials.js",
     "setup-s3": "node scripts/create-s3-bucket.js",
+    "test-ses": "npx tsx scripts/test-ses-config.ts",
+    "test-redis": "npx tsx scripts/test-redis.ts",
+    "test-queue-simple": "npx tsx scripts/test-queue-simple.ts",
+    "test-queue": "npx tsx scripts/test-queue.ts",
+    "test-system": "npx tsx scripts/test-complete-system.ts",
+    "queue-worker": "npx tsx scripts/queue-worker.ts",
     "postinstall": "npm rebuild --build-from-source sharp"
   },
   "dependencies": {
