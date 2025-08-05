@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     // Get local rate limiter stats
-    const localStats = sesRateLimiter.getStats();
+    const localStats = await sesRateLimiter.getStats();
 
     // Calculate recent sending statistics
     const last24Hours = statsResult.SendDataPoints

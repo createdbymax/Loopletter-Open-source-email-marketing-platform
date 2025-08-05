@@ -1,7 +1,8 @@
 {
-  "functions": {
-    "app/api/queue/process/route.ts": {
-      "maxDuration": 60
+  "crons": [
+    {
+      "path": "/api/queue/process-all",
+      "schedule": "* * * * *"
     }
-  }
+  ]
 }

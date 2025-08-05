@@ -408,7 +408,7 @@ export async function sendCampaignEmail(
     const result = await ses.send(command);
 
     // Record the email as sent for rate limiting
-    sesRateLimiter.recordEmailSent();
+    await sesRateLimiter.recordEmailSent();
 
     // Log the sent email (handle RLS policy errors gracefully)
     try {

@@ -68,7 +68,7 @@ async function testSESConfiguration() {
     // Test 5: Rate limiter functionality
     console.log('5. Testing rate limiter...');
     const rateLimitCheck = await sesRateLimiter.canSendEmail();
-    const stats = sesRateLimiter.getStats();
+    const stats = await sesRateLimiter.getStats();
     console.log(`   ✅ Rate limiter functional: ${rateLimitCheck.canSend}`);
     console.log(`   📈 Current stats:`);
     console.log(`      Sent this second: ${stats.sentInCurrentSecond}/${SES_CONFIG.limits.maxSendRate}`);

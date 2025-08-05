@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { getOrCreateArtistByClerkId, getCampaignById, updateCampaign, getFansByArtist } from '@/lib/db';
-import { sendCampaignEmail } from '@/lib/email-sender';
 import { serverAnalytics } from '@/lib/server-analytics';
+import { sesRateLimiter, estimateCampaignDuration } from '@/lib/ses-config';
+import { queueBulkCampaign } from '@/lib/email-queue';
 
 export async function POST(
   request: NextRequest,
@@ -65,7 +66,16 @@ export async function POST(
       return NextResponse.json({ error: 'No subscribers to send to' }, { status: 400 });
     }
 
-    console.log(`Starting to send campaign "${campaign.title}" to ${fanCount} subscribers`);
+    // Check if we have enough quota remaining for this campaign
+    const rateLimiterStats = await sesRateLimiter.getStats();
+    if (rateLimiterStats.remainingToday < fanCount) {
+      return NextResponse.json({ 
+        error: 'Insufficient daily quota remaining',
+        details: `Campaign requires ${fanCount} emails but only ${rateLimiterStats.remainingToday} remaining today.`
+      }, { status: 400 });
+    }
+
+    console.log(`Queueing campaign "${campaign.title}" for ${fanCount} subscribers`);
 
     // For template-based campaigns, the message should be generated from the editor
     // The editor will have already converted template data to HTML and saved it
@@ -76,98 +86,42 @@ export async function POST(
       }, { status: 400 });
     }
 
-    // Update campaign status to sending
+    // Get estimated sending time
+    const estimate = await estimateCampaignDuration(fanCount);
+    
+    // Queue the campaign for sending using the bulk queue system
+    const job = await queueBulkCampaign(id, 25); // Use batch size of 25 for optimal throughput
+
+    // Update campaign status to scheduled (will be changed to 'sending' by the queue worker)
     await updateCampaign(id, {
-      status: 'sending',
+      status: 'scheduled',
       send_date: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      job_id: job.id?.toString()
     });
 
-    // Add a small delay to show the preparing step in the UI
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Send emails to all fans
-    let successCount = 0;
-    let failureCount = 0;
-    const errors: string[] = [];
-
-    for (const fan of fans) {
-      try {
-        const result = await sendCampaignEmail(campaign, fan, artist);
-        if (result.success) {
-          successCount++;
-          console.log(`✅ Sent to ${fan.email} (${successCount}/${fanCount})`);
-        } else {
-          failureCount++;
-          const errorMsg = `Failed to send to ${fan.email}: ${result.error}`;
-          errors.push(errorMsg);
-          console.error(`❌ ${errorMsg}`);
-        }
-      } catch (error) {
-        failureCount++;
-        let errorMessage = 'Unknown error';
-        
-        if (error instanceof Error) {
-          errorMessage = error.message;
-          
-          // Handle specific AWS SES errors
-          if (errorMessage.includes('MessageRejected')) {
-            errorMessage = 'Email rejected by SES (possibly invalid email address)';
-          } else if (errorMessage.includes('Throttling')) {
-            errorMessage = 'Rate limit exceeded, please try again later';
-          } else if (errorMessage.includes('SendingQuotaExceeded')) {
-            errorMessage = 'Daily sending quota exceeded';
-          }
-        }
-        
-        const errorMsg = `Failed to send to ${fan.email}: ${errorMessage}`;
-        errors.push(errorMsg);
-        console.error(`❌ Error sending to ${fan.email}:`, error);
-      }
-
-      // Add a small delay between emails to respect rate limits
-      if (fans.indexOf(fan) < fans.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay
-      }
-    }
-
-    // Update campaign status to sent
-    await updateCampaign(id, {
-      status: 'sent',
-      updated_at: new Date().toISOString()
-    });
-
-    console.log(`Campaign sending completed: ${successCount} successful, ${failureCount} failed`);
-
-    // Track campaign sent event
-    await serverAnalytics.track(user.id, 'Campaign Sent', {
+    // Track campaign queued event
+    await serverAnalytics.track(user.id, 'Campaign Queued', {
       campaign_id: id,
       campaign_title: campaign.title || campaign.subject,
-      recipient_count: successCount,
-      failed_count: failureCount,
-      total_count: fanCount,
-      success_rate: (successCount / fanCount) * 100,
+      recipient_count: fanCount,
+      estimated_minutes: estimate.estimatedMinutes,
       campaign_type: campaign.template_data ? 'template' : 'custom',
+      job_id: job.id,
     });
 
-    // Return results with detailed information for the modal
+    // Return queue information
     const response = {
       success: true,
-      sentCount: successCount,
-      failedCount: failureCount,
+      queued: true,
       totalCount: fanCount,
-      message: `Campaign sent to ${successCount} of ${fanCount} subscribers`,
+      message: `Campaign queued for sending to ${fanCount} subscribers`,
       campaignId: id,
-      campaignTitle: campaign.title || campaign.subject
+      campaignTitle: campaign.title || campaign.subject,
+      jobId: job.id,
+      estimatedTime: `${estimate.estimatedMinutes} minutes`,
+      status: 'scheduled'
     };
-
-    // Include errors if there were any failures
-    if (errors.length > 0) {
-      (response as any).errors = errors.slice(0, 10); // Limit to first 10 errors
-      if (errors.length > 10) {
-        (response as any).additionalErrors = errors.length - 10;
-      }
-    }
 
     return NextResponse.json(response);
 

@@ -1,79 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { processJobById, getEmailQueue } from '@/lib/email-queue';
+import { processJobById, getQueueStats } from '@/lib/email-queue';
 
-export async function POST(req: NextRequest) {
+// This endpoint processes queued email jobs
+// In a serverless environment, this would be called by a cron job or webhook
+export async function POST(request: NextRequest) {
   try {
-    // Check for cron authentication token
-    const authHeader = req.headers.get('authorization');
-    const cronToken = process.env.QUEUE_PROCESS_TOKEN;
-    
-    // Allow either Clerk auth or cron token
-    let isAuthenticated = false;
-    
-    if (authHeader === `Bearer ${cronToken}` && cronToken) {
-      isAuthenticated = true;
-    } else {
-      const { userId } = await auth();
-      isAuthenticated = !!userId;
+    const { jobId } = await request.json();
+
+    if (!jobId) {
+      return NextResponse.json({ error: 'jobId is required' }, { status: 400 });
     }
 
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Process the specific job
+    const result = await processJobById(jobId);
+
+    if (!result.processed) {
+      return NextResponse.json({ error: 'Job not found or could not be processed' }, { status: 404 });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const { jobId, processNext, batchSize = 14 } = body;
-
-    if (jobId) {
-      // Process specific job
-      const result = await processJobById(jobId);
-      return NextResponse.json(result);
-    } else {
-      // Process multiple jobs up to batch size (respecting rate limits)
-      const queue = getEmailQueue();
-      const waitingJobs = await queue.getWaiting();
-      
-      if (waitingJobs.length === 0) {
-        return NextResponse.json({ processed: 0, message: 'No jobs waiting' });
-      }
-
-      // Process up to batchSize jobs (respecting SES rate limits)
-      const jobsToProcess = waitingJobs.slice(0, Math.min(batchSize, 14));
-      const results = [];
-      
-      for (const job of jobsToProcess) {
-        try {
-          const result = await processJobById(job.id!);
-          results.push({ jobId: job.id, ...result });
-          
-          // Small delay between jobs to respect rate limits
-          if (jobsToProcess.length > 1) {
-            await new Promise(resolve => setTimeout(resolve, 75)); // ~13.3 emails/second
-          }
-        } catch (error) {
-          console.error(`Failed to process job ${job.id}:`, error);
-          results.push({ 
-            jobId: job.id, 
-            processed: false, 
-            error: error instanceof Error ? error.message : 'Unknown error' 
-          });
-        }
-      }
-
-      return NextResponse.json({ 
-        processed: results.filter(r => r.processed).length,
-        failed: results.filter(r => !r.processed).length,
-        total: results.length,
-        results 
-      });
-    }
+    return NextResponse.json({
+      success: true,
+      jobId,
+      result: result.result,
+    });
 
   } catch (error) {
-    console.error('Error processing jobs:', error);
-    return NextResponse.json({ 
-      error: 'Failed to process jobs',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    console.error('Error processing job:', error);
+    return NextResponse.json(
+      { error: 'Failed to process job' },
+      { status: 500 }
+    );
+  }
+}
+
+// Get queue statistics
+export async function GET() {
+  try {
+    const stats = await getQueueStats();
+    
+    return NextResponse.json({
+      success: true,
+      stats,
+    });
+
+  } catch (error) {
+    console.error('Error getting queue stats:', error);
+    return NextResponse.json(
+      { error: 'Failed to get queue stats' },
+      { status: 500 }
+    );
   }
 }

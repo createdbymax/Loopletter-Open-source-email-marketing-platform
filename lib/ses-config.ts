@@ -1,4 +1,5 @@
 import { SESClient } from '@aws-sdk/client-ses';
+import { sesQuotaTracker } from './ses-quota-tracker';
 
 // Initialize SES client with proper configuration
 export const ses = new SESClient({
@@ -67,8 +68,6 @@ export async function isEmailVerifiedInSandbox(email: string): Promise<boolean> 
 class SESRateLimiter {
   private sentInCurrentSecond = 0;
   private currentSecondStart = 0;
-  private sentToday = 0;
-  private todayStart = 0;
 
   constructor() {
     this.resetCounters();
@@ -77,16 +76,12 @@ class SESRateLimiter {
   private resetCounters() {
     const now = Date.now();
     this.currentSecondStart = Math.floor(now / 1000) * 1000;
-    this.todayStart = new Date().setHours(0, 0, 0, 0);
     this.sentInCurrentSecond = 0;
-    // Note: sentToday should be loaded from persistent storage in production
-    this.sentToday = 0;
   }
 
   async canSendEmail(): Promise<{ canSend: boolean; reason?: string; waitTime?: number }> {
     const now = Date.now();
     const currentSecond = Math.floor(now / 1000) * 1000;
-    const today = new Date().setHours(0, 0, 0, 0);
 
     // Reset second counter if we're in a new second
     if (currentSecond > this.currentSecondStart) {
@@ -94,14 +89,9 @@ class SESRateLimiter {
       this.currentSecondStart = currentSecond;
     }
 
-    // Reset daily counter if it's a new day
-    if (today > this.todayStart) {
-      this.sentToday = 0;
-      this.todayStart = today;
-    }
-
-    // Check daily quota
-    if (this.sentToday >= SES_CONFIG.limits.maxDailyQuota) {
+    // Check daily quota using persistent tracker
+    const remainingQuota = await sesQuotaTracker.getRemainingQuota(SES_CONFIG.limits.maxDailyQuota);
+    if (remainingQuota <= 0) {
       return {
         canSend: false,
         reason: `Daily quota of ${SES_CONFIG.limits.maxDailyQuota} emails exceeded`,
@@ -121,16 +111,17 @@ class SESRateLimiter {
     return { canSend: true };
   }
 
-  recordEmailSent() {
+  async recordEmailSent() {
     this.sentInCurrentSecond++;
-    this.sentToday++;
+    await sesQuotaTracker.incrementCount(1);
   }
 
-  getStats() {
+  async getStats() {
+    const todayCount = await sesQuotaTracker.loadTodayCount();
     return {
       sentInCurrentSecond: this.sentInCurrentSecond,
-      sentToday: this.sentToday,
-      remainingToday: SES_CONFIG.limits.maxDailyQuota - this.sentToday,
+      sentToday: todayCount,
+      remainingToday: SES_CONFIG.limits.maxDailyQuota - todayCount,
       remainingThisSecond: SES_CONFIG.limits.maxSendRate - this.sentInCurrentSecond,
     };
   }
@@ -155,13 +146,13 @@ export function calculateBatchDelay(emailCount: number): number {
 }
 
 // Helper function to estimate campaign send time
-export function estimateCampaignDuration(emailCount: number): {
+export async function estimateCampaignDuration(emailCount: number): Promise<{
   estimatedSeconds: number;
   estimatedMinutes: number;
   canSendToday: boolean;
-} {
+}> {
   const { maxSendRate, maxDailyQuota } = SES_CONFIG.limits;
-  const stats = sesRateLimiter.getStats();
+  const stats = await sesRateLimiter.getStats();
 
   const canSendToday = (stats.remainingToday >= emailCount);
   const estimatedSeconds = Math.ceil(emailCount / maxSendRate);

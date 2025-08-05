@@ -15,10 +15,14 @@ interface CampaignSendingModalProps {
 
 interface SendResult {
   success: boolean;
-  sentCount: number;
-  failedCount: number;
+  queued?: boolean;
+  sentCount?: number;
+  failedCount?: number;
   totalCount: number;
   errors?: string[];
+  jobId?: string;
+  estimatedTime?: string;
+  status?: string;
 }
 
 export function CampaignSendingModal({ 
@@ -28,7 +32,7 @@ export function CampaignSendingModal({
   fanCount,
   onComplete 
 }: CampaignSendingModalProps) {
-  const [step, setStep] = useState<'preparing' | 'sending' | 'complete' | 'error'>('preparing');
+  const [step, setStep] = useState<'preparing' | 'sending' | 'queued' | 'complete' | 'error'>('preparing');
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<SendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -73,16 +77,30 @@ export function CampaignSendingModal({
         await new Promise(resolve => setTimeout(resolve, 500));
         
         setResult(sendResult);
-        setStep('complete');
-        setProgress(100);
         
-        // Track successful campaign send
-        track('Campaign Send Completed', {
-          campaign_id: campaignId,
-          recipient_count: sendResult.sentCount,
-          failed_count: sendResult.failedCount,
-          success_rate: (sendResult.sentCount / sendResult.totalCount) * 100,
-        });
+        if (sendResult.queued) {
+          setStep('queued');
+          setProgress(100);
+          
+          // Track campaign queued
+          track('Campaign Queued', {
+            campaign_id: campaignId,
+            recipient_count: sendResult.totalCount,
+            estimated_time: sendResult.estimatedTime,
+            job_id: sendResult.jobId,
+          });
+        } else {
+          setStep('complete');
+          setProgress(100);
+          
+          // Track successful campaign send (for immediate sends)
+          track('Campaign Send Completed', {
+            campaign_id: campaignId,
+            recipient_count: sendResult.sentCount || 0,
+            failed_count: sendResult.failedCount || 0,
+            success_rate: sendResult.sentCount ? (sendResult.sentCount / sendResult.totalCount) * 100 : 0,
+          });
+        }
         
         // Call completion callback
         onComplete(sendResult);
@@ -112,7 +130,7 @@ export function CampaignSendingModal({
   };
 
   const handleClose = () => {
-    if (step === 'complete') {
+    if (step === 'complete' || step === 'queued') {
       // Redirect to campaigns list
       window.location.href = '/dashboard/campaigns';
     } else {
@@ -129,7 +147,8 @@ export function CampaignSendingModal({
         <div className="flex items-center justify-between p-6 border-b dark:border-neutral-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">
             {step === 'preparing' && 'Preparing Campaign'}
-            {step === 'sending' && 'Sending Campaign'}
+            {step === 'sending' && 'Queueing Campaign'}
+            {step === 'queued' && 'Campaign Queued!'}
             {step === 'complete' && 'Campaign Sent!'}
             {step === 'error' && 'Send Failed'}
           </h2>
@@ -170,16 +189,68 @@ export function CampaignSendingModal({
                 <Send className="w-12 h-12 text-blue-500 mx-auto animate-bounce" />
               </div>
               <p className="text-gray-600 dark:text-neutral-400 mb-2">
-                Sending to {fanCount.toLocaleString()} subscribers...
+                Queueing campaign for {fanCount.toLocaleString()} subscribers...
               </p>
               <p className="text-sm text-gray-500 dark:text-neutral-500 mb-4">
-                This may take a few minutes for large lists
+                Your campaign will be sent respecting rate limits
               </p>
               <div className="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2">
                 <div 
                   className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Queued Step */}
+          {step === 'queued' && result && (
+            <div className="text-center">
+              <div className="mb-4">
+                <Clock className="w-12 h-12 text-orange-500 mx-auto" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-4">
+                Campaign Successfully Queued!
+              </h3>
+              
+              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 mb-6">
+                <div className="text-sm space-y-2">
+                  <div className="flex items-center justify-center">
+                    <Users className="w-4 h-4 text-orange-600 mr-2" />
+                    <span className="font-semibold">
+                      {result.totalCount.toLocaleString()} subscribers
+                    </span>
+                  </div>
+                  
+                  {result.estimatedTime && (
+                    <div className="flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-orange-600 mr-2" />
+                      <span>Estimated time: {result.estimatedTime}</span>
+                    </div>
+                  )}
+                  
+                  <p className="text-orange-700 dark:text-orange-300 mt-3">
+                    Your campaign is now in the sending queue and will be delivered 
+                    automatically while respecting AWS SES rate limits.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  onClick={() => window.location.href = '/dashboard/campaigns'}
+                  className="w-full"
+                >
+                  View All Campaigns
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = `/dashboard/campaigns/${campaignId}`}
+                  className="w-full"
+                >
+                  Monitor Progress
+                </Button>
               </div>
             </div>
           )}
