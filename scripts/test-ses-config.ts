@@ -79,7 +79,7 @@ async function testSESConfiguration() {
     const testCampaignSizes = [100, 1000, 5000, 10000];
     
     for (const size of testCampaignSizes) {
-      const estimate = estimateCampaignDuration(size);
+      const estimate = await estimateCampaignDuration(size);
       console.log(`   📧 ${size} emails: ${estimate.estimatedMinutes} minutes (${estimate.canSendToday ? 'can send today' : 'exceeds daily quota'})`);
     }
 

@@ -97,8 +97,8 @@ process.on('SIGTERM', async () => {
 });
 
 console.log('📬 Email queue worker is running. Press Ctrl+C to stop.');
-/
-/ Process individual campaign email
+
+// Process individual campaign email
 async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
   const { campaignId, fanId, artistId } = data;
 
@@ -181,7 +181,8 @@ async function processBulkCampaign(job: Job, data: BulkCampaignJob) {
   });
 
   // Import queue functions
-  const { queueCampaignEmail, calculateBatchDelay } = await import('../lib/email-queue');
+  const { queueCampaignEmail } = await import('../lib/email-queue');
+  const { calculateBatchDelay } = await import('../lib/ses-config');
 
   // Process fans in batches respecting SES limits
   const totalFans = subscribedFans.length;

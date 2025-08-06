@@ -3,49 +3,96 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { RefreshCw, Clock, CheckCircle, AlertCircle, Mail, Calendar } from 'lucide-react';
 
-interface QueueStats {
-  waiting: number;
-  active: number;
-  completed: number;
-  failed: number;
+interface Campaign {
+  id: string;
+  title: string;
+  subject: string;
+  status: 'scheduled' | 'sending';
+  job_id: string;
+  send_date: string;
+  created_at: string;
+  updated_at: string;
+  jobStatus?: {
+    id: string;
+    progress: number;
+    processedOn?: number;
+    finishedOn?: number;
+    failedReason?: string;
+  } | null;
+}
+
+interface UserQueueStats {
+  scheduled: number;
+  sending: number;
   total: number;
 }
 
+interface QueueData {
+  campaigns: Campaign[];
+  stats: UserQueueStats;
+}
+
 export default function QueueDashboard() {
-  const [stats, setStats] = useState<QueueStats | null>(null);
+  const [queueData, setQueueData] = useState<QueueData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchStats = async () => {
+  const fetchQueueData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/queue/process');
+      const response = await fetch('/api/campaigns/queue-status');
       if (response.ok) {
         const data = await response.json();
-        setStats(data.stats);
+        setQueueData({
+          campaigns: data.campaigns,
+          stats: data.stats,
+        });
         setLastUpdated(new Date());
       }
     } catch (error) {
-      console.error('Failed to fetch queue stats:', error);
+      console.error('Failed to fetch queue data:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStats();
+    fetchQueueData();
     // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchStats, 30000);
+    const interval = setInterval(fetchQueueData, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'scheduled': return 'text-orange-600';
+      case 'sending': return 'text-blue-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'scheduled': return <Clock className="w-4 h-4" />;
+      case 'sending': return <AlertCircle className="w-4 h-4" />;
+      default: return <Mail className="w-4 h-4" />;
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Email Queue Dashboard</h1>
-        <Button onClick={fetchStats} disabled={loading} variant="outline">
+        <div>
+          <h1 className="text-2xl font-bold">My Campaign Queue</h1>
+          <p className="text-sm text-gray-600">Monitor your queued and sending campaigns</p>
+        </div>
+        <Button onClick={fetchQueueData} disabled={loading} variant="outline">
           <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
@@ -57,98 +104,124 @@ export default function QueueDashboard() {
         </p>
       )}
 
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Waiting</CardTitle>
-              <Clock className="h-4 w-4 text-orange-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{stats.waiting}</div>
-              <p className="text-xs text-gray-600">Jobs in queue</p>
-            </CardContent>
-          </Card>
+      {queueData && (
+        <>
+          {/* User-specific Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
+                <Clock className="h-4 w-4 text-orange-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-600">{queueData.stats.scheduled}</div>
+                <p className="text-xs text-gray-600">Campaigns waiting to send</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active</CardTitle>
-              <AlertCircle className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
-              <p className="text-xs text-gray-600">Currently processing</p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Sending</CardTitle>
+                <AlertCircle className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">{queueData.stats.sending}</div>
+                <p className="text-xs text-gray-600">Currently being sent</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-              <p className="text-xs text-gray-600">Successfully sent</p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Active</CardTitle>
+                <Mail className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{queueData.stats.total}</div>
+                <p className="text-xs text-gray-600">Active campaigns</p>
+              </CardContent>
+            </Card>
+          </div>
 
+          {/* Campaign List */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Failed</CardTitle>
-              <XCircle className="h-4 w-4 text-red-600" />
+            <CardHeader>
+              <CardTitle>Active Campaigns</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
-              <p className="text-xs text-gray-600">Failed to send</p>
+              {queueData.campaigns.length > 0 ? (
+                <div className="space-y-4">
+                  {queueData.campaigns.map((campaign) => (
+                    <div key={campaign.id} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <div className={getStatusColor(campaign.status)}>
+                            {getStatusIcon(campaign.status)}
+                          </div>
+                          <h3 className="font-semibold">{campaign.title || campaign.subject}</h3>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          campaign.status === 'scheduled' 
+                            ? 'bg-orange-100 text-orange-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {campaign.status}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>Scheduled: {formatDate(campaign.send_date)}</span>
+                        </div>
+                        
+                        {campaign.jobStatus && (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 flex items-center justify-center">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                            </div>
+                            <span>Progress: {campaign.jobStatus.progress || 0}%</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {campaign.jobStatus?.progress && campaign.jobStatus.progress > 0 && (
+                        <div className="mt-3">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${campaign.jobStatus.progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {campaign.jobStatus?.failedReason && (
+                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                          Error: {campaign.jobStatus.failedReason}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">No campaigns currently in queue</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Campaigns will appear here when they're scheduled or being sent
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
-        </div>
+        </>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Queue Health</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {stats ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Total Jobs:</span>
-                <span className="font-semibold">{stats.total}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span>Success Rate:</span>
-                <span className="font-semibold">
-                  {stats.total > 0 
-                    ? `${Math.round((stats.completed / (stats.completed + stats.failed)) * 100)}%`
-                    : 'N/A'
-                  }
-                </span>
-              </div>
-
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-green-600 h-2 rounded-full" 
-                  style={{ 
-                    width: stats.total > 0 
-                      ? `${(stats.completed / stats.total) * 100}%` 
-                      : '0%' 
-                  }}
-                />
-              </div>
-              
-              <div className="text-sm text-gray-600">
-                Queue is {stats.waiting > 0 ? 'processing' : 'idle'}
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-4">
-              <p className="text-gray-600">Loading queue statistics...</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {!queueData && !loading && (
+        <div className="text-center py-8">
+          <p className="text-gray-600">Failed to load queue data</p>
+        </div>
+      )}
     </div>
   );
 }

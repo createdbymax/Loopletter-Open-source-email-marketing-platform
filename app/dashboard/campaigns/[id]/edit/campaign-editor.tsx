@@ -132,7 +132,11 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
     }
   };
 
-  const handleSend = async (data: { subject: string; previewText: string; content: string }) => {
+  const handleSend = async (data: {
+    subject: string;
+    previewText: string;
+    content: string;
+  }) => {
     if (!campaign || !artist) return;
 
     const confirmMessage = `Are you sure you want to send this campaign to all ${fanCount} subscribers?\n\nThis action cannot be undone.`;
@@ -177,9 +181,19 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
     }
   };
 
-  const handleSendingComplete = (result: any) => {
+  const handleSendingComplete = (result: {
+    success: boolean;
+    queued?: boolean;
+    sentCount?: number;
+    failedCount?: number;
+    totalCount: number;
+    errors?: string[];
+    jobId?: string;
+    estimatedTime?: string;
+    status?: string;
+  }) => {
     // The modal will handle the redirect to analytics
-    console.log('Campaign sending completed:', result);
+    console.log("Campaign sending completed:", result);
   };
 
   const handleCloseSendingModal = () => {

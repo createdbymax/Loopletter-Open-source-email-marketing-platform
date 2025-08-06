@@ -48,6 +48,9 @@ export async function POST(req: NextRequest) {
       updated_at: new Date().toISOString(),
     });
 
+    // Get estimated sending time
+    const estimate = await estimateCampaignDuration(subscribedFans.length);
+    
     // Queue the bulk campaign job
     const job = await queueBulkCampaign(campaignId, batchSize);
 
@@ -56,7 +59,7 @@ export async function POST(req: NextRequest) {
       message: 'Campaign queued for sending',
       jobId: job.id,
       totalRecipients: subscribedFans.length,
-      estimatedTime: `${estimateCampaignDuration(subscribedFans.length).estimatedMinutes} minutes`
+      estimatedTime: `${estimate.estimatedMinutes} minutes`
     });
 
   } catch (error) {

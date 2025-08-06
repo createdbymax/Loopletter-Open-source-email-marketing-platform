@@ -242,7 +242,7 @@ async function processBulkCampaign(job: Job, data: BulkCampaignJob) {
   });
 
   // Check if we can send all emails today
-  const estimate = estimateCampaignDuration(subscribedFans.length);
+  const estimate = await estimateCampaignDuration(subscribedFans.length);
   if (!estimate.canSendToday) {
     throw new Error(`Cannot send ${subscribedFans.length} emails today. Daily quota would be exceeded.`);
   }

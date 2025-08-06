@@ -26,7 +26,7 @@ export async function POST(
 
     // Fetch campaign
     const campaign = await getCampaignById(id);
-    
+
     if (!campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
     }
@@ -52,7 +52,7 @@ export async function POST(
 
     // Check if artist has proper email configuration for production
     if (process.env.NODE_ENV === 'production' && (!artist.ses_domain || !artist.ses_domain_verified)) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'You must have a verified domain to send campaigns',
         details: 'Please set up and verify your domain in the Domain Settings before sending campaigns.'
       }, { status: 400 });
@@ -69,7 +69,7 @@ export async function POST(
     // Check if we have enough quota remaining for this campaign
     const rateLimiterStats = await sesRateLimiter.getStats();
     if (rateLimiterStats.remainingToday < fanCount) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Insufficient daily quota remaining',
         details: `Campaign requires ${fanCount} emails but only ${rateLimiterStats.remainingToday} remaining today.`
       }, { status: 400 });
@@ -80,7 +80,7 @@ export async function POST(
     // For template-based campaigns, the message should be generated from the editor
     // The editor will have already converted template data to HTML and saved it
     if (!campaign.message || campaign.message === 'Template-based email content') {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Campaign content is required',
         details: 'Please ensure the campaign has been saved with content from the editor.'
       }, { status: 400 });
@@ -88,7 +88,7 @@ export async function POST(
 
     // Get estimated sending time
     const estimate = await estimateCampaignDuration(fanCount);
-    
+
     // Queue the campaign for sending using the bulk queue system
     const job = await queueBulkCampaign(id, 25); // Use batch size of 25 for optimal throughput
 

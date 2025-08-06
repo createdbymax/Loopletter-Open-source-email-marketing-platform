@@ -145,6 +145,7 @@ export type Campaign = {
   template_data?: Record<string, unknown> | null;
   segment_id?: string | null;
   ab_test_id?: string | null;
+  job_id?: string | null;
   settings: CampaignSettings;
   stats: CampaignStats;
   created_at: string;
