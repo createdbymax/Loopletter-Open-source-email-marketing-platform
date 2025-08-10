@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { checkDataProcessingCompliance } from '@/lib/privacy-middleware';
 
 // This endpoint serves a 1x1 transparent pixel and tracks email opens
 export async function GET(request: NextRequest) {
@@ -11,10 +12,45 @@ export async function GET(request: NextRequest) {
     const fanId = searchParams.get('fid');
     
     if (messageId && campaignId && fanId) {
-      // Record the open event asynchronously (don't await)
-      recordOpenEvent(messageId, campaignId, fanId, request).catch(error => {
-        console.error('Error recording open event:', error);
-      });
+      // Check privacy compliance before tracking
+      const { data: campaign } = await supabase
+        .from('campaigns')
+        .select('artist_id')
+        .eq('id', campaignId)
+        .single();
+      
+      if (campaign) {
+        const hasConsent = await checkDataProcessingCompliance(
+          campaign.artist_id,
+          fanId,
+          'analytics'
+        );
+        
+        if (hasConsent) {
+          // Record the open event asynchronously (don't await)
+          recordOpenEvent(messageId, campaignId, fanId, request).catch(error => {
+            console.error('Error recording open event:', error);
+          });
+        } else {
+          // Log the blocked tracking attempt
+          await supabase
+            .from('compliance_audit_logs')
+            .insert({
+              artist_id: campaign.artist_id,
+              fan_id: fanId,
+              action: 'tracking_blocked',
+              details: {
+                reason: 'no_analytics_consent',
+                tracking_type: 'email_open',
+                message_id: messageId,
+                campaign_id: campaignId
+              },
+              timestamp: new Date().toISOString(),
+              ip_address: request.headers.get('x-forwarded-for') || 'unknown',
+              user_agent: request.headers.get('user-agent') || 'unknown'
+            });
+        }
+      }
     }
     
     // Return a 1x1 transparent pixel

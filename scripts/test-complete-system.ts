@@ -56,7 +56,7 @@ async function testCompleteSystem() {
 
         // Test 3: Supabase connection
         console.log('3. Testing Supabase connection...');
-        const { supabaseAdmin } = await import('../lib/supabase');
+        const { supabaseAdmin } = await import('../lib/supabase-server');
         const { data, error } = await supabaseAdmin.from('campaigns').select('count').limit(1);
         if (error && !error.message.includes('relation "campaigns" does not exist')) {
             throw error;

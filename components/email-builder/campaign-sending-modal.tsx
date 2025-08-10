@@ -10,7 +10,7 @@ interface CampaignSendingModalProps {
   onClose: () => void;
   campaignId: string;
   fanCount: number;
-  onComplete: () => void;
+  onComplete: (result: SendResult) => void;
 }
 
 interface SendResult {

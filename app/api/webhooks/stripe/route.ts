@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { updateArtist } from '@/lib/db';
 import { SubscriptionPlan } from '@/lib/subscription';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-server';
 import { StripeSubscription, StripeInvoice, SubscriptionDetails, convertStripeSubscription } from '@/lib/stripe-types';
 
 // Initialize Stripe with the secret key
