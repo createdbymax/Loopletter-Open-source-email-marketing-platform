@@ -1,6 +1,14 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 
-export default clerkMiddleware();
+export default clerkMiddleware((auth, req) => {
+  // Skip authentication for cron endpoints
+  if (req.nextUrl.pathname === '/api/queue/process-all') {
+    return;
+  }
+  
+  // Apply normal Clerk authentication for other routes
+  return;
+});
 
 export const config = {
   matcher: [
