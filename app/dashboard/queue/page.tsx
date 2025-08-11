@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Clock, CheckCircle, AlertCircle, Mail, Calendar } from 'lucide-react';
+import { RefreshCw, Clock, AlertCircle, Mail, Calendar } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -92,10 +92,52 @@ export default function QueueDashboard() {
           <h1 className="text-2xl font-bold">My Campaign Queue</h1>
           <p className="text-sm text-gray-600">Monitor your queued and sending campaigns</p>
         </div>
-        <Button onClick={fetchQueueData} disabled={loading} variant="outline">
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          {process.env.NODE_ENV === 'development' && (
+            <>
+              <Button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/queue/recover', { method: 'POST' });
+                    const result = await response.json();
+                    console.log('Queue recovery result:', result);
+                    alert(`Recovery completed: ${result.recovered?.length || 0} jobs recovered`);
+                    // Refresh the queue data after recovery
+                    setTimeout(fetchQueueData, 1000);
+                  } catch (error) {
+                    console.error('Error recovering queue:', error);
+                    alert('Queue recovery failed');
+                  }
+                }} 
+                variant="secondary"
+              >
+                <AlertCircle className="w-4 h-4 mr-2" />
+                Recover Queue
+              </Button>
+              <Button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/queue/process-all');
+                    const result = await response.json();
+                    console.log('Queue processing result:', result);
+                    // Refresh the queue data after processing
+                    setTimeout(fetchQueueData, 1000);
+                  } catch (error) {
+                    console.error('Error processing queue:', error);
+                  }
+                }} 
+                variant="default"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Process Queue
+              </Button>
+            </>
+          )}
+          <Button onClick={fetchQueueData} disabled={loading} variant="outline">
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {lastUpdated && (

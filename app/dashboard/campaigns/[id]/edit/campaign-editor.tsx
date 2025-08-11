@@ -6,6 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { getOrCreateArtistByClerkId, getFansByArtist } from "@/lib/db";
 import { MailyEditor } from "@/components/email-builder/maily-editor";
 import { CampaignSendingModal } from "@/components/email-builder/campaign-sending-modal";
+import { DevQueueProcessor } from "@/components/dev-queue-processor";
 import { Campaign, Artist } from "@/lib/types";
 import { getUserSubscriptionPlan } from "@/lib/subscription";
 import { generateEmailHtml } from "@/lib/email-generator";
@@ -40,7 +41,8 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
       setArtist(artistData);
 
       const fans = await getFansByArtist(artistData.id);
-      setFanCount(fans.length);
+      const subscribedFans = fans.filter(fan => fan.status === 'subscribed');
+      setFanCount(subscribedFans.length);
 
       // Fetch campaign
       const response = await fetch(`/api/campaigns/${campaignId}`);
@@ -290,6 +292,9 @@ export function CampaignEditor({ campaignId }: CampaignEditorProps) {
 
   return (
     <div>
+      {/* Development Queue Processor */}
+      <DevQueueProcessor />
+      
       {hasBeenEdited && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4 mx-6 mt-4">
           <div className="flex items-start">

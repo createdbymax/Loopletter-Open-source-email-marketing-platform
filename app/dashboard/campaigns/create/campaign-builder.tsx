@@ -35,6 +35,7 @@ import { TemplateEditor } from "./template-editor";
 import { MailyEditor } from "@/components/email-builder/maily-editor";
 import { DomainCheck } from "./domain-check";
 import { EmailLimitWarning } from "@/components/ui/limit-warning";
+import { CampaignSendingModal } from "@/components/email-builder/campaign-sending-modal";
 import {
   hasReachedEmailSendLimit,
   getUserSubscriptionPlan,
@@ -138,6 +139,24 @@ export function CampaignBuilder() {
   // Artist state
   const [artist, setArtist] = useState<Artist | null>(null);
 
+  // Sending modal state
+  const [showSendingModal, setShowSendingModal] = useState(false);
+  const [campaignToSend, setCampaignToSend] = useState<string | null>(null);
+
+  // Handle sending completion
+  const handleSendingComplete = (result: any) => {
+    console.log("Campaign sending completed:", result);
+    // Redirect to campaigns list after successful send
+    if (result.success) {
+      router.push("/dashboard/campaigns");
+    }
+  };
+
+  const handleCloseSendingModal = () => {
+    setShowSendingModal(false);
+    setCampaignToSend(null);
+  };
+
   // Fetch fan count and artist on component mount
   useEffect(() => {
     async function fetchData() {
@@ -150,7 +169,8 @@ export function CampaignBuilder() {
         );
         setArtist(artistData);
         const fans = await getFansByArtist(artistData.id);
-        setFanCount(fans.length);
+        const subscribedFans = fans.filter(fan => fan.status === 'subscribed');
+        setFanCount(subscribedFans.length);
 
         // Set default values if not already set
         setEmailData((prev) => ({
@@ -299,64 +319,70 @@ export function CampaignBuilder() {
 
   // Send campaign
   const handleSendCampaign = async () => {
+    console.log('handleSendCampaign called with emailHtml length:', emailHtml.length);
+    console.log('emailData:', emailData);
+    
     if (!emailData.subject) {
       alert("Please add a subject line before sending");
       return;
     }
 
-    if (
-      confirm("Are you sure you want to send this campaign to all subscribers?")
-    ) {
-      try {
-        // First save the campaign
-        const campaignData = {
-          title: emailData.subject,
-          subject: emailData.subject,
-          from_name:
-            emailData.fromName || artist?.default_from_name || artist?.name,
-          from_email: artist?.ses_domain
-            ? `${artist.default_from_email || "noreply"}@${artist.ses_domain}`
-            : null,
-          message:
-            selectedTemplate === "visual-builder"
-              ? emailHtml
-              : selectedTemplate
-                ? "Template-based email content" // Provide a placeholder message for template-based campaigns
-                : blocks.map((b) => b.content).join("\n"),
-          template_id: selectedTemplate,
-          templateData: templateData,
-          settings: campaignSettings,
-          status: "draft", // Create as draft first, then send
-        };
+    if (!emailHtml || emailHtml.trim().length === 0) {
+      alert("Please add content to your email before sending");
+      return;
+    }
 
-        console.log('Creating campaign with data:', {
-          ...campaignData,
-          message: campaignData.message ? `${campaignData.message.substring(0, 100)}...` : 'No message',
-          templateData: campaignData.templateData ? 'Has template data' : 'No template data'
-        });
+    try {
+      // First create the campaign
+      const campaignData = {
+        title: emailData.subject,
+        subject: emailData.subject,
+        from_name:
+          emailData.fromName || artist?.default_from_name || artist?.name,
+        from_email: artist?.ses_domain
+          ? `${artist.default_from_email || "noreply"}@${artist.ses_domain}`
+          : null,
+        message: emailHtml, // Use the actual HTML content from the editor
+        template_id: selectedTemplate,
+        templateData: templateData,
+        settings: campaignSettings,
+        status: "draft", // Create as draft first, then send
+      };
 
-        const response = await fetch("/api/campaigns", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(campaignData),
-        });
+      console.log('Creating campaign with data:', {
+        ...campaignData,
+        message: campaignData.message ? `${campaignData.message.substring(0, 100)}...` : 'No message',
+        templateData: campaignData.templateData ? 'Has template data' : 'No template data'
+      });
 
-        if (response.ok) {
-          const result = await response.json();
-          const campaign = result.campaign;
+      const response = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(campaignData),
+      });
 
-          // Redirect to editor for editing and sending
-          router.push(`/dashboard/campaigns/${campaign.id}/edit`);
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to create campaign");
-        }
-      } catch (error) {
-        console.error("Error sending campaign:", error);
-        alert(
-          `Failed to send campaign: ${error instanceof Error ? error.message : "Unknown error"}`
-        );
+      if (response.ok) {
+        const result = await response.json();
+        const campaign = result.campaign;
+        
+        console.log('Campaign created successfully:', campaign);
+
+        // Now immediately send the campaign and show the sending modal
+        console.log('Setting campaign to send:', campaign.id);
+        setCampaignToSend(campaign.id);
+        console.log('Setting show sending modal to true');
+        setShowSendingModal(true);
+        
+        console.log('Modal state - campaignToSend:', campaign.id, 'showSendingModal:', true);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create campaign");
       }
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      alert(
+        `Failed to create campaign: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   };
 
@@ -381,42 +407,53 @@ export function CampaignBuilder() {
   // Show Maily email designer
   if (currentStep === "maily-editor") {
     return (
-      <MailyEditor
-        initialHtml={emailHtml}
-        templateId={selectedTemplate || undefined}
-        templateData={templateData}
-        fanCount={fanCount}
-        subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : "starter"}
-        subject={emailData.subject}
-        previewText={emailData.previewText}
-        fromName={emailData.fromName}
-        artist={artist}
-        onBack={() => setCurrentStep("template")}
-        onSave={() => {
-          // TODO: Get HTML content from editor
-          setEmailHtml("");
-          // Update email data with a default subject if not set
-          if (!emailData.subject) {
+      <>
+        <MailyEditor
+          initialHtml={emailHtml}
+          templateId={selectedTemplate || undefined}
+          templateData={templateData}
+          fanCount={fanCount}
+          subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : "starter"}
+          subject={emailData.subject}
+          previewText={emailData.previewText}
+          fromName={emailData.fromName}
+          artist={artist}
+          onBack={() => setCurrentStep("template")}
+          onSave={(htmlContent: string) => {
+            console.log('Campaign builder - onSave called with content length:', htmlContent.length);
+            setEmailHtml(htmlContent);
+            handleSaveDraft();
+          }}
+          onSend={(data: { subject: string; previewText: string; content: string }) => {
+            console.log('Campaign builder - onSend called with:', {
+              subject: data.subject,
+              previewText: data.previewText,
+              contentLength: data.content.length
+            });
+            
+            // Update email data with the data from the editor
             setEmailData((prev) => ({
               ...prev,
-              subject: "My Email Campaign",
+              subject: data.subject || prev.subject || "My Email Campaign",
+              previewText: data.previewText || prev.previewText
             }));
-          }
-          handleSaveDraft();
-        }}
-        onSend={() => {
-          // TODO: Get HTML content from editor
-          setEmailHtml("");
-          // Update email data with a default subject if not set
-          if (!emailData.subject) {
-            setEmailData((prev) => ({
-              ...prev,
-              subject: "My Email Campaign",
-            }));
-          }
-          handleSendCampaign();
-        }}
-      />
+            
+            setEmailHtml(data.content);
+            handleSendCampaign();
+          }}
+        />
+        
+        {/* Campaign Sending Modal - needs to be here for Maily editor */}
+        {campaignToSend && (
+          <CampaignSendingModal
+            isOpen={showSendingModal}
+            onClose={handleCloseSendingModal}
+            campaignId={campaignToSend}
+            fanCount={fanCount}
+            onComplete={handleSendingComplete}
+          />
+        )}
+      </>
     );
   }
 
@@ -526,22 +563,24 @@ export function CampaignBuilder() {
               <Eye className="w-4 h-4 mr-2" />
               Preview
             </Button>
-            <Button
-              size="sm"
-              onClick={handleSendCampaign}
-              disabled={
-                !isDomainValid ||
-                Boolean(artist && hasReachedEmailSendLimit(artist, fanCount))
-              }
-              title={
-                artist && hasReachedEmailSendLimit(artist, fanCount)
-                  ? "You've reached your email sending limit"
-                  : ""
-              }
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Create Campaign
-            </Button>
+            {currentStep !== "maily-editor" && (
+              <Button
+                size="sm"
+                onClick={handleSendCampaign}
+                disabled={
+                  !isDomainValid ||
+                  Boolean(artist && hasReachedEmailSendLimit(artist, fanCount))
+                }
+                title={
+                  artist && hasReachedEmailSendLimit(artist, fanCount)
+                    ? "You've reached your email sending limit"
+                    : ""
+                }
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Create Campaign
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -624,7 +663,7 @@ export function CampaignBuilder() {
                   <Label>Audience</Label>
                   <div className="mt-2">
                     <Badge variant="secondary">
-                      All Subscribers ({fanCount.toLocaleString()})
+                      Subscribed Fans ({fanCount.toLocaleString()})
                     </Badge>
                   </div>
                 </div>
@@ -863,6 +902,17 @@ export function CampaignBuilder() {
           </div>
         </div>
       </div>
+
+      {/* Campaign Sending Modal */}
+      {campaignToSend && (
+        <CampaignSendingModal
+          isOpen={showSendingModal}
+          onClose={handleCloseSendingModal}
+          campaignId={campaignToSend}
+          fanCount={fanCount}
+          onComplete={handleSendingComplete}
+        />
+      )}
     </div>
   );
 }
@@ -871,7 +921,7 @@ interface BlockEditorProps {
   block: Block;
   isSelected: boolean;
   onSelect: () => void;
-  onUpdate: (updates: Partial<Block>) => void;
+  onUpdate: () => void;
   onDelete: () => void;
 }
 
@@ -1036,7 +1086,7 @@ function BlockEditor({
 
 interface BlockPropertiesProps {
   block: Block;
-  onUpdate: (updates: any) => void;
+  onUpdate: () => void;
 }
 
 function BlockProperties({ block, onUpdate }: BlockPropertiesProps) {

@@ -10,7 +10,7 @@ interface CampaignSendingModalProps {
   onClose: () => void;
   campaignId: string;
   fanCount: number;
-  onComplete: (result: SendResult) => void;
+  onComplete: () => void;
 }
 
 interface SendResult {
@@ -194,7 +194,7 @@ export function CampaignSendingModal({
                 <Send className="w-12 h-12 text-blue-500 mx-auto animate-bounce" />
               </div>
               <p className="text-gray-600 dark:text-neutral-400 mb-2">
-                Queueing campaign for {fanCount.toLocaleString()} subscribers...
+                Queueing campaign for {fanCount.toLocaleString()} subscribed fans...
               </p>
               <p className="text-sm text-gray-500 dark:text-neutral-500 mb-4">
                 Your campaign will be sent respecting rate limits
@@ -223,7 +223,7 @@ export function CampaignSendingModal({
                   <div className="flex items-center justify-center">
                     <Users className="w-4 h-4 text-orange-600 mr-2" />
                     <span className="font-semibold">
-                      {result.totalCount.toLocaleString()} subscribers
+                      {result.totalCount.toLocaleString()} subscribed fans
                     </span>
                   </div>
 
@@ -238,6 +238,11 @@ export function CampaignSendingModal({
                     Your campaign is now in the sending queue and will be
                     delivered automatically while respecting AWS SES rate
                     limits.
+                    {process.env.NODE_ENV === 'development' && (
+                      <span className="block mt-2 text-sm">
+                        <strong>Development Mode:</strong> Queue processing will start automatically in a few seconds.
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -255,7 +260,7 @@ export function CampaignSendingModal({
                 <Button
                   variant="outline"
                   onClick={() =>
-                    (window.location.href = `/dashboard/campaigns/${campaignId}`)
+                    (window.location.href = `/dashboard/campaigns/${campaignId}/edit`)
                   }
                   className="w-full"
                 >

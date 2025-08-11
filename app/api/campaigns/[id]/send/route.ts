@@ -16,6 +16,9 @@ export async function POST(
     }
 
     const { id } = await params;
+    console.log(`=== CAMPAIGN SEND ENDPOINT CALLED ===`);
+    console.log(`Campaign ID: ${id}`);
+    console.log(`User ID: ${user.id}`);
 
     // Get artist to verify ownership
     const artist = await getOrCreateArtistByClerkId(
@@ -58,12 +61,13 @@ export async function POST(
       }, { status: 400 });
     }
 
-    // Get fans to send to
-    const fans = await getFansByArtist(artist.id);
-    const fanCount = fans.length;
+    // Get fans to send to - only count subscribed fans
+    const allFans = await getFansByArtist(artist.id);
+    const subscribedFans = allFans.filter(fan => fan.status === 'subscribed');
+    const fanCount = subscribedFans.length;
 
     if (fanCount === 0) {
-      return NextResponse.json({ error: 'No subscribers to send to' }, { status: 400 });
+      return NextResponse.json({ error: 'No subscribed fans to send to' }, { status: 400 });
     }
 
     // Check if we have enough quota remaining for this campaign
@@ -75,7 +79,7 @@ export async function POST(
       }, { status: 400 });
     }
 
-    console.log(`Queueing campaign "${campaign.title}" for ${fanCount} subscribers`);
+    console.log(`Queueing campaign "${campaign.title}" for ${fanCount} subscribed fans`);
 
     // For template-based campaigns, the message should be generated from the editor
     // The editor will have already converted template data to HTML and saved it
@@ -90,7 +94,15 @@ export async function POST(
     const estimate = await estimateCampaignDuration(fanCount);
 
     // Queue the campaign for sending using the bulk queue system
-    const job = await queueBulkCampaign(id, 25); // Use batch size of 25 for optimal throughput
+    console.log(`Attempting to queue campaign ${id} for ${fanCount} fans...`);
+    let job;
+    try {
+      job = await queueBulkCampaign(id, 25); // Use batch size of 25 for optimal throughput
+      console.log(`Campaign queued successfully. Job ID: ${job.id}, Job Name: ${job.name}`);
+    } catch (queueError) {
+      console.error('Error queueing campaign:', queueError);
+      throw new Error(`Failed to queue campaign: ${queueError instanceof Error ? queueError.message : 'Unknown error'}`);
+    }
 
     // Update campaign status to scheduled (will be changed to 'sending' by the queue worker)
     await updateCampaign(id, {
@@ -110,12 +122,35 @@ export async function POST(
       job_id: job.id,
     });
 
+    // In development, automatically process the queue
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Development mode: triggering queue processing...');
+      
+      // Trigger queue processing after a short delay
+      setTimeout(async () => {
+        try {
+          const processResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/queue/process-all`, {
+            method: 'GET',
+          });
+          
+          if (processResponse.ok) {
+            const processResult = await processResponse.json();
+            console.log('Queue processing result:', processResult);
+          } else {
+            console.error('Failed to process queue:', await processResponse.text());
+          }
+        } catch (error) {
+          console.error('Error triggering queue processing:', error);
+        }
+      }, 2000); // 2 second delay to allow the job to be fully queued
+    }
+
     // Return queue information
     const response = {
       success: true,
       queued: true,
       totalCount: fanCount,
-      message: `Campaign queued for sending to ${fanCount} subscribers`,
+      message: `Campaign queued for sending to ${fanCount} subscribed fans`,
       campaignId: id,
       campaignTitle: campaign.title || campaign.subject,
       jobId: job.id,

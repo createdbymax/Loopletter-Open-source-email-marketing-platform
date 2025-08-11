@@ -21,7 +21,7 @@ const getRedisConfig = () => {
       commandTimeout: 5000,
     };
   }
-  
+
   // Fallback for other Redis providers
   if (process.env.REDIS_URL) {
     const url = new URL(process.env.REDIS_URL);
@@ -35,7 +35,7 @@ const getRedisConfig = () => {
       maxRetriesPerRequest: 2,
     };
   }
-  
+
   // Local development fallback
   return {
     host: 'localhost',
@@ -113,19 +113,23 @@ export async function queueBulkCampaign(campaignId: string, batchSize: number = 
     batchSize,
   };
 
+  console.log(`Queueing bulk campaign: ${campaignId} with batch size: ${batchSize}`);
   const queue = getEmailQueue();
-  return await queue.add('send-bulk-campaign', jobData, {
+  const job = await queue.add('send-bulk-campaign', jobData, {
     priority: 10, // Higher priority for bulk operations
   });
+  console.log(`Bulk campaign job created: ID=${job.id}, Name=${job.name}`);
+
+  return job;
 }
 
 // Process jobs via API endpoints for serverless
 export async function processJobById(jobId: string): Promise<{ processed: boolean; result?: any }> {
   const queue = getEmailQueue();
-  
+
   try {
     const job = await queue.getJob(jobId);
-    
+
     if (!job) {
       return { processed: false };
     }
@@ -138,11 +142,11 @@ export async function processJobById(jobId: string): Promise<{ processed: boolea
         case 'send-campaign-email':
           result = await processCampaignEmail(job, data as CampaignEmailJob);
           break;
-        
+
         case 'send-bulk-campaign':
           result = await processBulkCampaign(job, data as BulkCampaignJob);
           break;
-        
+
         default:
           throw new Error(`Unknown job type: ${name}`);
       }
@@ -166,18 +170,38 @@ async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
   // Update job progress
   await job.updateProgress(10);
 
-  // Fetch required data
-  const [campaign, fan, artist] = await Promise.all([
-    getCampaignById(campaignId),
-    getFanById(fanId),
-    getArtistById(artistId),
-  ]);
+  // Fetch required data with individual error handling
+  let campaign, fan, artist;
+  
+  try {
+    campaign = await getCampaignById(campaignId);
+    console.log(`Campaign ${campaignId} found:`, !!campaign);
+  } catch (error) {
+    console.error(`Error fetching campaign ${campaignId}:`, error);
+    throw new Error(`Failed to fetch campaign: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  try {
+    fan = await getFanById(fanId);
+    console.log(`Fan ${fanId} found:`, !!fan);
+  } catch (error) {
+    console.error(`Error fetching fan ${fanId}:`, error);
+    throw new Error(`Failed to fetch fan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+
+  try {
+    artist = await getArtistById(artistId);
+    console.log(`Artist ${artistId} found:`, !!artist);
+  } catch (error) {
+    console.error(`Error fetching artist ${artistId}:`, error);
+    throw new Error(`Failed to fetch artist: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 
   await job.updateProgress(30);
 
   // Validate data
   if (!campaign || !fan || !artist) {
-    throw new Error('Missing required data for email sending');
+    throw new Error(`Missing required data - Campaign: ${!!campaign}, Fan: ${!!fan}, Artist: ${!!artist}`);
   }
 
   // Skip if fan is unsubscribed
@@ -236,7 +260,7 @@ async function processBulkCampaign(job: Job, data: BulkCampaignJob) {
   await job.updateProgress(25);
 
   // Update campaign status to 'sending'
-  await updateCampaign(campaignId, { 
+  await updateCampaign(campaignId, {
     status: 'sending',
     updated_at: new Date().toISOString(),
   });
@@ -255,13 +279,13 @@ async function processBulkCampaign(job: Job, data: BulkCampaignJob) {
 
   for (let i = 0; i < subscribedFans.length; i += optimalBatchSize) {
     const batch = subscribedFans.slice(i, i + optimalBatchSize);
-    
+
     // Create individual email jobs for this batch with proper delays
     const batchJobs = batch.map((fan, index) => {
       const delay = calculateBatchDelay(1) * index; // Stagger emails within batch
       return queueCampaignEmail(campaignId, fan.id, campaign.artist_id);
     });
-    
+
     jobs.push(...batchJobs);
     processedFans += batch.length;
 

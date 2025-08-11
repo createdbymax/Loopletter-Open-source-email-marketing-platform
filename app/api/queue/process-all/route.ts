@@ -6,31 +6,71 @@ import { getEmailQueue, processJobById } from '@/lib/email-queue';
 export async function GET(request: NextRequest) {
   try {
     // Verify this is a cron request (optional security)
-    const authHeader = request.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // In development mode, skip auth check for easier testing
+    if (process.env.NODE_ENV !== 'development') {
+      const authHeader = request.headers.get('authorization');
+      if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
     }
 
     const queue = getEmailQueue();
     
-    // Get waiting jobs (limit to avoid timeouts)
+    // Get waiting and delayed jobs (limit to avoid timeouts)
     const waitingJobs = await queue.getWaiting(0, 5); // Process max 5 jobs per cron run
+    const delayedJobs = await queue.getDelayed(0, 5); // Also get delayed jobs
     
-    if (waitingJobs.length === 0) {
+    // In development, also check other job states for debugging
+    if (process.env.NODE_ENV === 'development') {
+      const [activeJobs, completedJobs, failedJobs] = await Promise.all([
+        queue.getActive(0, 5),
+        queue.getCompleted(0, 5),
+        queue.getFailed(0, 5)
+      ]);
+      
+      console.log('Queue Debug Info:');
+      console.log(`- Waiting jobs: ${waitingJobs.length}`);
+      console.log(`- Active jobs: ${activeJobs.length}`);
+      console.log(`- Completed jobs: ${completedJobs.length}`);
+      console.log(`- Failed jobs: ${failedJobs.length}`);
+      console.log(`- Delayed jobs: ${delayedJobs.length}`);
+      
+      if (waitingJobs.length > 0) {
+        console.log('Waiting jobs:', waitingJobs.map(j => ({ id: j.id, name: j.name, data: j.data })));
+      }
+      if (activeJobs.length > 0) {
+        console.log('Active jobs:', activeJobs.map(j => ({ id: j.id, name: j.name, data: j.data })));
+      }
+      if (delayedJobs.length > 0) {
+        console.log('Delayed jobs:', delayedJobs.map(j => ({ id: j.id, name: j.name, data: j.data, delay: j.delay })));
+      }
+    }
+    
+    // Combine waiting and delayed jobs for processing
+    const allJobsToProcess = [...waitingJobs, ...delayedJobs];
+    
+    if (allJobsToProcess.length === 0) {
       return NextResponse.json({ 
         message: 'No jobs to process',
-        processed: 0 
+        processed: 0,
+        debug: process.env.NODE_ENV === 'development' ? {
+          waiting: waitingJobs.length,
+          delayed: delayedJobs.length,
+          active: (await queue.getActive()).length,
+          completed: (await queue.getCompleted()).length,
+          failed: (await queue.getFailed()).length
+        } : undefined
       });
     }
 
-    console.log(`Processing ${waitingJobs.length} jobs from queue`);
+    console.log(`Processing ${allJobsToProcess.length} jobs from queue (${waitingJobs.length} waiting, ${delayedJobs.length} delayed)`);
     
     const results = [];
     let successCount = 0;
     let failureCount = 0;
 
     // Process jobs sequentially to respect rate limits
-    for (const job of waitingJobs) {
+    for (const job of allJobsToProcess) {
       try {
         console.log(`Processing job ${job.id}: ${job.name}`);
         
@@ -67,8 +107,8 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: `Processed ${waitingJobs.length} jobs`,
-      processed: waitingJobs.length,
+      message: `Processed ${allJobsToProcess.length} jobs`,
+      processed: allJobsToProcess.length,
       successful: successCount,
       failed: failureCount,
       timestamp: new Date().toISOString(),
