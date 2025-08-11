@@ -667,8 +667,10 @@ async function addEmailTracking(
   let processedMessage = message;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
 
-  // Check if this is HTML content
-  const isHtml = message.includes('<html>') || message.includes('<!DOCTYPE');
+  // Check if this is HTML content (more comprehensive check using regex)
+  const isHtml = message.includes('<html>') || message.includes('<!DOCTYPE') || 
+                 /<p\b/.test(message) || /<div\b/.test(message) || 
+                 /<br\b/.test(message) || /<span\b/.test(message);
 
   if (isHtml) {
     // Add click tracking to all links if enabled
@@ -687,10 +689,26 @@ async function addEmailTracking(
       );
     }
 
+    // Wrap content in complete HTML structure if it's not already
+    if (!processedMessage.includes('<html>') && !processedMessage.includes('<!DOCTYPE')) {
+      processedMessage = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${campaign.subject}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto;">
+    ${processedMessage}
+  </div>
+</body>
+</html>`;
+    }
+
     // Add unsubscribe footer if not already present
     if (!processedMessage.includes('unsubscribe')) {
-      const loopletterFooterRegex = /<div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">/;
-
       const unsubscribeFooter = `
         <div style="font-size: 12px; color: #666; text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
           <p style="margin: 0 0 10px 0;">You're receiving this email because you subscribed to updates from ${artist.name}.</p>
@@ -701,16 +719,20 @@ async function addEmailTracking(
         </div>
       `;
 
-      if (loopletterFooterRegex.test(processedMessage)) {
-        // Insert before Loopletter footer
-        processedMessage = processedMessage.replace(loopletterFooterRegex, unsubscribeFooter + '\n    <div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">');
-      } else {
-        // Add before closing container div
-        processedMessage = processedMessage.replace(
-          /<\/div>\s*<\/body>/,
-          unsubscribeFooter + '\n  </div>\n</body>'
-        );
-      }
+      // Add Loopletter footer
+      const loopletterFooter = `
+        <div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">
+          <p style="margin: 0;">
+            Sent with <a href="https://loopletter.co" style="color: #666; text-decoration: none;">Loopletter</a>
+          </p>
+        </div>
+      `;
+
+      // Insert both footers before closing container div and body
+      processedMessage = processedMessage.replace(
+        /<\/div>\s*<\/body>/,
+        unsubscribeFooter + loopletterFooter + '\n  </div>\n</body>'
+      );
     }
   } else {
     // For plain text emails, just add unsubscribe footer

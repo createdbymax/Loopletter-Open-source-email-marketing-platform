@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
     while (iteration < MAX_ITERATIONS) {
       const waitingJobs = await queue.getWaiting(0, 5);
       const delayedJobs = await queue.getDelayed(0, 5);
-      const allJobsToProcess = [...waitingJobs, ...delayedJobs];
+      const prioritizedJobs = await queue.getPrioritized(0, 5);
+      const allJobsToProcess = [...waitingJobs, ...delayedJobs, ...prioritizedJobs];
 
       if (allJobsToProcess.length === 0) {
         if (processed === 0) {
@@ -36,6 +37,7 @@ export async function GET(request: NextRequest) {
             debug: process.env.NODE_ENV === 'development' ? {
               waiting: waitingJobs.length,
               delayed: delayedJobs.length,
+              prioritized: prioritizedJobs.length,
               active: (await queue.getActive()).length,
               completed: (await queue.getCompleted()).length,
               failed: (await queue.getFailed()).length
@@ -58,6 +60,7 @@ export async function GET(request: NextRequest) {
         console.log(`- Completed jobs: ${completedJobs.length}`);
         console.log(`- Failed jobs: ${failedJobs.length}`);
         console.log(`- Delayed jobs: ${delayedJobs.length}`);
+        console.log(`- Prioritized jobs: ${prioritizedJobs.length}`);
 
         if (waitingJobs.length > 0) {
           console.log('Waiting jobs:', waitingJobs.map(j => ({ id: j.id, name: j.name, data: j.data })));
@@ -68,9 +71,12 @@ export async function GET(request: NextRequest) {
         if (delayedJobs.length > 0) {
           console.log('Delayed jobs:', delayedJobs.map(j => ({ id: j.id, name: j.name, data: j.data, delay: j.delay })));
         }
+        if (prioritizedJobs.length > 0) {
+          console.log('Prioritized jobs:', prioritizedJobs.map(j => ({ id: j.id, name: j.name, data: j.data })));
+        }
       }
 
-      console.log(`Processing ${allJobsToProcess.length} jobs from queue (${waitingJobs.length} waiting, ${delayedJobs.length} delayed)`);
+      console.log(`Processing ${allJobsToProcess.length} jobs from queue (${waitingJobs.length} waiting, ${delayedJobs.length} delayed, ${prioritizedJobs.length} prioritized)`);
 
       for (const job of allJobsToProcess) {
         try {
@@ -125,7 +131,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error processing queue:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to process queue',
         timestamp: new Date().toISOString()
       },

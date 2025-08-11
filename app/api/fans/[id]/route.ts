@@ -60,7 +60,7 @@ export async function PATCH(
 
     // Verify fan belongs to this artist
     const fan = await getFanById(fanId);
-    if (fan.artist_id !== artist.id) {
+    if (!fan || fan.artist_id !== artist.id) {
       return NextResponse.json({ error: 'Fan not found' }, { status: 404 });
     }
 
@@ -110,7 +110,7 @@ export async function DELETE(
 
     // Verify fan belongs to this artist
     const fan = await getFanById(fanId);
-    if (fan.artist_id !== artist.id) {
+    if (!fan || fan.artist_id !== artist.id) {
       return NextResponse.json({ error: 'Fan not found' }, { status: 404 });
     }
 

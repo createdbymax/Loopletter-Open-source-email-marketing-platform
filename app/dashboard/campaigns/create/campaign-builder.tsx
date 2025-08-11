@@ -392,7 +392,12 @@ export function CampaignBuilder() {
   }
 
   // Show template form
-  if (currentStep === "form" && selectedTemplate) {
+  if (currentStep === "form") {
+    if (!selectedTemplate) {
+      // If no template selected, go back to template selection
+      setCurrentStep("template");
+      return null;
+    }
     return (
       <TemplateForm
         templateId={selectedTemplate}
@@ -563,24 +568,22 @@ export function CampaignBuilder() {
               <Eye className="w-4 h-4 mr-2" />
               Preview
             </Button>
-            {currentStep !== "maily-editor" && (
-              <Button
-                size="sm"
-                onClick={handleSendCampaign}
-                disabled={
-                  !isDomainValid ||
-                  Boolean(artist && hasReachedEmailSendLimit(artist, fanCount))
-                }
-                title={
-                  artist && hasReachedEmailSendLimit(artist, fanCount)
-                    ? "You've reached your email sending limit"
-                    : ""
-                }
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Create Campaign
-              </Button>
-            )}
+            <Button
+              size="sm"
+              onClick={handleSendCampaign}
+              disabled={
+                !isDomainValid ||
+                Boolean(artist && hasReachedEmailSendLimit(artist, fanCount))
+              }
+              title={
+                artist && hasReachedEmailSendLimit(artist, fanCount)
+                  ? "You've reached your email sending limit"
+                  : ""
+              }
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Create Campaign
+            </Button>
           </div>
         </div>
       </div>
@@ -921,7 +924,7 @@ interface BlockEditorProps {
   block: Block;
   isSelected: boolean;
   onSelect: () => void;
-  onUpdate: () => void;
+  onUpdate: (updates: Partial<Block>) => void;
   onDelete: () => void;
 }
 
@@ -1086,7 +1089,7 @@ function BlockEditor({
 
 interface BlockPropertiesProps {
   block: Block;
-  onUpdate: () => void;
+  onUpdate: (updates: Partial<Block>) => void;
 }
 
 function BlockProperties({ block, onUpdate }: BlockPropertiesProps) {
