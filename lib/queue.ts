@@ -21,6 +21,9 @@ class EmailQueue {
 
   async addCampaignToQueue(campaignId: string): Promise<void> {
     const campaign = await getCampaignById(campaignId);
+    if (!campaign) {
+      throw new Error('Campaign not found');
+    }
     const fans = await getFansByArtist(campaign.artist_id);
 
     // Filter active subscribers
@@ -110,11 +113,17 @@ class EmailQueue {
 
   private async processJob(job: EmailJob): Promise<void> {
     try {
-      const [campaign, artist, fans] = await Promise.all([
-        getCampaignById(job.campaignId),
-        getCampaignById(job.campaignId).then(c => getArtistById(c.artist_id)),
-        getFansByArtist((await getCampaignById(job.campaignId)).artist_id)
-      ]);
+      const campaign = await getCampaignById(job.campaignId);
+      if (!campaign) {
+        throw new Error(`Campaign ${job.campaignId} not found`);
+      }
+
+      const artist = await getArtistById(campaign.artist_id);
+      if (!artist) {
+        throw new Error(`Artist ${campaign.artist_id} not found`);
+      }
+
+      const fans = await getFansByArtist(campaign.artist_id);
 
       const fan = fans.find(f => f.id === job.fanId);
       if (!fan) {

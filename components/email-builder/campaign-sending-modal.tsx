@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckCircle, Clock, Send, Users, TrendingUp, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAnalytics } from "@/hooks/use-analytics";
@@ -10,7 +10,7 @@ interface CampaignSendingModalProps {
   onClose: () => void;
   campaignId: string;
   fanCount: number;
-  onComplete: () => void;
+  onComplete: (result: SendResult) => void;
 }
 
 interface SendResult {
@@ -40,6 +40,8 @@ export function CampaignSendingModal({
   const [error, setError] = useState<string | null>(null);
   const { track } = useAnalytics();
 
+  const hasSentRef = useRef(false);
+
   useEffect(() => {
     if (!isOpen) {
       // Reset state when modal closes
@@ -47,11 +49,17 @@ export function CampaignSendingModal({
       setProgress(0);
       setResult(null);
       setError(null);
+      hasSentRef.current = false;
       return;
     }
 
-    // Start the sending process
-    sendCampaign();
+    // In React Strict Mode, effects may run twice. Use a ref to ensure the
+    // campaign is only sent once per modal open.
+    if (!hasSentRef.current) {
+      hasSentRef.current = true;
+      // Start the sending process
+      sendCampaign();
+    }
   }, [isOpen, campaignId]);
 
   const sendCampaign = async () => {
