@@ -35,9 +35,13 @@ function mapArtistFields(artist: any): Artist {
 
 // ARTISTS
 export async function getArtistById(id: string) {
-  const { data, error } = await supabase.from('artists').select('*').eq('id', id).single();
-  if (error) throw error;
-  return mapArtistFields(data) as Artist;
+  const { data, error } = await supabase
+    .from('artists')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return data ? (mapArtistFields(data) as Artist) : null;
 }
 
 export async function getArtistBySlug(slug: string) {
@@ -288,9 +292,15 @@ export async function getCampaignsByArtist(artist_id: string) {
 }
 
 export async function getCampaignById(id: string) {
-  const { data, error } = await supabase.from('campaigns').select('*').eq('id', id).single();
-  if (error) throw error;
-  return data as Campaign;
+  const { data, error } = await supabase
+    .from('campaigns')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error && error.code !== 'PGRST116') throw error;
+
+  return data as Campaign | null;
 }
 
 export async function updateCampaign(id: string, updates: Partial<Campaign>) {
@@ -306,6 +316,9 @@ export async function deleteCampaign(id: string) {
 
 export async function duplicateCampaign(id: string, artistId: string) {
   const original = await getCampaignById(id);
+  if (!original) {
+    throw new Error('Campaign not found');
+  }
   const now = new Date().toISOString();
   
   const duplicate: Omit<Campaign, 'id'> = {
@@ -872,9 +885,13 @@ export async function deleteFan(fan_id: string) {
 
 // Missing function implementations
 export async function getFanById(id: string) {
-  const { data, error } = await supabase.from('fans').select('*').eq('id', id).single();
-  if (error) throw error;
-  return data as Fan;
+  const { data, error } = await supabase
+    .from('fans')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return data as Fan | null;
 }
 
 export async function getTemplateById(id: string) {

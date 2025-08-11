@@ -134,6 +134,13 @@ export async function processJobById(jobId: string): Promise<{ processed: boolea
       return { processed: false };
     }
 
+    // Promote delayed jobs so they don't remain stuck in the queue
+    try {
+      await job.promote();
+    } catch {
+      // Ignore if job cannot be promoted (e.g., already active)
+    }
+
     const { name, data } = job;
     let result;
 
@@ -151,9 +158,12 @@ export async function processJobById(jobId: string): Promise<{ processed: boolea
           throw new Error(`Unknown job type: ${name}`);
       }
 
+      await job.moveToCompleted(result, true);
+
       return { processed: true, result };
 
     } catch (error) {
+      await job.moveToFailed(error as Error, true);
       console.error(`Job ${job.id} failed:`, error);
       throw error;
     }
@@ -175,6 +185,9 @@ async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
   
   try {
     campaign = await getCampaignById(campaignId);
+    if (!campaign) {
+      throw new Error('Campaign not found');
+    }
     console.log(`Campaign ${campaignId} found:`, !!campaign);
   } catch (error) {
     console.error(`Error fetching campaign ${campaignId}:`, error);
@@ -183,6 +196,9 @@ async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
 
   try {
     fan = await getFanById(fanId);
+    if (!fan) {
+      throw new Error('Fan not found');
+    }
     console.log(`Fan ${fanId} found:`, !!fan);
   } catch (error) {
     console.error(`Error fetching fan ${fanId}:`, error);
@@ -191,6 +207,9 @@ async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
 
   try {
     artist = await getArtistById(artistId);
+    if (!artist) {
+      throw new Error('Artist not found');
+    }
     console.log(`Artist ${artistId} found:`, !!artist);
   } catch (error) {
     console.error(`Error fetching artist ${artistId}:`, error);
@@ -222,6 +241,36 @@ async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
   }
 
   await job.updateProgress(100);
+
+  // Update campaign stats
+  try {
+    await updateCampaign(campaignId, {
+      stats: {
+        ...campaign.stats,
+        total_sent: (campaign.stats?.total_sent || 0) + 1,
+      },
+      updated_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error(`Failed to update campaign stats for ${campaignId}:`, err);
+  }
+
+  // If no more jobs exist for this campaign, mark as sent
+  try {
+    const queue = getEmailQueue();
+    const remaining = await queue.getJobs(['waiting', 'delayed', 'active']);
+    const hasMore = remaining.some(
+      (j) => j.name === 'send-campaign-email' && j.data.campaignId === campaignId
+    );
+    if (!hasMore) {
+      await updateCampaign(campaignId, {
+        status: 'sent',
+        updated_at: new Date().toISOString(),
+      });
+    }
+  } catch (err) {
+    console.error(`Failed to finalize campaign ${campaignId}:`, err);
+  }
 
   return {
     success: true,
