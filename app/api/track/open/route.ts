@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, getSupabaseAdmin } from '@/lib/supabase';
 import { checkDataProcessingCompliance } from '@/lib/privacy-middleware';
 
 // This endpoint serves a 1x1 transparent pixel and tracks email opens
@@ -83,72 +83,76 @@ export async function GET(request: NextRequest) {
 
 async function recordOpenEvent(messageId: string, campaignId: string, fanId: string, request: NextRequest) {
   try {
+    const supabaseAdmin = await getSupabaseAdmin();
+    
     // Get client information
     const userAgent = request.headers.get('user-agent') || '';
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
     
-    // Check if this open has already been recorded (use both messageId and fan/campaign combo)
-    const { data: existingOpen } = await supabase
-      .from('email_opens')
-      .select('id')
+    
+    // Find the email_sent record (try both messageId and campaign/fan combo)
+    const { data: emailSentRecord } = await supabaseAdmin
+      .from('emails_sent')
+      .select('id, opened_at')
       .or(`message_id.eq.${messageId},and(campaign_id.eq.${campaignId},fan_id.eq.${fanId})`)
-      .limit(1);
+      .limit(1)
+      .single();
     
-    if (existingOpen && existingOpen.length > 0) {
-      // Get current open_count and increment it
-      const { data: currentRecord } = await supabase
-        .from('email_opens')
-        .select('open_count')
-        .eq('id', existingOpen[0].id)
-        .single();
-      
-      const currentCount = currentRecord?.open_count || 0;
-      
-      // Update the existing open record with a new timestamp and incremented count
-      await supabase
-        .from('email_opens')
-        .update({
-          opened_at: new Date().toISOString(),
-          user_agent: userAgent,
-          ip_address: ip,
-          open_count: currentCount + 1
-        })
-        .eq('id', existingOpen[0].id);
-    } else {
-      // Create a new open record
-      await supabase
-        .from('email_opens')
-        .insert({
-          message_id: messageId,
-          campaign_id: campaignId,
-          fan_id: fanId,
-          opened_at: new Date().toISOString(),
-          user_agent: userAgent,
-          ip_address: ip,
-          open_count: 1
-        });
-      
-      // Update the email_sent record (try both messageId and campaign/fan combo)
-      const { data: emailSentRecords } = await supabase
-        .from('email_sent')
-        .select('id')
-        .or(`message_id.eq.${messageId},and(campaign_id.eq.${campaignId},fan_id.eq.${fanId})`)
-        .limit(1);
-      
-      if (emailSentRecords && emailSentRecords.length > 0) {
-        await supabase
-          .from('email_sent')
+    if (emailSentRecord) {
+      // Only update if this is the first open (for unique open tracking)
+      if (!emailSentRecord.opened_at) {
+        await supabaseAdmin
+          .from('emails_sent')
           .update({
             opened_at: new Date().toISOString(),
             status: 'opened'
           })
-          .eq('id', emailSentRecords[0].id);
+          .eq('id', emailSentRecord.id);
+        
+        // Update campaign stats for unique opens
+        const { data: campaign } = await supabaseAdmin
+          .from('campaigns')
+          .select('stats')
+          .eq('id', campaignId)
+          .single();
+        
+        if (campaign) {
+          const currentStats = campaign.stats || {};
+          const newUniqueOpens = (currentStats.unique_opens || 0) + 1;
+          const totalSent = currentStats.total_sent || 1;
+          
+          await supabaseAdmin
+            .from('campaigns')
+            .update({
+              stats: {
+                ...currentStats,
+                opens: (currentStats.opens || 0) + 1,
+                unique_opens: newUniqueOpens,
+                open_rate: (newUniqueOpens / totalSent) * 100
+              }
+            })
+            .eq('id', campaignId);
+        }
+      } else {
+        // This is a repeat open, just increment the total opens count
+        const { data: campaign } = await supabaseAdmin
+          .from('campaigns')
+          .select('stats')
+          .eq('id', campaignId)
+          .single();
+        
+        if (campaign) {
+          const currentStats = campaign.stats || {};
+          await supabaseAdmin
+            .from('campaigns')
+            .update({
+              stats: {
+                ...currentStats,
+                opens: (currentStats.opens || 0) + 1
+              }
+            })
+            .eq('id', campaignId);
+        }
       }
-      
-      // Update campaign stats
-      await supabase.rpc('increment_campaign_opens', {
-        p_campaign_id: campaignId
-      });
     }
   } catch (error) {
     console.error('Error recording open event:', error);

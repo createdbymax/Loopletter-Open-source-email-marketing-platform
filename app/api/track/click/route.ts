@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, getSupabaseAdmin } from '@/lib/supabase';
 
 // This endpoint tracks link clicks and redirects to the target URL
 export async function GET(request: NextRequest) {
@@ -45,51 +45,77 @@ async function recordClickEvent(
   request: NextRequest
 ) {
   try {
+    const supabaseAdmin = await getSupabaseAdmin();
+    
     // Get client information
     const userAgent = request.headers.get('user-agent') || '';
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
     
-    // Create a click record
-    await supabase
-      .from('email_clicks')
-      .insert({
-        message_id: messageId,
-        campaign_id: campaignId,
-        fan_id: fanId,
-        link_id: linkId,
-        url: url,
-        clicked_at: new Date().toISOString(),
-        user_agent: userAgent,
-        ip_address: ip
-      });
     
-    // Update the email_sent record if this is the first click (try both messageId and campaign/fan combo)
-    const { data: emailSent } = await supabase
-      .from('email_sent')
+    // Find the email_sent record (try both messageId and campaign/fan combo)
+    const { data: emailSent } = await supabaseAdmin
+      .from('emails_sent')
       .select('clicked_at, id')
       .or(`message_id.eq.${messageId},and(campaign_id.eq.${campaignId},fan_id.eq.${fanId})`)
       .limit(1)
       .single();
     
-    if (!emailSent?.clicked_at && emailSent?.id) {
-      await supabase
-        .from('email_sent')
-        .update({
-          clicked_at: new Date().toISOString(),
-          status: 'clicked'
-        })
-        .eq('id', emailSent.id);
-      
-      // Update campaign stats for unique clicks
-      await supabase.rpc('increment_campaign_clicks', {
-        p_campaign_id: campaignId
-      });
+    if (emailSent?.id) {
+      // Update the email_sent record if this is the first click
+      if (!emailSent.clicked_at) {
+        await supabaseAdmin
+          .from('emails_sent')
+          .update({
+            clicked_at: new Date().toISOString(),
+            status: 'clicked'
+          })
+          .eq('id', emailSent.id);
+        
+        // Update campaign stats for unique clicks
+        const { data: campaign } = await supabaseAdmin
+          .from('campaigns')
+          .select('stats')
+          .eq('id', campaignId)
+          .single();
+        
+        if (campaign) {
+          const currentStats = campaign.stats || {};
+          const newUniqueClicks = (currentStats.unique_clicks || 0) + 1;
+          const totalSent = currentStats.total_sent || 1;
+          
+          await supabaseAdmin
+            .from('campaigns')
+            .update({
+              stats: {
+                ...currentStats,
+                clicks: (currentStats.clicks || 0) + 1,
+                unique_clicks: newUniqueClicks,
+                click_rate: (newUniqueClicks / totalSent) * 100
+              }
+            })
+            .eq('id', campaignId);
+        }
+      } else {
+        // This is a repeat click, just increment the total clicks count
+        const { data: campaign } = await supabaseAdmin
+          .from('campaigns')
+          .select('stats')
+          .eq('id', campaignId)
+          .single();
+        
+        if (campaign) {
+          const currentStats = campaign.stats || {};
+          await supabaseAdmin
+            .from('campaigns')
+            .update({
+              stats: {
+                ...currentStats,
+                clicks: (currentStats.clicks || 0) + 1
+              }
+            })
+            .eq('id', campaignId);
+        }
+      }
     }
-    
-    // Always increment total clicks
-    await supabase.rpc('increment_campaign_total_clicks', {
-      p_campaign_id: campaignId
-    });
   } catch (error) {
     console.error('Error recording click event:', error);
     throw error;
