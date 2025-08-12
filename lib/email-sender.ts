@@ -2,6 +2,7 @@ import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import type { Campaign, Fan, Artist } from './types';
 import { logEmailSent } from './db';
 import { sesRateLimiter } from './ses-config';
+import { getUserSubscriptionPlan, canAccessFeature } from './subscription';
 // import { render } from '@react-email/render';
 
 // Initialize SES client
@@ -719,25 +720,41 @@ async function addEmailTracking(
         </div>
       `;
 
-      // Add Loopletter footer
-      const loopletterFooter = `
+      // Check if user can remove Loopletter branding (paid plans)
+      const canRemoveBranding = canAccessFeature(artist, 'removeLoopLetterBranding');
+      
+      let footersToAdd = unsubscribeFooter;
+      
+      // Only add Loopletter footer for starter plan users
+      if (!canRemoveBranding) {
+        const loopletterFooter = `
         <div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">
           <p style="margin: 0;">
             Sent with <a href="https://loopletter.co" style="color: #666; text-decoration: none;">Loopletter</a>
           </p>
         </div>
       `;
+        footersToAdd += loopletterFooter;
+      }
 
-      // Insert both footers before closing container div and body
+      // Insert footers before closing container div and body
       processedMessage = processedMessage.replace(
         /<\/div>\s*<\/body>/,
-        unsubscribeFooter + loopletterFooter + '\n  </div>\n</body>'
+        footersToAdd + '\n  </div>\n</body>'
       );
     }
   } else {
-    // For plain text emails, just add unsubscribe footer
+    // For plain text emails, add unsubscribe footer
     if (!processedMessage.includes('unsubscribe')) {
-      processedMessage += `\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`;
+      let plainTextFooter = `\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`;
+      
+      // Add Loopletter branding for starter plan users
+      const canRemoveBranding = canAccessFeature(artist, 'removeLoopLetterBranding');
+      if (!canRemoveBranding) {
+        plainTextFooter += `\n\nSent with Loopletter - https://loopletter.co`;
+      }
+      
+      processedMessage += plainTextFooter;
     }
   }
 
