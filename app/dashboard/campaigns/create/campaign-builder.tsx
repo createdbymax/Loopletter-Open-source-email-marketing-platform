@@ -169,7 +169,9 @@ export function CampaignBuilder() {
         );
         setArtist(artistData);
         const fans = await getFansByArtist(artistData.id);
-        const subscribedFans = fans.filter(fan => fan.status === 'subscribed');
+        const subscribedFans = fans.filter(
+          (fan) => fan.status === "subscribed"
+        );
         setFanCount(subscribedFans.length);
 
         // Set default values if not already set
@@ -275,18 +277,24 @@ export function CampaignBuilder() {
       // Ensure we have at least basic content for the draft
       const draftTitle = emailData.subject || "Untitled Campaign";
       const draftSubject = emailData.subject || "Draft Campaign";
-      const draftMessage = selectedTemplate === "visual-builder"
-        ? emailHtml || "Draft email content"
-        : selectedTemplate
-          ? "Template-based email content"
-          : blocks.map((b) => b.content).join("\n") || "Draft email content";
+      const draftMessage =
+        selectedTemplate === "visual-builder"
+          ? emailHtml || "Draft email content"
+          : selectedTemplate
+            ? "Template-based email content"
+            : blocks.map((b) => b.content).join("\n") || "Draft email content";
 
       const campaignData = {
         title: draftTitle,
         subject: draftSubject,
         from_name:
-          emailData.fromName || artist?.default_from_name || artist?.name || "Artist",
-        from_email: artist?.ses_domain ? `${artist.default_from_email || "noreply"}@${artist.ses_domain}` : null,
+          emailData.fromName ||
+          artist?.default_from_name ||
+          artist?.name ||
+          "Artist",
+        from_email: artist?.ses_domain
+          ? `${artist.default_from_email || "noreply"}@${artist.ses_domain}`
+          : null,
         message: draftMessage,
         template_id: selectedTemplate,
         templateData: templateData,
@@ -302,11 +310,11 @@ export function CampaignBuilder() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Campaign saved successfully:', result);
+        console.log("Campaign saved successfully:", result);
         alert("Campaign saved as draft!");
       } else {
         const errorData = await response.json();
-        console.error('Campaign save failed:', errorData);
+        console.error("Campaign save failed:", errorData);
         throw new Error(errorData.error || "Failed to save campaign");
       }
     } catch (error) {
@@ -319,16 +327,25 @@ export function CampaignBuilder() {
 
   // Send campaign
   const handleSendCampaign = async () => {
-    console.log('handleSendCampaign called with emailHtml length:', emailHtml.length);
-    console.log('emailData:', emailData);
-    
+    console.log(
+      "handleSendCampaign called with emailHtml length:",
+      emailHtml.length
+    );
+    console.log("emailData:", emailData);
+
     if (!emailData.subject) {
       alert("Please add a subject line before sending");
       return;
     }
 
-    if (!emailHtml || emailHtml.trim().length === 0) {
-      alert("Please add content to your email before sending");
+    // If we're in the maily editor and don't have content, show a helpful message
+    if (
+      currentStep === "maily-editor" &&
+      (!emailHtml || emailHtml.trim().length === 0)
+    ) {
+      alert(
+        "Please save your email content first by clicking the 'Save Draft' button, then try sending again."
+      );
       return;
     }
 
@@ -349,10 +366,14 @@ export function CampaignBuilder() {
         status: "draft", // Create as draft first, then send
       };
 
-      console.log('Creating campaign with data:', {
+      console.log("Creating campaign with data:", {
         ...campaignData,
-        message: campaignData.message ? `${campaignData.message.substring(0, 100)}...` : 'No message',
-        templateData: campaignData.templateData ? 'Has template data' : 'No template data'
+        message: campaignData.message
+          ? `${campaignData.message.substring(0, 100)}...`
+          : "No message",
+        templateData: campaignData.templateData
+          ? "Has template data"
+          : "No template data",
       });
 
       const response = await fetch("/api/campaigns", {
@@ -364,16 +385,21 @@ export function CampaignBuilder() {
       if (response.ok) {
         const result = await response.json();
         const campaign = result.campaign;
-        
-        console.log('Campaign created successfully:', campaign);
+
+        console.log("Campaign created successfully:", campaign);
 
         // Now immediately send the campaign and show the sending modal
-        console.log('Setting campaign to send:', campaign.id);
+        console.log("Setting campaign to send:", campaign.id);
         setCampaignToSend(campaign.id);
-        console.log('Setting show sending modal to true');
+        console.log("Setting show sending modal to true");
         setShowSendingModal(true);
-        
-        console.log('Modal state - campaignToSend:', campaign.id, 'showSendingModal:', true);
+
+        console.log(
+          "Modal state - campaignToSend:",
+          campaign.id,
+          "showSendingModal:",
+          true
+        );
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to create campaign");
@@ -418,36 +444,45 @@ export function CampaignBuilder() {
           templateId={selectedTemplate || undefined}
           templateData={templateData}
           fanCount={fanCount}
-          subscriptionPlan={artist ? getUserSubscriptionPlan(artist) : "starter"}
+          subscriptionPlan={
+            artist ? getUserSubscriptionPlan(artist) : "starter"
+          }
           subject={emailData.subject}
           previewText={emailData.previewText}
           fromName={emailData.fromName}
           artist={artist}
           onBack={() => setCurrentStep("template")}
           onSave={(htmlContent: string) => {
-            console.log('Campaign builder - onSave called with content length:', htmlContent.length);
+            console.log(
+              "Campaign builder - onSave called with content length:",
+              htmlContent.length
+            );
             setEmailHtml(htmlContent);
             handleSaveDraft();
           }}
-          onSend={(data: { subject: string; previewText: string; content: string }) => {
-            console.log('Campaign builder - onSend called with:', {
+          onSend={(data: {
+            subject: string;
+            previewText: string;
+            content: string;
+          }) => {
+            console.log("Campaign builder - onSend called with:", {
               subject: data.subject,
               previewText: data.previewText,
-              contentLength: data.content.length
+              contentLength: data.content.length,
             });
-            
+
             // Update email data with the data from the editor
             setEmailData((prev) => ({
               ...prev,
               subject: data.subject || prev.subject || "My Email Campaign",
-              previewText: data.previewText || prev.previewText
+              previewText: data.previewText || prev.previewText,
             }));
-            
+
             setEmailHtml(data.content);
             handleSendCampaign();
           }}
         />
-        
+
         {/* Campaign Sending Modal - needs to be here for Maily editor */}
         {campaignToSend && (
           <CampaignSendingModal

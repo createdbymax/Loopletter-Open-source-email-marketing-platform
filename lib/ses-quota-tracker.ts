@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabaseAdmin } from './supabase';
 
 interface QuotaRecord {
   date: string;
@@ -30,7 +30,8 @@ export class SESQuotaTracker {
     }
 
     try {
-      const { data, error } = await supabase
+      const supabaseAdmin = await getSupabaseAdmin();
+      const { data, error } = await supabaseAdmin
         .from('ses_quota_tracking')
         .select('emails_sent')
         .eq('date', today)
@@ -54,8 +55,10 @@ export class SESQuotaTracker {
     const today = new Date().toISOString().split('T')[0];
     
     try {
+      const supabaseAdmin = await getSupabaseAdmin();
+      
       // First, try to update existing record
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('ses_quota_tracking')
         .update({ 
           emails_sent: this.todayCount + count,
@@ -66,7 +69,7 @@ export class SESQuotaTracker {
 
       if (error || !data || data.length === 0) {
         // If update failed (no existing record), insert new record
-        await supabase
+        await supabaseAdmin
           .from('ses_quota_tracking')
           .insert({
             date: today,

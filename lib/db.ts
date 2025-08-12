@@ -1,4 +1,4 @@
-import { supabase, createClerkSupabaseClient } from './supabase';
+import { supabase, createClerkSupabaseClient, getSupabaseAdmin } from './supabase';
 import type { 
   Artist, Fan, Campaign, EmailSent, Segment, Automation, ABTest, 
   Template, Webhook, TeamMember, Integration, AnalyticsData,
@@ -304,7 +304,9 @@ export async function getCampaignById(id: string) {
 }
 
 export async function updateCampaign(id: string, updates: Partial<Campaign>) {
-  const { data, error } = await supabase.from('campaigns').update(updates).eq('id', id).select().single();
+  // Use admin client for server-side operations to bypass RLS
+  const supabaseAdmin = await getSupabaseAdmin();
+  const { data, error } = await supabaseAdmin.from('campaigns').update(updates).eq('id', id).select().single();
   if (error) throw error;
   return data as Campaign;
 }
@@ -356,7 +358,9 @@ export async function duplicateCampaign(id: string, artistId: string) {
 
 // EMAILS SENT
 export async function logEmailSent(email: Omit<EmailSent, 'id'>) {
-  const { data, error } = await supabase.from('emails_sent').insert(email).select().single();
+  // Use admin client for server-side operations to bypass RLS
+  const supabaseAdmin = await getSupabaseAdmin();
+  const { data, error } = await supabaseAdmin.from('emails_sent').insert(email).select().single();
   if (error) throw error;
   return data as EmailSent;
 }

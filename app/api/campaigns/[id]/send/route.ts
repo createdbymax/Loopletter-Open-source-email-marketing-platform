@@ -50,7 +50,7 @@ export async function POST(
 
     // Check if campaign has content (either message or template data)
     if (!campaign.message && !campaign.template_data) {
-      return NextResponse.json({ error: 'Campaign must have message content or template data' }, { status: 400 });
+      return NextResponse.json({ error: 'Please add content to your email before sending' }, { status: 400 });
     }
 
     // Check if artist has proper email configuration for production
