@@ -143,7 +143,7 @@ export async function processJobById(jobId: string): Promise<{ processed: boolea
 
     try {
       console.log(`Processing job ${jobId} of type ${name}`);
-      
+
       // Process the job logic without using BullMQ's job state management
       switch (name) {
         case 'send-campaign-email':
@@ -191,7 +191,7 @@ async function processCampaignEmailServerless(data: CampaignEmailJob) {
 
   // Fetch required data with individual error handling
   let campaign, fan, artist;
-  
+
   try {
     campaign = await getCampaignById(campaignId);
     if (!campaign) {
@@ -258,17 +258,36 @@ async function processCampaignEmailServerless(data: CampaignEmailJob) {
 
   // Check if this was the last email for this campaign
   try {
-    const queue = getEmailQueue();
-    const remaining = await queue.getJobs(['waiting', 'delayed', 'active', 'prioritized']);
-    const hasMore = remaining.some(
-      (j) => j.name === 'send-campaign-email' && j.data.campaignId === campaignId
-    );
-    if (!hasMore) {
-      console.log(`All emails sent for campaign ${campaignId}, marking as sent`);
+    console.log(`Checking if campaign ${campaignId} should be finalized...`);
+
+    // Get the updated campaign stats to see how many emails were supposed to be sent
+    const updatedCampaign = await getCampaignById(campaignId);
+    if (!updatedCampaign) {
+      console.log(`Campaign ${campaignId} not found for finalization check`);
+      return {
+        success: true,
+        messageId: result.messageId,
+        fanEmail: fan.email,
+      };
+    }
+
+    // Get the total number of subscribed fans for this artist
+    const allFans = await getFansByArtist(updatedCampaign.artist_id);
+    const subscribedFansCount = allFans.filter(f => f.status === 'subscribed').length;
+    const totalSent = updatedCampaign.stats?.total_sent || 0;
+
+    console.log(`Campaign ${campaignId}: ${totalSent}/${subscribedFansCount} emails sent`);
+
+    // If we've sent emails to all subscribed fans, mark as sent
+    if (totalSent >= subscribedFansCount) {
+      console.log(`All emails sent for campaign ${campaignId} (${totalSent}/${subscribedFansCount}), marking as sent`);
       await updateCampaign(campaignId, {
         status: 'sent',
         updated_at: new Date().toISOString(),
       });
+      console.log(`Campaign ${campaignId} successfully marked as sent`);
+    } else {
+      console.log(`Campaign ${campaignId} still needs ${subscribedFansCount - totalSent} more emails, keeping status as sending`);
     }
   } catch (err) {
     console.error(`Failed to finalize campaign ${campaignId}:`, err);
@@ -290,7 +309,7 @@ async function processCampaignEmail(job: Job, data: CampaignEmailJob) {
 
   // Fetch required data with individual error handling
   let campaign, fan, artist;
-  
+
   try {
     campaign = await getCampaignById(campaignId);
     if (!campaign) {
@@ -526,7 +545,7 @@ async function processBulkCampaign(job: Job, data: BulkCampaignJob) {
 
     // Create individual email jobs for this batch with proper delays
     const batchJobs = batch.map((fan, index) => {
-      const delay = calculateBatchDelay(1) * index; // Stagger emails within batch
+       // Stagger emails within batch
       return queueCampaignEmail(campaignId, fan.id, campaign.artist_id);
     });
 
