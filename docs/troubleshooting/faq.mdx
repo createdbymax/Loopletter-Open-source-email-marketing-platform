@@ -1,0 +1,28 @@
+---
+title: Frequently Asked Questions
+description: Answers to common questions about Loopletter deployments
+---
+
+# Frequently Asked Questions
+
+## Can I deploy without AWS SES?
+
+Loopletter ships with first-class SES support because of its deliverability and pricing. You can swap in another provider by adjusting the abstractions in `lib/email-sender.ts` and the queue worker.
+
+## Where are the database migrations?
+
+SQL used by production is stored as Supabase migrations. You can import the baseline schema from `docs/database/schema.sql` (or generate it from your Supabase project) and track future changes inside `supabase/migrations/`.
+
+## Do I need Redis to send campaigns?
+
+Yes. BullMQ is used to orchestrate high-volume sends. Any Redis provider works (Upstash, AWS Elasticache, Docker). Update `REDIS_URL` and `REDIS_TLS` in `.env.local` to point at your instance.
+
+## How do I run the queue worker in production?
+
+Use `npm run queue-worker` on a dedicated process. On Vercel or other serverless platforms you can deploy the worker as a separate Node process (Render, Fly.io, Railway, etc.).
+
+## Is there a Docker setup?
+
+A `Dockerfile` is included for container deployments. Pass in your environment variables and mount a persistent volume if you plan to store uploaded assets locally.
+
+Still have questions? [Open a discussion on GitHub](https://github.com/Loopletter/loopletter/discussions) or join the community chat.
