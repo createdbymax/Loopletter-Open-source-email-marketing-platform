@@ -1,11 +1,7 @@
-export default function EmailDesignerLayout({
-  children,
-}: {
-  children: React.ReactNode;
+export default function EmailDesignerLayout({ children, }: {
+    children: React.ReactNode;
 }) {
-  return (
-    <div className="h-screen flex flex-col">
+    return (<div className="h-screen flex flex-col">
       {children}
-    </div>
-  );
+    </div>);
 }

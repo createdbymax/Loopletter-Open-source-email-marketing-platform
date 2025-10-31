@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { HelpCircle, Mail, Users, CreditCard, Settings, Lightbulb } from 'lucide-react';
-
 export default function FAQPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Frequently Asked Questions</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function FAQPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+            <Mail className="h-5 w-5"/>
             Email Campaigns & Sending
           </CardTitle>
         </CardHeader>
@@ -71,7 +69,7 @@ export default function FAQPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <Users className="h-5 w-5"/>
             Audience Management
           </CardTitle>
         </CardHeader>
@@ -128,7 +126,7 @@ export default function FAQPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
+            <CreditCard className="h-5 w-5"/>
             Billing & Plans
           </CardTitle>
         </CardHeader>
@@ -194,7 +192,7 @@ export default function FAQPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
+            <Settings className="h-5 w-5"/>
             Technical Questions
           </CardTitle>
         </CardHeader>
@@ -326,12 +324,11 @@ export default function FAQPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Still have questions?</strong> Check our full documentation or contact support at support@loopletter.co. 
           We're here to help you succeed with email marketing!
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

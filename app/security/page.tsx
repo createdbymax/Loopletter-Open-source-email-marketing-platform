@@ -1,19 +1,16 @@
 import { Metadata } from "next";
 import { Shield, Lock, Eye, Server, CheckCircle, AlertTriangle } from "lucide-react";
-
 export const metadata: Metadata = {
-  title: "Security - Loopletter",
-  description: "Learn about Loopletter's security measures and data protection practices.",
+    title: "Security - Loopletter",
+    description: "Learn about Loopletter's security measures and data protection practices.",
 };
-
 export default function SecurityPage() {
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
+    return (<div className="min-h-screen bg-white">
+      
       <div className="bg-gray-50 border-b">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="flex items-center gap-4 mb-4">
-            <Shield className="w-12 h-12 text-green-600" />
+            <Shield className="w-12 h-12 text-green-600"/>
             <h1 className="text-4xl font-bold text-gray-900">Security</h1>
           </div>
           <p className="text-xl text-gray-600">
@@ -22,13 +19,13 @@ export default function SecurityPage() {
         </div>
       </div>
 
-      {/* Content */}
+      
       <div className="max-w-4xl mx-auto px-6 py-16">
         <div className="space-y-12">
-          {/* Data Encryption */}
+          
           <section>
             <div className="flex items-center gap-3 mb-6">
-              <Lock className="w-8 h-8 text-blue-600" />
+              <Lock className="w-8 h-8 text-blue-600"/>
               <h2 className="text-3xl font-bold text-gray-900">Data Encryption</h2>
             </div>
             <div className="bg-blue-50 rounded-lg p-6 mb-6">
@@ -42,15 +39,15 @@ export default function SecurityPage() {
                 <h4 className="font-semibold text-gray-900 mb-3">In Transit</h4>
                 <ul className="space-y-2 text-gray-600">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     TLS 1.3 encryption for all connections
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     HTTPS enforced across all services
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Certificate pinning for mobile apps
                   </li>
                 </ul>
@@ -59,15 +56,15 @@ export default function SecurityPage() {
                 <h4 className="font-semibold text-gray-900 mb-3">At Rest</h4>
                 <ul className="space-y-2 text-gray-600">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     AES-256 database encryption
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Encrypted file storage
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Secure key management
                   </li>
                 </ul>
@@ -75,10 +72,10 @@ export default function SecurityPage() {
             </div>
           </section>
 
-          {/* Access Controls */}
+          
           <section>
             <div className="flex items-center gap-3 mb-6">
-              <Eye className="w-8 h-8 text-purple-600" />
+              <Eye className="w-8 h-8 text-purple-600"/>
               <h2 className="text-3xl font-bold text-gray-900">Access Controls</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -112,10 +109,10 @@ export default function SecurityPage() {
             </div>
           </section>
 
-          {/* Infrastructure Security */}
+          
           <section>
             <div className="flex items-center gap-3 mb-6">
-              <Server className="w-8 h-8 text-green-600" />
+              <Server className="w-8 h-8 text-green-600"/>
               <h2 className="text-3xl font-bold text-gray-900">Infrastructure Security</h2>
             </div>
             <div className="bg-green-50 rounded-lg p-6 mb-6">
@@ -129,19 +126,19 @@ export default function SecurityPage() {
                 <h4 className="font-semibold text-gray-900">Network Security</h4>
                 <ul className="space-y-2 text-gray-600">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Virtual private clouds (VPC)
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Network segmentation
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     DDoS protection
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Intrusion detection systems
                   </li>
                 </ul>
@@ -150,19 +147,19 @@ export default function SecurityPage() {
                 <h4 className="font-semibold text-gray-900">Server Security</h4>
                 <ul className="space-y-2 text-gray-600">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Regular security updates
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Hardened server configurations
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     Automated vulnerability scanning
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <CheckCircle className="w-4 h-4 text-green-600"/>
                     24/7 monitoring
                   </li>
                 </ul>
@@ -170,34 +167,34 @@ export default function SecurityPage() {
             </div>
           </section>
 
-          {/* Compliance & Certifications */}
+          
           <section>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Compliance & Certifications</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="border rounded-lg p-6 text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Shield className="w-6 h-6 text-blue-600" />
+                  <Shield className="w-6 h-6 text-blue-600"/>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">SOC 2 Type II</h4>
                 <p className="text-sm text-gray-600">Security, availability, and confidentiality controls</p>
               </div>
               <div className="border rounded-lg p-6 text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600"/>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">GDPR</h4>
                 <p className="text-sm text-gray-600">European data protection regulation compliance</p>
               </div>
               <div className="border rounded-lg p-6 text-center">
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Lock className="w-6 h-6 text-purple-600" />
+                  <Lock className="w-6 h-6 text-purple-600"/>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">CCPA</h4>
                 <p className="text-sm text-gray-600">California consumer privacy act compliance</p>
               </div>
               <div className="border rounded-lg p-6 text-center">
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <AlertTriangle className="w-6 h-6 text-orange-600" />
+                  <AlertTriangle className="w-6 h-6 text-orange-600"/>
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">CAN-SPAM</h4>
                 <p className="text-sm text-gray-600">Email marketing law compliance</p>
@@ -205,7 +202,7 @@ export default function SecurityPage() {
             </div>
           </section>
 
-          {/* Security Practices */}
+          
           <section>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Security Practices</h2>
             <div className="space-y-6">
@@ -239,7 +236,7 @@ export default function SecurityPage() {
             </div>
           </section>
 
-          {/* Data Backup & Recovery */}
+          
           <section>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Data Backup & Recovery</h2>
             <div className="bg-gray-50 rounded-lg p-6">
@@ -266,7 +263,7 @@ export default function SecurityPage() {
             </div>
           </section>
 
-          {/* Contact Security Team */}
+          
           <section className="bg-red-50 rounded-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Report Security Issues</h2>
             <p className="text-gray-700 mb-4">
@@ -280,6 +277,5 @@ export default function SecurityPage() {
           </section>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 }

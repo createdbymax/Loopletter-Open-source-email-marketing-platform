@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Code, Key, Database, Shield } from 'lucide-react';
-
 export default function APIPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">API Documentation</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function APIPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Code className="h-4 w-4" />
+              <Code className="h-4 w-4"/>
               REST API
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function APIPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Key className="h-4 w-4" />
+              <Key className="h-4 w-4"/>
               Authentication
             </CardTitle>
           </CardHeader>
@@ -44,7 +42,7 @@ export default function APIPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Database className="h-4 w-4" />
+              <Database className="h-4 w-4"/>
               Data Access
             </CardTitle>
           </CardHeader>
@@ -58,7 +56,7 @@ export default function APIPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               Rate Limits
             </CardTitle>
           </CardHeader>
@@ -98,6 +96,5 @@ export default function APIPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

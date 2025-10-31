@@ -1,33 +1,23 @@
 import { ImportJob } from './types';
 import { createNotification } from './notifications';
-
-export async function sendImportCompletionEmail(
-  artistEmail: string,
-  artistName: string,
-  job: ImportJob
-): Promise<void> {
-  const { SESClient, SendEmailCommand } = await import('@aws-sdk/client-ses');
-  
-  const sesClient = new SESClient({
-    region: process.env.AWS_REGION || 'us-east-1',
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-  });
-
-  const isSuccess = job.status === 'completed';
-  const result = job.result;
-  
-  const subject = isSuccess 
-    ? `✅ Fan import completed - ${result?.imported || 0} fans imported`
-    : `❌ Fan import failed - ${job.file_data.filename}`;
-
-  let htmlBody = '';
-  let textBody = '';
-
-  if (isSuccess && result) {
-    htmlBody = `
+export async function sendImportCompletionEmail(artistEmail: string, artistName: string, job: ImportJob): Promise<void> {
+    const { SESClient, SendEmailCommand } = await import('@aws-sdk/client-ses');
+    const sesClient = new SESClient({
+        region: process.env.AWS_REGION || 'us-east-1',
+        credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+    });
+    const isSuccess = job.status === 'completed';
+    const result = job.result;
+    const subject = isSuccess
+        ? `✅ Fan import completed - ${result?.imported || 0} fans imported`
+        : `❌ Fan import failed - ${job.file_data.filename}`;
+    let htmlBody = '';
+    let textBody = '';
+    if (isSuccess && result) {
+        htmlBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #16a34a;">Import Completed Successfully!</h2>
         <p>Hi ${artistName},</p>
@@ -56,8 +46,7 @@ export async function sendImportCompletionEmail(
         </p>
       </div>
     `;
-
-    textBody = `
+        textBody = `
 Import Completed Successfully!
 
 Hi ${artistName},
@@ -73,8 +62,9 @@ View your fans: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard/fans
 
 This import was completed on ${new Date(job.completed_at!).toLocaleString()}.
     `;
-  } else {
-    htmlBody = `
+    }
+    else {
+        htmlBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #dc2626;">Import Failed</h2>
         <p>Hi ${artistName},</p>
@@ -95,8 +85,7 @@ This import was completed on ${new Date(job.completed_at!).toLocaleString()}.
         </p>
       </div>
     `;
-
-    textBody = `
+        textBody = `
 Import Failed
 
 Hi ${artistName},
@@ -110,75 +99,55 @@ Please check your CSV file format and try again. If you continue to experience i
 
 Try import again: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard/fans/import
     `;
-  }
-
-  const command = new SendEmailCommand({
-    Source: process.env.FROM_EMAIL || 'noreply@loopletter.com',
-    Destination: {
-      ToAddresses: [artistEmail],
-    },
-    Message: {
-      Subject: {
-        Data: subject,
-        Charset: 'UTF-8',
-      },
-      Body: {
-        Html: {
-          Data: htmlBody,
-          Charset: 'UTF-8',
+    }
+    const command = new SendEmailCommand({
+        Source: process.env.FROM_EMAIL || 'noreply@loopletter.com',
+        Destination: {
+            ToAddresses: [artistEmail],
         },
-        Text: {
-          Data: textBody,
-          Charset: 'UTF-8',
+        Message: {
+            Subject: {
+                Data: subject,
+                Charset: 'UTF-8',
+            },
+            Body: {
+                Html: {
+                    Data: htmlBody,
+                    Charset: 'UTF-8',
+                },
+                Text: {
+                    Data: textBody,
+                    Charset: 'UTF-8',
+                },
+            },
         },
-      },
-    },
-  });
-
-  try {
-    await sesClient.send(command);
-    console.log(`Import notification email sent to ${artistEmail}`);
-  } catch (error) {
-    console.error('Failed to send import notification email:', error);
-    // Don't throw - we don't want email failures to break the import process
-  }
+    });
+    try {
+        await sesClient.send(command);
+        console.log(`Import notification email sent to ${artistEmail}`);
+    }
+    catch (error) {
+        console.error('Failed to send import notification email:', error);
+    }
 }
-
-export async function createImportNotification(
-  artistId: string,
-  job: ImportJob
-): Promise<void> {
-  const isSuccess = job.status === 'completed';
-  const result = job.result;
-
-  if (isSuccess && result) {
-    await createNotification(
-      artistId,
-      'import_completed',
-      'Fan import completed',
-      `Successfully imported ${result.imported} fans from ${job.file_data.filename}${result.failed > 0 ? ` (${result.failed} failed)` : ''}${result.skipped > 0 ? ` (${result.skipped} skipped)` : ''}`,
-      {
-        job_id: job.id,
-        filename: job.file_data.filename,
-        imported: result.imported,
-        failed: result.failed,
-        skipped: result.skipped,
-        total_records: job.total_records
-      },
-      7 // Expire after 7 days
-    );
-  } else {
-    await createNotification(
-      artistId,
-      'import_failed',
-      'Fan import failed',
-      `Import of ${job.file_data.filename} failed: ${job.error_message || 'Unknown error'}`,
-      {
-        job_id: job.id,
-        filename: job.file_data.filename,
-        error_message: job.error_message
-      },
-      7 // Expire after 7 days
-    );
-  }
+export async function createImportNotification(artistId: string, job: ImportJob): Promise<void> {
+    const isSuccess = job.status === 'completed';
+    const result = job.result;
+    if (isSuccess && result) {
+        await createNotification(artistId, 'import_completed', 'Fan import completed', `Successfully imported ${result.imported} fans from ${job.file_data.filename}${result.failed > 0 ? ` (${result.failed} failed)` : ''}${result.skipped > 0 ? ` (${result.skipped} skipped)` : ''}`, {
+            job_id: job.id,
+            filename: job.file_data.filename,
+            imported: result.imported,
+            failed: result.failed,
+            skipped: result.skipped,
+            total_records: job.total_records
+        }, 7);
+    }
+    else {
+        await createNotification(artistId, 'import_failed', 'Fan import failed', `Import of ${job.file_data.filename} failed: ${job.error_message || 'Unknown error'}`, {
+            job_id: job.id,
+            filename: job.file_data.filename,
+            error_message: job.error_message
+        }, 7);
+    }
 }

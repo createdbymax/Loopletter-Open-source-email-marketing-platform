@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, XCircle, Clock, HelpCircle } from 'lucide-react';
-
 export default function DomainTroubleshootingPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Domain Setup Troubleshooting</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -23,7 +21,7 @@ export default function DomainTroubleshootingPage() {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+              <XCircle className="h-5 w-5 text-red-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium text-red-700">Domain verification failed</h3>
                 <p className="text-sm text-muted-foreground">
@@ -37,7 +35,7 @@ export default function DomainTroubleshootingPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+              <XCircle className="h-5 w-5 text-red-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium text-red-700">SPF record not found</h3>
                 <p className="text-sm text-muted-foreground">
@@ -51,7 +49,7 @@ export default function DomainTroubleshootingPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <XCircle className="h-5 w-5 text-red-500 mt-0.5" />
+              <XCircle className="h-5 w-5 text-red-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium text-red-700">DKIM records missing</h3>
                 <p className="text-sm text-muted-foreground">
@@ -65,7 +63,7 @@ export default function DomainTroubleshootingPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-yellow-500 mt-0.5" />
+              <Clock className="h-5 w-5 text-yellow-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium text-yellow-700">Verification pending</h3>
                 <p className="text-sm text-muted-foreground">
@@ -114,7 +112,7 @@ export default function DomainTroubleshootingPage() {
               SPF records have a 255-character limit and a 10 DNS lookup limit.
             </p>
             <Alert>
-              <AlertTriangle className="h-4 w-4" />
+              <AlertTriangle className="h-4 w-4"/>
               <AlertDescription>
                 If your SPF record is too complex, consider using SPF flattening services or contact support for help optimizing it.
               </AlertDescription>
@@ -186,15 +184,15 @@ export default function DomainTroubleshootingPage() {
               <div className="text-sm font-medium text-yellow-800 mb-2">Verification Status:</div>
               <div className="space-y-1 text-sm">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500"/>
                   <span>DKIM Record 1: Found</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500"/>
                   <span>DKIM Record 2: Found</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-red-500"/>
                   <span>DKIM Record 3: Missing</span>
                 </div>
               </div>
@@ -397,12 +395,11 @@ export default function DomainTroubleshootingPage() {
       </Card>
 
       <Alert>
-        <HelpCircle className="h-4 w-4" />
+        <HelpCircle className="h-4 w-4"/>
         <AlertDescription>
           <strong>Remember:</strong> Domain setup can be complex, and DNS propagation takes time. 
           Don't hesitate to reach out for help if you're stuck - our support team is here to assist you.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

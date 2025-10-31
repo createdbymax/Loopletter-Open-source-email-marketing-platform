@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Upload, Users, FileText, CheckCircle, Lightbulb } from 'lucide-react';
-
 export default function ImportingFansPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Importing Your Fan List</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function ImportingFansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Upload className="h-5 w-5" />
+              <Upload className="h-5 w-5"/>
               CSV Upload
             </CardTitle>
           </CardHeader>
@@ -31,7 +29,7 @@ export default function ImportingFansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+              <Users className="h-5 w-5"/>
               Manual Entry
             </CardTitle>
           </CardHeader>
@@ -45,7 +43,7 @@ export default function ImportingFansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
+              <FileText className="h-5 w-5"/>
               Integrations
             </CardTitle>
           </CardHeader>
@@ -136,7 +134,7 @@ export default function ImportingFansPage() {
       </Card>
 
       <Alert className="border-orange-200 bg-orange-50">
-        <AlertTriangle className="h-4 w-4 text-orange-600" />
+        <AlertTriangle className="h-4 w-4 text-orange-600"/>
         <AlertDescription className="text-orange-800">
           <strong>Important:</strong> Only import contacts who have given permission to receive your emails. 
           Importing purchased lists or scraping emails violates our terms and hurts deliverability.
@@ -153,19 +151,19 @@ export default function ImportingFansPage() {
             <p className="text-sm text-muted-foreground mb-3">Our system automatically:</p>
             <div className="grid grid-cols-2 gap-2">
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Checks email format validity
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Identifies obvious typos
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Flags potentially fake addresses
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Removes duplicates
               </div>
             </div>
@@ -271,12 +269,11 @@ export default function ImportingFansPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Legal Compliance:</strong> Always ensure you have proper consent to email your contacts. 
           Include clear unsubscribe options and honor requests immediately.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

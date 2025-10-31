@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Users, Shield, UserPlus, Settings, Crown, Eye, Edit, Lightbulb } from 'lucide-react';
-
 export default function TeamManagementPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Team Management</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function TeamManagementPage() {
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <Users className="h-5 w-5"/>
             Why Use Team Management?
           </CardTitle>
         </CardHeader>
@@ -42,7 +40,7 @@ export default function TeamManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Crown className="h-4 w-4" />
+              <Crown className="h-4 w-4"/>
               Owner
             </CardTitle>
           </CardHeader>
@@ -56,7 +54,7 @@ export default function TeamManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               Admin
             </CardTitle>
           </CardHeader>
@@ -70,7 +68,7 @@ export default function TeamManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Edit className="h-4 w-4" />
+              <Edit className="h-4 w-4"/>
               Editor
             </CardTitle>
           </CardHeader>
@@ -84,7 +82,7 @@ export default function TeamManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Eye className="h-4 w-4" />
+              <Eye className="h-4 w-4"/>
               Viewer
             </CardTitle>
           </CardHeader>
@@ -452,12 +450,11 @@ export default function TeamManagementPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Start with minimal permissions and gradually increase access as team members prove themselves. 
           It's easier to grant more access than to recover from security issues.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

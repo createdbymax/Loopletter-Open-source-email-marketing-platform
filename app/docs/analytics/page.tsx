@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, TrendingUp, Users, Mail, MousePointer, Eye, Lightbulb } from 'lucide-react';
-
 export default function AnalyticsPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Analytics & Reporting</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Eye className="h-4 w-4" />
+              <Eye className="h-4 w-4"/>
               Open Rate
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <MousePointer className="h-4 w-4" />
+              <MousePointer className="h-4 w-4"/>
               Click Rate
             </CardTitle>
           </CardHeader>
@@ -43,7 +41,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Total Subscribers
             </CardTitle>
           </CardHeader>
@@ -56,7 +54,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Emails Sent
             </CardTitle>
           </CardHeader>
@@ -126,7 +124,7 @@ export default function AnalyticsPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4"/>
                   Open Rate
                 </h4>
                 <p className="text-sm text-muted-foreground mb-2">
@@ -150,7 +148,7 @@ export default function AnalyticsPage() {
 
               <div>
                 <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <MousePointer className="h-4 w-4" />
+                  <MousePointer className="h-4 w-4"/>
                   Click Rate
                 </h4>
                 <p className="text-sm text-muted-foreground mb-2">
@@ -313,7 +311,7 @@ export default function AnalyticsPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Focus on engagement quality over quantity. A smaller, highly engaged list performs better than a large, unengaged one.
         </AlertDescription>
@@ -389,6 +387,5 @@ export default function AnalyticsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

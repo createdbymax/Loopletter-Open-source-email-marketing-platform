@@ -1,166 +1,120 @@
 import { SESClient } from '@aws-sdk/client-ses';
 import { sesQuotaTracker } from './ses-quota-tracker';
-
-// Initialize SES client with proper configuration
 export const ses = new SESClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
+    region: process.env.AWS_REGION || 'us-east-1',
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
 });
-
-// SES Configuration settings
 export const SES_CONFIG = {
-  // Whether we're in sandbox mode (limited sending)
-  isSandbox: process.env.SES_SANDBOX === 'true',
-
-  // Configuration set for tracking email events
-  configurationSet: process.env.SES_CONFIGURATION_SET || 'default',
-
-  // Default sender domain
-  defaultSenderDomain: process.env.SES_DEFAULT_SENDER_DOMAIN || 'loopletter.co',
-
-  // AWS SES Limits - Your specified limits
-  limits: {
-    // Maximum emails per second
-    maxSendRate: parseInt(process.env.SES_MAX_SEND_RATE || '12', 10),
-    // Maximum emails per 24-hour period
-    maxDailyQuota: parseInt(process.env.SES_MAX_DAILY_QUOTA || '40000', 10),
-  },
-
-  // Batch processing configuration
-  batch: {
-    // Maximum batch size for processing (should not exceed rate limit)
-    size: parseInt(process.env.SES_BATCH_SIZE || '12', 10),
-    // Interval between batches in milliseconds (1000ms = 1 second)
-    intervalMs: parseInt(process.env.SES_BATCH_INTERVAL || '1000', 10),
-  },
-
-  // Retry configuration
-  retry: {
-    maxRetries: parseInt(process.env.SES_MAX_RETRIES || '3', 10),
-    backoffFactor: parseInt(process.env.SES_BACKOFF_FACTOR || '2', 10),
-    initialDelay: parseInt(process.env.SES_INITIAL_DELAY || '1000', 10),
-  }
+    isSandbox: process.env.SES_SANDBOX === 'true',
+    configurationSet: process.env.SES_CONFIGURATION_SET || 'default',
+    defaultSenderDomain: process.env.SES_DEFAULT_SENDER_DOMAIN || 'loopletter.co',
+    limits: {
+        maxSendRate: parseInt(process.env.SES_MAX_SEND_RATE || '12', 10),
+        maxDailyQuota: parseInt(process.env.SES_MAX_DAILY_QUOTA || '40000', 10),
+    },
+    batch: {
+        size: parseInt(process.env.SES_BATCH_SIZE || '12', 10),
+        intervalMs: parseInt(process.env.SES_BATCH_INTERVAL || '1000', 10),
+    },
+    retry: {
+        maxRetries: parseInt(process.env.SES_MAX_RETRIES || '3', 10),
+        backoffFactor: parseInt(process.env.SES_BACKOFF_FACTOR || '2', 10),
+        initialDelay: parseInt(process.env.SES_INITIAL_DELAY || '1000', 10),
+    }
 };
-
-// Helper function to check if an email is verified in sandbox mode
 export async function isEmailVerifiedInSandbox(email: string): Promise<boolean> {
-  if (!SES_CONFIG.isSandbox) {
-    // If not in sandbox mode, all emails are considered "verified"
-    return true;
-  }
-
-  try {
-    // In a real implementation, you would check against the list of verified emails
-    // For now, we'll just check if the email ends with a test domain
-    return email.endsWith('@example.com') ||
-      email.endsWith('@test.com') ||
-      email.endsWith('@loopletter.co');
-  } catch (error) {
-    console.error('Error checking if email is verified:', error);
-    return false;
-  }
+    if (!SES_CONFIG.isSandbox) {
+        return true;
+    }
+    try {
+        return email.endsWith('@example.com') ||
+            email.endsWith('@test.com') ||
+            email.endsWith('@loopletter.co');
+    }
+    catch (error) {
+        console.error('Error checking if email is verified:', error);
+        return false;
+    }
 }
-
-// Rate limiting and quota tracking
 class SESRateLimiter {
-  private sentInCurrentSecond = 0;
-  private currentSecondStart = 0;
-
-  constructor() {
-    this.resetCounters();
-  }
-
-  private resetCounters() {
-    const now = Date.now();
-    this.currentSecondStart = Math.floor(now / 1000) * 1000;
-    this.sentInCurrentSecond = 0;
-  }
-
-  async canSendEmail(): Promise<{ canSend: boolean; reason?: string; waitTime?: number }> {
-    const now = Date.now();
-    const currentSecond = Math.floor(now / 1000) * 1000;
-
-    // Reset second counter if we're in a new second
-    if (currentSecond > this.currentSecondStart) {
-      this.sentInCurrentSecond = 0;
-      this.currentSecondStart = currentSecond;
+    private sentInCurrentSecond = 0;
+    private currentSecondStart = 0;
+    constructor() {
+        this.resetCounters();
     }
-
-    // Check daily quota using persistent tracker
-    const remainingQuota = await sesQuotaTracker.getRemainingQuota(SES_CONFIG.limits.maxDailyQuota);
-    if (remainingQuota <= 0) {
-      return {
-        canSend: false,
-        reason: `Daily quota of ${SES_CONFIG.limits.maxDailyQuota} emails exceeded`,
-      };
+    private resetCounters() {
+        const now = Date.now();
+        this.currentSecondStart = Math.floor(now / 1000) * 1000;
+        this.sentInCurrentSecond = 0;
     }
-
-    // Check rate limit
-    if (this.sentInCurrentSecond >= SES_CONFIG.limits.maxSendRate) {
-      const waitTime = 1000 - (now - this.currentSecondStart);
-      return {
-        canSend: false,
-        reason: `Rate limit of ${SES_CONFIG.limits.maxSendRate} emails/second exceeded`,
-        waitTime,
-      };
+    async canSendEmail(): Promise<{
+        canSend: boolean;
+        reason?: string;
+        waitTime?: number;
+    }> {
+        const now = Date.now();
+        const currentSecond = Math.floor(now / 1000) * 1000;
+        if (currentSecond > this.currentSecondStart) {
+            this.sentInCurrentSecond = 0;
+            this.currentSecondStart = currentSecond;
+        }
+        const remainingQuota = await sesQuotaTracker.getRemainingQuota(SES_CONFIG.limits.maxDailyQuota);
+        if (remainingQuota <= 0) {
+            return {
+                canSend: false,
+                reason: `Daily quota of ${SES_CONFIG.limits.maxDailyQuota} emails exceeded`,
+            };
+        }
+        if (this.sentInCurrentSecond >= SES_CONFIG.limits.maxSendRate) {
+            const waitTime = 1000 - (now - this.currentSecondStart);
+            return {
+                canSend: false,
+                reason: `Rate limit of ${SES_CONFIG.limits.maxSendRate} emails/second exceeded`,
+                waitTime,
+            };
+        }
+        return { canSend: true };
     }
-
-    return { canSend: true };
-  }
-
-  async recordEmailSent() {
-    this.sentInCurrentSecond++;
-    await sesQuotaTracker.incrementCount(1);
-  }
-
-  async getStats() {
-    const todayCount = await sesQuotaTracker.loadTodayCount();
-    return {
-      sentInCurrentSecond: this.sentInCurrentSecond,
-      sentToday: todayCount,
-      remainingToday: SES_CONFIG.limits.maxDailyQuota - todayCount,
-      remainingThisSecond: SES_CONFIG.limits.maxSendRate - this.sentInCurrentSecond,
-    };
-  }
+    async recordEmailSent() {
+        this.sentInCurrentSecond++;
+        await sesQuotaTracker.incrementCount(1);
+    }
+    async getStats() {
+        const todayCount = await sesQuotaTracker.loadTodayCount();
+        return {
+            sentInCurrentSecond: this.sentInCurrentSecond,
+            sentToday: todayCount,
+            remainingToday: SES_CONFIG.limits.maxDailyQuota - todayCount,
+            remainingThisSecond: SES_CONFIG.limits.maxSendRate - this.sentInCurrentSecond,
+        };
+    }
 }
-
-// Export singleton instance
 export const sesRateLimiter = new SESRateLimiter();
-
-// Helper function to calculate optimal batch delay
 export function calculateBatchDelay(emailCount: number): number {
-  const { maxSendRate } = SES_CONFIG.limits;
-  const { size: batchSize } = SES_CONFIG.batch;
-
-  // If batch size is within rate limit, use standard interval
-  if (batchSize <= maxSendRate) {
-    return SES_CONFIG.batch.intervalMs;
-  }
-
-  // Otherwise, calculate delay to stay within rate limit
-  const secondsNeeded = Math.ceil(batchSize / maxSendRate);
-  return secondsNeeded * 1000;
+    const { maxSendRate } = SES_CONFIG.limits;
+    const { size: batchSize } = SES_CONFIG.batch;
+    if (batchSize <= maxSendRate) {
+        return SES_CONFIG.batch.intervalMs;
+    }
+    const secondsNeeded = Math.ceil(batchSize / maxSendRate);
+    return secondsNeeded * 1000;
 }
-
-// Helper function to estimate campaign send time
 export async function estimateCampaignDuration(emailCount: number): Promise<{
-  estimatedSeconds: number;
-  estimatedMinutes: number;
-  canSendToday: boolean;
+    estimatedSeconds: number;
+    estimatedMinutes: number;
+    canSendToday: boolean;
 }> {
-  const { maxSendRate, maxDailyQuota } = SES_CONFIG.limits;
-  const stats = await sesRateLimiter.getStats();
-
-  const canSendToday = (stats.remainingToday >= emailCount);
-  const estimatedSeconds = Math.ceil(emailCount / maxSendRate);
-  const estimatedMinutes = Math.ceil(estimatedSeconds / 60);
-
-  return {
-    estimatedSeconds,
-    estimatedMinutes,
-    canSendToday,
-  };
+    const { maxSendRate, maxDailyQuota } = SES_CONFIG.limits;
+    const stats = await sesRateLimiter.getStats();
+    const canSendToday = (stats.remainingToday >= emailCount);
+    const estimatedSeconds = Math.ceil(emailCount / maxSendRate);
+    const estimatedMinutes = Math.ceil(estimatedSeconds / 60);
+    return {
+        estimatedSeconds,
+        estimatedMinutes,
+        canSendToday,
+    };
 }

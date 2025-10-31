@@ -1,19 +1,11 @@
 'use client';
-
 import { InfoIcon } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from '@/components/ui/tooltip';
 export function PreviewTextInfo() {
-  return (
-    <TooltipProvider>
+    return (<TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <InfoIcon className="h-4 w-4 text-gray-400 dark:text-neutral-500 cursor-help" />
+          <InfoIcon className="h-4 w-4 text-gray-400 dark:text-neutral-500 cursor-help"/>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs">
           <p>
@@ -22,6 +14,5 @@ export function PreviewTextInfo() {
           </p>
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
-  );
+    </TooltipProvider>);
 }

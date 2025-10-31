@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Calendar, Globe, Zap, Lightbulb, Target } from 'lucide-react';
-
 export default function SchedulingPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Email Scheduling</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function SchedulingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4"/>
               Send Now
             </CardTitle>
           </CardHeader>
@@ -31,7 +29,7 @@ export default function SchedulingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4"/>
               Schedule Later
             </CardTitle>
           </CardHeader>
@@ -45,7 +43,7 @@ export default function SchedulingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Globe className="h-4 w-4" />
+              <Globe className="h-4 w-4"/>
               Time Zone Optimization
             </CardTitle>
           </CardHeader>
@@ -59,7 +57,7 @@ export default function SchedulingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Target className="h-4 w-4" />
+              <Target className="h-4 w-4"/>
               Smart Timing
             </CardTitle>
           </CardHeader>
@@ -444,12 +442,11 @@ export default function SchedulingPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Your audience's behavior is unique. Use these guidelines as a starting point, 
           then test and optimize based on your specific fan engagement patterns.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

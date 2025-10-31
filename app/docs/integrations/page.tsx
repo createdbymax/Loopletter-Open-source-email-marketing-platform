@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plug, Code, Webhook, Zap } from 'lucide-react';
-
 export default function IntegrationsPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Integrations</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function IntegrationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Plug className="h-4 w-4" />
+              <Plug className="h-4 w-4"/>
               Native Integrations
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function IntegrationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Code className="h-4 w-4" />
+              <Code className="h-4 w-4"/>
               API Access
             </CardTitle>
           </CardHeader>
@@ -44,7 +42,7 @@ export default function IntegrationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Webhook className="h-4 w-4" />
+              <Webhook className="h-4 w-4"/>
               Webhooks
             </CardTitle>
           </CardHeader>
@@ -58,7 +56,7 @@ export default function IntegrationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4"/>
               Zapier
             </CardTitle>
           </CardHeader>
@@ -98,6 +96,5 @@ export default function IntegrationsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

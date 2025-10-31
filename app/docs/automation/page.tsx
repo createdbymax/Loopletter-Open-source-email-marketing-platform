@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Mail, Users, Clock, Target, Heart, Lightbulb } from 'lucide-react';
-
 export default function AutomationPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Email Automation</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function AutomationPage() {
       <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5" />
+            <Zap className="h-5 w-5"/>
             Why Use Email Automation?
           </CardTitle>
         </CardHeader>
@@ -42,7 +40,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Heart className="h-4 w-4" />
+              <Heart className="h-4 w-4"/>
               Welcome Series
             </CardTitle>
           </CardHeader>
@@ -56,7 +54,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Drip Campaigns
             </CardTitle>
           </CardHeader>
@@ -70,7 +68,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Target className="h-4 w-4" />
+              <Target className="h-4 w-4"/>
               Behavioral Triggers
             </CardTitle>
           </CardHeader>
@@ -84,7 +82,7 @@ export default function AutomationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Re-engagement
             </CardTitle>
           </CardHeader>
@@ -428,11 +426,10 @@ export default function AutomationPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Start with a simple welcome series, then gradually add more complex automations as you learn what resonates with your audience.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

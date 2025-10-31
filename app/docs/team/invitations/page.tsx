@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, Mail, Clock, CheckCircle } from 'lucide-react';
-
 export default function InvitationsPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Team Invitations</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function InvitationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="h-4 w-4"/>
               Send Invite
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function InvitationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Email Sent
             </CardTitle>
           </CardHeader>
@@ -44,7 +42,7 @@ export default function InvitationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4"/>
               Pending
             </CardTitle>
           </CardHeader>
@@ -58,7 +56,7 @@ export default function InvitationsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="h-4 w-4"/>
               Accepted
             </CardTitle>
           </CardHeader>
@@ -84,6 +82,5 @@ export default function InvitationsPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

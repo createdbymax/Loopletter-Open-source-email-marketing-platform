@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,43 +6,31 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  ArrowRight, 
-  Mail, 
-  Eye, 
-  Send,
-  Sparkles,
-  Music,
-  Calendar,
-  Gift
-} from 'lucide-react';
+import { ArrowRight, Mail, Eye, Send, Sparkles, Music, Calendar, Gift } from 'lucide-react';
 import { Artist } from '@/lib/types';
-
 interface FirstCampaignStepProps {
-  artist: Artist;
-  onNext: () => void;
-  onStepComplete: () => void;
+    artist: Artist;
+    onNext: () => void;
+    onStepComplete: () => void;
 }
-
 export function FirstCampaignStep({ artist, onNext, onStepComplete }: FirstCampaignStepProps) {
-  const [campaignType, setCampaignType] = useState<string>('');
-  const [formData, setFormData] = useState({
-    title: '',
-    subject: '',
-    message: '',
-    sendNow: false,
-  });
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<'template' | 'content' | 'preview'>('template');
-
-  const templates = [
-    {
-      id: 'welcome',
-      title: 'Welcome Message',
-      description: 'Introduce yourself to new fans',
-      icon: Sparkles,
-      subject: 'Welcome to my music journey! 🎵',
-      message: `Hey there!
+    const [campaignType, setCampaignType] = useState<string>('');
+    const [formData, setFormData] = useState({
+        title: '',
+        subject: '',
+        message: '',
+        sendNow: false,
+    });
+    const [loading, setLoading] = useState(false);
+    const [step, setStep] = useState<'template' | 'content' | 'preview'>('template');
+    const templates = [
+        {
+            id: 'welcome',
+            title: 'Welcome Message',
+            description: 'Introduce yourself to new fans',
+            icon: Sparkles,
+            subject: 'Welcome to my music journey! 🎵',
+            message: `Hey there!
 
 Thanks for joining my email list! I'm so excited to have you along for this musical journey.
 
@@ -53,14 +40,14 @@ Stay tuned for some amazing music coming your way!
 
 Much love,
 ${artist.name}`
-    },
-    {
-      id: 'release',
-      title: 'New Release Announcement',
-      description: 'Announce your latest track or album',
-      icon: Music,
-      subject: 'New music is here! 🎶',
-      message: `Hey music lovers!
+        },
+        {
+            id: 'release',
+            title: 'New Release Announcement',
+            description: 'Announce your latest track or album',
+            icon: Music,
+            subject: 'New music is here! 🎶',
+            message: `Hey music lovers!
 
 I'm thrilled to announce that my new [SONG/ALBUM NAME] is now available everywhere!
 
@@ -72,14 +59,14 @@ Let me know what you think - I love hearing from you!
 
 Rock on,
 ${artist.name}`
-    },
-    {
-      id: 'show',
-      title: 'Show Announcement',
-      description: 'Promote your upcoming performances',
-      icon: Calendar,
-      subject: 'See me live! Upcoming shows 🎤',
-      message: `Hey everyone!
+        },
+        {
+            id: 'show',
+            title: 'Show Announcement',
+            description: 'Promote your upcoming performances',
+            icon: Calendar,
+            subject: 'See me live! Upcoming shows 🎤',
+            message: `Hey everyone!
 
 I'm excited to announce some upcoming shows! Here's where you can catch me live:
 
@@ -92,14 +79,14 @@ Can't wait to see you there and perform these songs live!
 
 See you soon,
 ${artist.name}`
-    },
-    {
-      id: 'merch',
-      title: 'Merchandise Promotion',
-      description: 'Promote your latest merchandise',
-      icon: Gift,
-      subject: 'New merch drop! 👕',
-      message: `Hey fans!
+        },
+        {
+            id: 'merch',
+            title: 'Merchandise Promotion',
+            description: 'Promote your latest merchandise',
+            icon: Gift,
+            subject: 'New merch drop! 👕',
+            message: `Hey fans!
 
 I've got some exciting new merchandise available in my store!
 
@@ -111,67 +98,62 @@ Thanks for supporting my music!
 
 Best,
 ${artist.name}`
-    }
-  ];
-
-  const selectedTemplate = templates.find(t => t.id === campaignType);
-
-  const handleTemplateSelect = (templateId: string) => {
-    setCampaignType(templateId);
-    const template = templates.find(t => t.id === templateId);
-    if (template) {
-      setFormData(prev => ({
-        ...prev,
-        title: `${template.title} - ${new Date().toLocaleDateString()}`,
-        subject: template.subject,
-        message: template.message,
-      }));
-      setStep('content');
-    }
-  };
-
-  const handleSubmit = async () => {
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/campaigns', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          subject: formData.subject,
-          message: formData.message,
-          status: formData.sendNow ? 'sending' : 'draft',
-          template_id: campaignType,
-          settings: {
-            send_time_optimization: false,
-            track_opens: true,
-            track_clicks: true,
-            auto_tweet: false,
-            send_to_unsubscribed: false,
-          },
-        }),
-      });
-
-      if (response.ok) {
-        onStepComplete();
-        onNext();
-      } else {
-        throw new Error('Failed to create campaign');
-      }
-    } catch (error) {
-      console.error('Error creating campaign:', error);
-      // Handle error - could show toast notification
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (step === 'template') {
-    return (
-      <div className="space-y-6">
+        }
+    ];
+    const selectedTemplate = templates.find(t => t.id === campaignType);
+    const handleTemplateSelect = (templateId: string) => {
+        setCampaignType(templateId);
+        const template = templates.find(t => t.id === templateId);
+        if (template) {
+            setFormData(prev => ({
+                ...prev,
+                title: `${template.title} - ${new Date().toLocaleDateString()}`,
+                subject: template.subject,
+                message: template.message,
+            }));
+            setStep('content');
+        }
+    };
+    const handleSubmit = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/campaigns', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: formData.title,
+                    subject: formData.subject,
+                    message: formData.message,
+                    status: formData.sendNow ? 'sending' : 'draft',
+                    template_id: campaignType,
+                    settings: {
+                        send_time_optimization: false,
+                        track_opens: true,
+                        track_clicks: true,
+                        auto_tweet: false,
+                        send_to_unsubscribed: false,
+                    },
+                }),
+            });
+            if (response.ok) {
+                onStepComplete();
+                onNext();
+            }
+            else {
+                throw new Error('Failed to create campaign');
+            }
+        }
+        catch (error) {
+            console.error('Error creating campaign:', error);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    if (step === 'template') {
+        return (<div className="space-y-6">
         <div className="text-center mb-6">
           <p className="text-gray-600">
             Choose a template to create your first campaign. You can customize it in the next step.
@@ -179,16 +161,11 @@ ${artist.name}`
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {templates.map((template) => (
-            <Card 
-              key={template.id} 
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleTemplateSelect(template.id)}
-            >
+          {templates.map((template) => (<Card key={template.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleTemplateSelect(template.id)}>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-3">
                   <div className="bg-blue-100 p-2 rounded-lg">
-                    <template.icon className="w-5 h-5 text-blue-600" />
+                    <template.icon className="w-5 h-5 text-blue-600"/>
                   </div>
                   <span>{template.title}</span>
                 </CardTitle>
@@ -196,8 +173,7 @@ ${artist.name}`
               <CardContent>
                 <p className="text-gray-600 text-sm">{template.description}</p>
               </CardContent>
-            </Card>
-          ))}
+            </Card>))}
         </div>
 
         <div className="text-center">
@@ -205,13 +181,10 @@ ${artist.name}`
             Skip campaign creation
           </Button>
         </div>
-      </div>
-    );
-  }
-
-  if (step === 'content') {
-    return (
-      <div className="space-y-6">
+      </div>);
+    }
+    if (step === 'content') {
+        return (<div className="space-y-6">
         <div className="text-center mb-6">
           <p className="text-gray-600">
             Customize your {selectedTemplate?.title.toLowerCase()} campaign
@@ -221,33 +194,17 @@ ${artist.name}`
         <div className="space-y-4">
           <div>
             <Label htmlFor="title">Campaign Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Internal name for your campaign"
-            />
+            <Input id="title" value={formData.title} onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))} placeholder="Internal name for your campaign"/>
           </div>
 
           <div>
             <Label htmlFor="subject">Email Subject Line</Label>
-            <Input
-              id="subject"
-              value={formData.subject}
-              onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-              placeholder="What your fans will see in their inbox"
-            />
+            <Input id="subject" value={formData.subject} onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))} placeholder="What your fans will see in their inbox"/>
           </div>
 
           <div>
             <Label htmlFor="message">Email Message</Label>
-            <Textarea
-              id="message"
-              value={formData.message}
-              onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-              placeholder="Your email content..."
-              rows={12}
-            />
+            <Textarea id="message" value={formData.message} onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))} placeholder="Your email content..." rows={12}/>
             <p className="text-xs text-gray-500 mt-1">
               Tip: Personalize the message by replacing placeholder text with your specific details
             </p>
@@ -260,16 +217,13 @@ ${artist.name}`
           </Button>
           <Button onClick={() => setStep('preview')}>
             Preview
-            <Eye className="w-4 h-4 ml-2" />
+            <Eye className="w-4 h-4 ml-2"/>
           </Button>
         </div>
-      </div>
-    );
-  }
-
-  if (step === 'preview') {
-    return (
-      <div className="space-y-6">
+      </div>);
+    }
+    if (step === 'preview') {
+        return (<div className="space-y-6">
         <div className="text-center mb-6">
           <p className="text-gray-600">
             Review your campaign before sending or saving as draft
@@ -316,31 +270,22 @@ ${artist.name}`
           </Button>
           
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => {
+            <Button variant="outline" onClick={() => {
                 setFormData(prev => ({ ...prev, sendNow: false }));
                 handleSubmit();
-              }}
-              disabled={loading}
-            >
+            }} disabled={loading}>
               Save as Draft
             </Button>
-            <Button 
-              onClick={() => {
+            <Button onClick={() => {
                 setFormData(prev => ({ ...prev, sendNow: true }));
                 handleSubmit();
-              }}
-              disabled={loading}
-            >
+            }} disabled={loading}>
               {loading ? 'Creating...' : 'Send Now'}
-              <Send className="w-4 h-4 ml-2" />
+              <Send className="w-4 h-4 ml-2"/>
             </Button>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return null;
+      </div>);
+    }
+    return null;
 }

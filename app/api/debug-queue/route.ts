@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getEmailQueue } from '@/lib/email-queue';
-
 export async function GET() {
     try {
         const queue = getEmailQueue();
-
-        // Get all job states
         const [waiting, active, completed, failed, delayed] = await Promise.all([
             queue.getWaiting(0, 10),
             queue.getActive(0, 10),
@@ -13,15 +10,13 @@ export async function GET() {
             queue.getFailed(0, 10),
             queue.getDelayed(0, 10)
         ]);
-
-        // Get specific job by ID if it exists
         let specificJob = null;
         try {
             specificJob = await queue.getJob('11');
-        } catch (error) {
+        }
+        catch (error) {
             console.log('Job 11 not found:', error);
         }
-
         const result = {
             queueName: queue.name,
             counts: {
@@ -86,10 +81,9 @@ export async function GET() {
                 returnvalue: specificJob.returnvalue
             } : null
         };
-
         return NextResponse.json(result);
-
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Debug queue error:', error);
         return NextResponse.json({
             error: error instanceof Error ? error.message : 'Unknown error',

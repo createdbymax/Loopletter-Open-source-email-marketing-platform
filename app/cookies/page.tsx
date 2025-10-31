@@ -1,14 +1,11 @@
 import { Metadata } from "next";
-
 export const metadata: Metadata = {
-  title: "Cookie Policy - Loopletter",
-  description: "Learn about how Loopletter uses cookies and similar technologies.",
+    title: "Cookie Policy - Loopletter",
+    description: "Learn about how Loopletter uses cookies and similar technologies.",
 };
-
 export default function CookiesPage() {
-  return (
-    <div className="min-h-screen bg-white text-gray-900">
-      {/* Header */}
+    return (<div className="min-h-screen bg-white text-gray-900">
+      
       <header className="bg-gray-50 border-b">
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
@@ -18,7 +15,7 @@ export default function CookiesPage() {
         </div>
       </header>
 
-      {/* Content */}
+      
       <main className="max-w-4xl mx-auto px-6 py-16">
         <div className="prose prose-lg max-w-none space-y-12">
           <section>
@@ -173,6 +170,5 @@ export default function CookiesPage() {
           </section>
         </div>
       </main>
-    </div>
-  );
+    </div>);
 }

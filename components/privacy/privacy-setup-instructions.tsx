@@ -1,22 +1,13 @@
 'use client';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Database, 
-  CheckCircle, 
-  Copy,
-  ExternalLink,
-  AlertTriangle
-} from 'lucide-react';
+import { Database, CheckCircle, Copy, ExternalLink, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
-
 export function PrivacySetupInstructions() {
-  const [copied, setCopied] = useState(false);
-
-  const sqlScript = `-- Privacy Compliance Setup Script
+    const [copied, setCopied] = useState(false);
+    const sqlScript = `-- Privacy Compliance Setup Script
 -- Copy and paste this into your Supabase SQL Editor
 
 -- Enable UUID extension if not already enabled
@@ -144,23 +135,21 @@ BEGIN
     );
   END IF;
 END $$;`;
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(sqlScript);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  };
-
-  return (
-    <div className="space-y-6">
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(sqlScript);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+        catch (error) {
+            console.error('Failed to copy:', error);
+        }
+    };
+    return (<div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
+            <Database className="h-5 w-5"/>
             Privacy Compliance Setup Required
           </CardTitle>
           <CardDescription>
@@ -169,7 +158,7 @@ END $$;`;
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert>
-            <AlertTriangle className="h-4 w-4" />
+            <AlertTriangle className="h-4 w-4"/>
             <AlertDescription>
               <div className="space-y-2">
                 <p className="font-medium">Database tables are not set up yet</p>
@@ -194,7 +183,7 @@ END $$;`;
                   </p>
                   <Button variant="outline" size="sm" className="mt-2" asChild>
                     <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
+                      <ExternalLink className="h-4 w-4 mr-2"/>
                       Open Supabase
                     </a>
                   </Button>
@@ -223,23 +212,14 @@ END $$;`;
                     <pre className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg text-xs overflow-x-auto max-h-64 border">
                       <code>{sqlScript}</code>
                     </pre>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={copyToClipboard}
-                    >
-                      {copied ? (
-                        <>
-                          <CheckCircle className="h-4 w-4 mr-2" />
+                    <Button variant="outline" size="sm" className="absolute top-2 right-2" onClick={copyToClipboard}>
+                      {copied ? (<>
+                          <CheckCircle className="h-4 w-4 mr-2"/>
                           Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4 mr-2" />
+                        </>) : (<>
+                          <Copy className="h-4 w-4 mr-2"/>
                           Copy SQL
-                        </>
-                      )}
+                        </>)}
                     </Button>
                   </div>
                 </div>
@@ -252,12 +232,7 @@ END $$;`;
                   <p className="text-sm text-muted-foreground">
                     After running the script successfully, refresh this page to access privacy features
                   </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="mt-2"
-                    onClick={() => window.location.reload()}
-                  >
+                  <Button variant="outline" size="sm" className="mt-2" onClick={() => window.location.reload()}>
                     Refresh Page
                   </Button>
                 </div>
@@ -266,7 +241,7 @@ END $$;`;
           </div>
 
           <Alert>
-            <CheckCircle className="h-4 w-4" />
+            <CheckCircle className="h-4 w-4"/>
             <AlertDescription className="text-sm">
               <div className="space-y-2">
                 <p><strong>What this script does:</strong></p>
@@ -286,6 +261,5 @@ END $$;`;
           </Alert>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

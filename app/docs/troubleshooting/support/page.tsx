@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { MessageCircle, Mail, Phone, Clock, HelpCircle, FileText, Video, Users } from 'lucide-react';
-
 export default function ContactSupportPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Contact Support</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function ContactSupportPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4"/>
               Live Chat
             </CardTitle>
           </CardHeader>
@@ -32,7 +30,7 @@ export default function ContactSupportPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Email Support
             </CardTitle>
           </CardHeader>
@@ -47,7 +45,7 @@ export default function ContactSupportPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Phone className="h-4 w-4" />
+              <Phone className="h-4 w-4"/>
               Phone Support
             </CardTitle>
           </CardHeader>
@@ -62,7 +60,7 @@ export default function ContactSupportPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Community
             </CardTitle>
           </CardHeader>
@@ -247,7 +245,7 @@ export default function ContactSupportPage() {
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <FileText className="h-4 w-4" />
+                <FileText className="h-4 w-4"/>
                 Documentation
               </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -261,7 +259,7 @@ export default function ContactSupportPage() {
 
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Video className="h-4 w-4" />
+                <Video className="h-4 w-4"/>
                 Video Tutorials
               </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -275,7 +273,7 @@ export default function ContactSupportPage() {
 
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Users className="h-4 w-4" />
+                <Users className="h-4 w-4"/>
                 Community Forum
               </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -289,7 +287,7 @@ export default function ContactSupportPage() {
 
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <HelpCircle className="h-4 w-4" />
+                <HelpCircle className="h-4 w-4"/>
                 Knowledge Base
               </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -409,7 +407,7 @@ export default function ContactSupportPage() {
           <div className="grid gap-6 md:grid-cols-3">
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-green-500" />
+                <Clock className="h-4 w-4 text-green-500"/>
                 Urgent Issues
               </h3>
               <div className="space-y-2 text-sm">
@@ -426,7 +424,7 @@ export default function ContactSupportPage() {
 
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-yellow-500" />
+                <Clock className="h-4 w-4 text-yellow-500"/>
                 Standard Issues
               </h3>
               <div className="space-y-2 text-sm">
@@ -443,7 +441,7 @@ export default function ContactSupportPage() {
 
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-blue-500" />
+                <Clock className="h-4 w-4 text-blue-500"/>
                 General Inquiries
               </h3>
               <div className="space-y-2 text-sm">
@@ -462,12 +460,11 @@ export default function ContactSupportPage() {
       </Card>
 
       <Alert>
-        <MessageCircle className="h-4 w-4" />
+        <MessageCircle className="h-4 w-4"/>
         <AlertDescription>
           <strong>Need immediate help?</strong> Use the live chat feature for the fastest response during business hours. 
           For complex issues, email support provides the most thorough assistance.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

@@ -1,5 +1,4 @@
 "use client";
-
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { getOrCreateArtistByClerkId, updateArtist } from "@/lib/db";
@@ -10,245 +9,223 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import {
-  Globe,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Copy,
-  RefreshCw,
-  Shield,
-  Mail,
-  Settings,
-  ExternalLink,
-  Server,
-  TrendingUp,
-  Eye,
-  AlertCircle,
-} from "lucide-react";
+import { Globe, CheckCircle, XCircle, AlertTriangle, Copy, RefreshCw, Shield, Mail, Settings, ExternalLink, Server, TrendingUp, Eye, AlertCircle, } from "lucide-react";
 import type { Artist } from "@/lib/types";
-
 interface DomainVerificationStatus {
-  domain: string;
-  verified: boolean;
-  dkimTokens: string[];
-  spfRecord: string;
-  dmarcRecord: string;
-  mxRecord: string;
-  verificationToken: string;
+    domain: string;
+    verified: boolean;
+    dkimTokens: string[];
+    spfRecord: string;
+    dmarcRecord: string;
+    mxRecord: string;
+    verificationToken: string;
 }
-
 interface ReputationData {
-  domain: string;
-  domainReputation: {
-    score: number;
-    status: string;
-  };
-  ipReputation: {
-    score: number;
-    status: string;
-    address: string;
-    type: string;
-  };
-  metrics: {
-    bounceRate: number;
-    complaintRate: number;
-    openRate: number;
-    clickRate: number;
-    period: string;
-    totalSent: number;
-    totalBounces: number;
-    totalComplaints: number;
-    totalRejects: number;
-  };
-  blacklists: {
-    total: number;
-    listed: number;
-    status: Array<{
-      name: string;
-      listed: boolean;
-      lastChecked: string;
+    domain: string;
+    domainReputation: {
+        score: number;
+        status: string;
+    };
+    ipReputation: {
+        score: number;
+        status: string;
+        address: string;
+        type: string;
+    };
+    metrics: {
+        bounceRate: number;
+        complaintRate: number;
+        openRate: number;
+        clickRate: number;
+        period: string;
+        totalSent: number;
+        totalBounces: number;
+        totalComplaints: number;
+        totalRejects: number;
+    };
+    blacklists: {
+        total: number;
+        listed: number;
+        status: Array<{
+            name: string;
+            listed: boolean;
+            lastChecked: string;
+        }>;
+        lastChecked: string;
+    };
+    ispFeedback: Array<{
+        name: string;
+        connected: boolean;
+        complaints: number;
     }>;
-    lastChecked: string;
-  };
-  ispFeedback: Array<{
-    name: string;
-    connected: boolean;
-    complaints: number;
-  }>;
-  authentication: {
-    spf: { verified: boolean; record: string };
-    dkim: { verified: boolean; selector: string; enabled: boolean };
-    dmarc: { verified: boolean; policy: string; record: string };
-  };
-  sesStatus: {
-    sendingEnabled: boolean;
-    sendQuota: number;
-    sendRate: number;
-    sentLast24Hours: number;
-  };
-  lastUpdated: string;
+    authentication: {
+        spf: {
+            verified: boolean;
+            record: string;
+        };
+        dkim: {
+            verified: boolean;
+            selector: string;
+            enabled: boolean;
+        };
+        dmarc: {
+            verified: boolean;
+            policy: string;
+            record: string;
+        };
+    };
+    sesStatus: {
+        sendingEnabled: boolean;
+        sendQuota: number;
+        sendRate: number;
+        sentLast24Hours: number;
+    };
+    lastUpdated: string;
 }
-
 export default function DomainPage() {
-  const { user, isLoaded } = useUser();
-  const [artist, setArtist] = useState<Artist | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [verifying, setVerifying] = useState(false);
-  const [domainInput, setDomainInput] = useState("");
-  const [verificationStatus, setVerificationStatus] =
-    useState<DomainVerificationStatus | null>(null);
-  const [reputationData, setReputationData] = useState<ReputationData | null>(null);
-  const [loadingReputation, setLoadingReputation] = useState(false);
-
-  useEffect(() => {
-    async function fetchArtist() {
-      if (!user) return;
-      setLoading(true);
-      try {
-        const a = await getOrCreateArtistByClerkId(
-          user.id,
-          user.primaryEmailAddress?.emailAddress || "",
-          user.fullName || user.username || "Artist"
-        );
-        setArtist(a);
-        setDomainInput(a.ses_domain || "");
-
-        if (a.ses_domain) {
-          await checkDomainStatus(a.ses_domain);
-          await fetchReputationData();
+    const { user, isLoaded } = useUser();
+    const [artist, setArtist] = useState<Artist | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [verifying, setVerifying] = useState(false);
+    const [domainInput, setDomainInput] = useState("");
+    const [verificationStatus, setVerificationStatus] = useState<DomainVerificationStatus | null>(null);
+    const [reputationData, setReputationData] = useState<ReputationData | null>(null);
+    const [loadingReputation, setLoadingReputation] = useState(false);
+    useEffect(() => {
+        async function fetchArtist() {
+            if (!user)
+                return;
+            setLoading(true);
+            try {
+                const a = await getOrCreateArtistByClerkId(user.id, user.primaryEmailAddress?.emailAddress || "", user.fullName || user.username || "Artist");
+                setArtist(a);
+                setDomainInput(a.ses_domain || "");
+                if (a.ses_domain) {
+                    await checkDomainStatus(a.ses_domain);
+                    await fetchReputationData();
+                }
+            }
+            catch (error) {
+                console.error("Error fetching artist:", error);
+            }
+            finally {
+                setLoading(false);
+            }
         }
-      } catch (error) {
-        console.error("Error fetching artist:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    if (isLoaded) fetchArtist();
-  }, [user, isLoaded]);
-
-  const checkDomainStatus = async (domain: string) => {
-    try {
-      const response = await fetch(`/api/ses/domain/verify?domain=${domain}`);
-      const data = await response.json();
-      setVerificationStatus(data);
-    } catch (error) {
-      console.error("Error checking domain status:", error);
-    }
-  };
-
-  const fetchReputationData = async () => {
-    if (!artist?.ses_domain) return;
-    
-    setLoadingReputation(true);
-    try {
-      const response = await fetch('/api/domain/reputation');
-      if (response.ok) {
-        const data = await response.json();
-        setReputationData(data);
-      }
-    } catch (error) {
-      console.error("Error fetching reputation data:", error);
-    } finally {
-      setLoadingReputation(false);
-    }
-  };
-
-  const handleDomainSubmit = async () => {
-    if (!domainInput.trim() || !artist) return;
-
-    setVerifying(true);
-    try {
-      // Add domain
-      const response = await fetch("/api/ses/domain/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain: domainInput.trim() }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setVerificationStatus(data);
-
-        // Update artist record
-        await updateArtist(artist.id, {
-          ses_domain: domainInput.trim(),
-          ses_status: "pending",
-        });
-
-        setArtist({
-          ...artist,
-          ses_domain: domainInput.trim(),
-          ses_status: "pending",
-        });
-      } else {
-        const error = await response.json();
-        alert(`Failed to add domain: ${error.message}`);
-      }
-    } catch (error) {
-      console.error("Error adding domain:", error);
-      alert("Failed to add domain");
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  const handleVerifyDomain = async () => {
-    if (!artist?.ses_domain) return;
-
-    setVerifying(true);
-    try {
-      const response = await fetch("/api/ses/domain/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain: artist.ses_domain }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        if (data.verified) {
-          await updateArtist(artist.id, {
-            ses_domain_verified: true,
-            ses_status: "verified",
-          });
-
-          setArtist({
-            ...artist,
-            ses_domain_verified: true,
-            ses_status: "verified",
-          });
-
-          alert("Domain verified successfully!");
-        } else {
-          alert("Domain verification failed. Please check your DNS records.");
+        if (isLoaded)
+            fetchArtist();
+    }, [user, isLoaded]);
+    const checkDomainStatus = async (domain: string) => {
+        try {
+            const response = await fetch(`/api/ses/domain/verify?domain=${domain}`);
+            const data = await response.json();
+            setVerificationStatus(data);
         }
-
-        await checkDomainStatus(artist.ses_domain);
-      }
-    } catch (error) {
-      console.error("Error verifying domain:", error);
-      alert("Failed to verify domain");
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
+        catch (error) {
+            console.error("Error checking domain status:", error);
+        }
+    };
+    const fetchReputationData = async () => {
+        if (!artist?.ses_domain)
+            return;
+        setLoadingReputation(true);
+        try {
+            const response = await fetch('/api/domain/reputation');
+            if (response.ok) {
+                const data = await response.json();
+                setReputationData(data);
+            }
+        }
+        catch (error) {
+            console.error("Error fetching reputation data:", error);
+        }
+        finally {
+            setLoadingReputation(false);
+        }
+    };
+    const handleDomainSubmit = async () => {
+        if (!domainInput.trim() || !artist)
+            return;
+        setVerifying(true);
+        try {
+            const response = await fetch("/api/ses/domain/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ domain: domainInput.trim() }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setVerificationStatus(data);
+                await updateArtist(artist.id, {
+                    ses_domain: domainInput.trim(),
+                    ses_status: "pending",
+                });
+                setArtist({
+                    ...artist,
+                    ses_domain: domainInput.trim(),
+                    ses_status: "pending",
+                });
+            }
+            else {
+                const error = await response.json();
+                alert(`Failed to add domain: ${error.message}`);
+            }
+        }
+        catch (error) {
+            console.error("Error adding domain:", error);
+            alert("Failed to add domain");
+        }
+        finally {
+            setVerifying(false);
+        }
+    };
+    const handleVerifyDomain = async () => {
+        if (!artist?.ses_domain)
+            return;
+        setVerifying(true);
+        try {
+            const response = await fetch("/api/ses/domain/check", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ domain: artist.ses_domain }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.verified) {
+                    await updateArtist(artist.id, {
+                        ses_domain_verified: true,
+                        ses_status: "verified",
+                    });
+                    setArtist({
+                        ...artist,
+                        ses_domain_verified: true,
+                        ses_status: "verified",
+                    });
+                    alert("Domain verified successfully!");
+                }
+                else {
+                    alert("Domain verification failed. Please check your DNS records.");
+                }
+                await checkDomainStatus(artist.ses_domain);
+            }
+        }
+        catch (error) {
+            console.error("Error verifying domain:", error);
+            alert("Failed to verify domain");
+        }
+        finally {
+            setVerifying(false);
+        }
+    };
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+    };
+    if (loading) {
+        return (<div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
+      </div>);
+    }
+    return (<div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Domain Setup</h1>
         <p className="text-gray-600">
@@ -256,39 +233,31 @@ export default function DomainPage() {
         </p>
       </div>
 
-      {/* Domain Status Overview */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Domain Status</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <Globe className="h-4 w-4 text-muted-foreground"/>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              {artist?.ses_domain_verified ? (
-                <>
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+              {artist?.ses_domain_verified ? (<>
+                  <CheckCircle className="w-5 h-5 text-green-500"/>
                   <Badge className="bg-green-100 text-green-800">
                     Verified
                   </Badge>
-                </>
-              ) : artist?.ses_domain ? (
-                <>
-                  <AlertTriangle className="w-5 h-5 text-yellow-500" />
+                </>) : artist?.ses_domain ? (<>
+                  <AlertTriangle className="w-5 h-5 text-yellow-500"/>
                   <Badge className="bg-yellow-100 text-yellow-800">
                     Pending
                   </Badge>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-red-500" />
+                </>) : (<>
+                  <XCircle className="w-5 h-5 text-red-500"/>
                   <Badge variant="secondary">Not Set</Badge>
-                </>
-              )}
+                </>)}
             </div>
-            {artist?.ses_domain && (
-              <p className="text-sm text-gray-600 mt-2">{artist.ses_domain}</p>
-            )}
+            {artist?.ses_domain && (<p className="text-sm text-gray-600 mt-2">{artist.ses_domain}</p>)}
           </CardContent>
         </Card>
 
@@ -297,20 +266,20 @@ export default function DomainPage() {
             <CardTitle className="text-sm font-medium">
               Email Authentication
             </CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
+            <Shield className="h-4 w-4 text-muted-foreground"/>
           </CardHeader>
           <CardContent>
             <div className="space-y-1 text-sm">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-3 h-3 text-green-500" />
+                <CheckCircle className="w-3 h-3 text-green-500"/>
                 <span>SPF Record</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-3 h-3 text-green-500" />
+                <CheckCircle className="w-3 h-3 text-green-500"/>
                 <span>DKIM Signing</span>
               </div>
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-3 h-3 text-yellow-500" />
+                <AlertTriangle className="w-3 h-3 text-yellow-500"/>
                 <span>DMARC Policy</span>
               </div>
             </div>
@@ -322,7 +291,7 @@ export default function DomainPage() {
             <CardTitle className="text-sm font-medium">
               Sending Status
             </CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <Mail className="h-4 w-4 text-muted-foreground"/>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -330,8 +299,8 @@ export default function DomainPage() {
             </div>
             <p className="text-xs text-gray-600">
               {artist?.ses_domain_verified
-                ? "You can send campaigns"
-                : "Complete domain setup to send emails"}
+            ? "You can send campaigns"
+            : "Complete domain setup to send emails"}
             </p>
           </CardContent>
         </Card>
@@ -352,89 +321,65 @@ export default function DomainPage() {
               <CardTitle>Add Your Domain</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {!artist?.ses_domain ? (
-                <>
+              {!artist?.ses_domain ? (<>
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       Domain Name
                     </label>
                     <div className="flex gap-2">
-                      <Input
-                        value={domainInput}
-                        onChange={(e) => setDomainInput(e.target.value)}
-                        placeholder="yourdomain.com"
-                        className="flex-1" />
-                      <Button
-                        onClick={handleDomainSubmit}
-                        disabled={!domainInput.trim() || verifying}
-                      >
-                        {verifying ? (
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                        ) : (
-                          "Add Domain"
-                        )}
+                      <Input value={domainInput} onChange={(e) => setDomainInput(e.target.value)} placeholder="yourdomain.com" className="flex-1"/>
+                      <Button onClick={handleDomainSubmit} disabled={!domainInput.trim() || verifying}>
+                        {verifying ? (<RefreshCw className="w-4 h-4 animate-spin"/>) : ("Add Domain")}
                       </Button>
                     </div>
                   </div>
 
                   <Alert>
-                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTriangle className="h-4 w-4"/>
                     <AlertDescription>
                       You must own this domain and have access to modify its DNS
                       records. We'll provide the necessary DNS records after you
                       add the domain.
                     </AlertDescription>
                   </Alert>
-                </>
-              ) : (
-                <div className="space-y-4">
+                </>) : (<div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-medium">{artist.ses_domain}</h3>
                       <p className="text-sm text-gray-600">
                         Status:{" "}
                         {artist.ses_domain_verified
-                          ? "Verified"
-                          : "Pending Verification"}
+                ? "Verified"
+                : "Pending Verification"}
                       </p>
                     </div>
 
-                    {!artist.ses_domain_verified && (
-                      <Button onClick={handleVerifyDomain} disabled={verifying}>
-                        {verifying ? (
-                          <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                        ) : (
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                        )}
+                    {!artist.ses_domain_verified && (<Button onClick={handleVerifyDomain} disabled={verifying}>
+                        {verifying ? (<RefreshCw className="w-4 h-4 animate-spin mr-2"/>) : (<CheckCircle className="w-4 h-4 mr-2"/>)}
                         Verify Domain
-                      </Button>
-                    )}
+                      </Button>)}
                   </div>
 
-                  {!artist.ses_domain_verified && (
-                    <Alert>
-                      <AlertTriangle className="h-4 w-4" />
+                  {!artist.ses_domain_verified && (<Alert>
+                      <AlertTriangle className="h-4 w-4"/>
                       <AlertDescription>
                         Please add the DNS records shown in the "DNS Records"
                         tab, then click "Verify Domain". Verification can take
                         up to 72 hours after DNS propagation.
                       </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              )}
+                    </Alert>)}
+                </div>)}
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="dns" className="space-y-4">
-          {verificationStatus ? (
-            <div className="space-y-4">
-              {/* DKIM Records */}
+          {verificationStatus ? (<div className="space-y-4">
+              
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Shield className="w-5 h-5" />
+                    <Shield className="w-5 h-5"/>
                     DKIM Records
                   </CardTitle>
                 </CardHeader>
@@ -442,8 +387,7 @@ export default function DomainPage() {
                   <p className="text-sm text-gray-600">
                     Add these CNAME records to enable DKIM signing:
                   </p>
-                  {verificationStatus.dkimTokens.map((token, index) => (
-                    <div key={index} className="bg-gray-50 p-3 rounded border">
+                  {verificationStatus.dkimTokens.map((token, index) => (<div key={index} className="bg-gray-50 p-3 rounded border">
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                           <strong>Name:</strong>
@@ -463,22 +407,17 @@ export default function DomainPage() {
                             <span className="flex-1">
                               {token}.dkim.amazonses.com
                             </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => copyToClipboard(`${token}.dkim.amazonses.com`)}
-                            >
-                              <Copy className="w-4 h-4" />
+                            <Button variant="ghost" size="sm" onClick={() => copyToClipboard(`${token}.dkim.amazonses.com`)}>
+                              <Copy className="w-4 h-4"/>
                             </Button>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </div>))}
                 </CardContent>
               </Card>
 
-              {/* SPF Record */}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>SPF Record</CardTitle>
@@ -507,12 +446,8 @@ export default function DomainPage() {
                           <span className="flex-1">
                             {verificationStatus.spfRecord}
                           </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(verificationStatus.spfRecord)}
-                          >
-                            <Copy className="w-4 h-4" />
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(verificationStatus.spfRecord)}>
+                            <Copy className="w-4 h-4"/>
                           </Button>
                         </div>
                       </div>
@@ -521,7 +456,7 @@ export default function DomainPage() {
                 </CardContent>
               </Card>
 
-              {/* DMARC Record */}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>DMARC Record (Recommended)</CardTitle>
@@ -550,12 +485,8 @@ export default function DomainPage() {
                           <span className="flex-1">
                             {verificationStatus.dmarcRecord}
                           </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(verificationStatus.dmarcRecord)}
-                          >
-                            <Copy className="w-4 h-4" />
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(verificationStatus.dmarcRecord)}>
+                            <Copy className="w-4 h-4"/>
                           </Button>
                         </div>
                       </div>
@@ -564,7 +495,7 @@ export default function DomainPage() {
                 </CardContent>
               </Card>
 
-              {/* Domain Verification */}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>Domain Verification</CardTitle>
@@ -593,14 +524,8 @@ export default function DomainPage() {
                           <span className="flex-1">
                             {verificationStatus.verificationToken}
                           </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(
-                              verificationStatus.verificationToken
-                            )}
-                          >
-                            <Copy className="w-4 h-4" />
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(verificationStatus.verificationToken)}>
+                            <Copy className="w-4 h-4"/>
                           </Button>
                         </div>
                       </div>
@@ -608,11 +533,9 @@ export default function DomainPage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          ) : (
-            <Card>
+            </div>) : (<Card>
               <CardContent className="text-center py-12">
-                <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4"/>
                 <h3 className="text-lg font-medium mb-2">
                   No Domain Configured
                 </h3>
@@ -620,57 +543,41 @@ export default function DomainPage() {
                   Add a domain in the "Domain Setup&quot; tab to see DNS records
                 </p>
               </CardContent>
-            </Card>
-          )}
+            </Card>)}
         </TabsContent>
 
         <TabsContent value="reputation" className="space-y-6">
-          {/* Reputation Overview */}
+          
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold">Domain Reputation</h2>
               <p className="text-sm text-gray-600">Real-time AWS SES reputation monitoring</p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchReputationData}
-              disabled={loadingReputation}
-            >
-              {loadingReputation ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
+            <Button variant="outline" size="sm" onClick={fetchReputationData} disabled={loadingReputation}>
+              {loadingReputation ? (<RefreshCw className="h-4 w-4 animate-spin mr-2"/>) : (<RefreshCw className="h-4 w-4 mr-2"/>)}
               Refresh
             </Button>
           </div>
 
-          {loadingReputation ? (
-            <div className="flex items-center justify-center h-32">
+          {loadingReputation ? (<div className="flex items-center justify-center h-32">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
-          ) : reputationData ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            </div>) : reputationData ? (<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Domain Reputation</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  <TrendingUp className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                   <div className={`text-2xl font-bold ${reputationData.domainReputation.score >= 90 ? 'text-green-600' :
-                      reputationData.domainReputation.score >= 75 ? 'text-yellow-600' : 'text-red-600'}`}>
+                reputationData.domainReputation.score >= 75 ? 'text-yellow-600' : 'text-red-600'}`}>
                     {reputationData.domainReputation.score}/100
                   </div>
                   <p className="text-xs text-muted-foreground capitalize">
                     {reputationData.domainReputation.status}
                   </p>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div
-                      className={`h-2 rounded-full ${reputationData.domainReputation.score >= 90 ? 'bg-green-500' :
-                          reputationData.domainReputation.score >= 75 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                      style={{ width: `${reputationData.domainReputation.score}%` }}
-                    ></div>
+                    <div className={`h-2 rounded-full ${reputationData.domainReputation.score >= 90 ? 'bg-green-500' :
+                reputationData.domainReputation.score >= 75 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{ width: `${reputationData.domainReputation.score}%` }}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -678,22 +585,19 @@ export default function DomainPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">IP Reputation</CardTitle>
-                  <Server className="h-4 w-4 text-muted-foreground" />
+                  <Server className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                   <div className={`text-2xl font-bold ${reputationData.ipReputation.score >= 90 ? 'text-green-600' :
-                      reputationData.ipReputation.score >= 75 ? 'text-yellow-600' : 'text-red-600'}`}>
+                reputationData.ipReputation.score >= 75 ? 'text-yellow-600' : 'text-red-600'}`}>
                     {reputationData.ipReputation.score}/100
                   </div>
                   <p className="text-xs text-muted-foreground capitalize">
                     {reputationData.ipReputation.status}
                   </p>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div
-                      className={`h-2 rounded-full ${reputationData.ipReputation.score >= 90 ? 'bg-green-500' :
-                          reputationData.ipReputation.score >= 75 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                      style={{ width: `${reputationData.ipReputation.score}%` }}
-                    ></div>
+                    <div className={`h-2 rounded-full ${reputationData.ipReputation.score >= 90 ? 'bg-green-500' :
+                reputationData.ipReputation.score >= 75 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{ width: `${reputationData.ipReputation.score}%` }}></div>
                   </div>
                 </CardContent>
               </Card>
@@ -701,15 +605,11 @@ export default function DomainPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Blacklist Status</CardTitle>
-                  <Shield className="h-4 w-4 text-muted-foreground" />
+                  <Shield className="h-4 w-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2">
-                    {reputationData.blacklists.listed === 0 ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <AlertCircle className="h-5 w-5 text-red-500" />
-                    )}
+                    {reputationData.blacklists.listed === 0 ? (<CheckCircle className="h-5 w-5 text-green-500"/>) : (<AlertCircle className="h-5 w-5 text-red-500"/>)}
                     <span className="text-sm font-medium">
                       {reputationData.blacklists.listed === 0 ? 'Clean' : 'Listed'}
                     </span>
@@ -719,79 +619,18 @@ export default function DomainPage() {
                   </p>
                 </CardContent>
               </Card>
-            </div>
-          ) : (
-            <Card>
+            </div>) : (<Card>
               <CardContent className="text-center py-12">
-                <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4"/>
                 <h3 className="text-lg font-medium mb-2">No Reputation Data</h3>
                 <p className="text-gray-600">Add and verify a domain to see reputation metrics</p>
               </CardContent>
-            </Card>
-          )}
+            </Card>)}
 
-          {/* AWS SES Status - Only visible to admin users
-          {reputationData && reputationData.sesStatus && (reputationData.userRole === "owner" || reputationData.userRole === "admin") && (
-            <Card>
-              <CardHeader>
-                <CardTitle>AWS SES Account Status</CardTitle>
-                <p className="text-sm text-gray-600">
-                  Your current AWS SES sending limits and usage
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="text-center p-3 border rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {reputationData.sesStatus.sendingEnabled ? 'Enabled' : 'Disabled'}
-                    </div>
-                    <p className="text-xs text-gray-600">Sending Status</p>
-                  </div>
+          
 
-                  <div className="text-center p-3 border rounded-lg">
-                    <div className="text-2xl font-bold">
-                      {reputationData.sesStatus.sendQuota.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-gray-600">24h Send Quota</p>
-                  </div>
-
-                  <div className="text-center p-3 border rounded-lg">
-                    <div className="text-2xl font-bold">
-                      {reputationData.sesStatus.sendRate}/sec
-                    </div>
-                    <p className="text-xs text-gray-600">Send Rate</p>
-                  </div>
-
-                  <div className="text-center p-3 border rounded-lg">
-                    <div className="text-2xl font-bold">
-                      {reputationData.sesStatus.sentLast24Hours.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-gray-600">Sent Last 24h</p>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">Usage Summary</h4>
-                  <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full"
-                      style={{
-                        width: `${Math.min(100, (reputationData.sesStatus.sentLast24Hours / reputationData.sesStatus.sendQuota) * 100)}%`
-                      }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-blue-800">
-                    You've used {reputationData.sesStatus.sentLast24Hours.toLocaleString()} of your {reputationData.sesStatus.sendQuota.toLocaleString()} daily quota
-                    ({Math.round((reputationData.sesStatus.sentLast24Hours / reputationData.sesStatus.sendQuota) * 100)}%)
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )} */}
-
-          {/* Dedicated IP Management */}
-          {reputationData && (
-            <Card>
+          
+          {reputationData && (<Card>
               <CardHeader>
                 <CardTitle>Dedicated IP Address</CardTitle>
                 <p className="text-sm text-gray-600">
@@ -813,33 +652,31 @@ export default function DomainPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button variant="outline">
-                    <Server className="h-4 w-4 mr-2" />
+                    <Server className="h-4 w-4 mr-2"/>
                     Request Additional IP
                   </Button>
                   <Button variant="outline">
-                    <Shield className="h-4 w-4 mr-2" />
+                    <Shield className="h-4 w-4 mr-2"/>
                     IP Warm-up Plan
                   </Button>
                   <Button variant="outline">
-                    <Eye className="h-4 w-4 mr-2" />
+                    <Eye className="h-4 w-4 mr-2"/>
                     View IP History
                   </Button>
                 </div>
 
                 <Alert>
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle className="h-4 w-4"/>
                   <AlertDescription>
                     Dedicated IPs give you full control over your sending reputation.
                     Consider requesting additional IPs if you send high volumes or want to segment campaigns.
                   </AlertDescription>
                 </Alert>
               </CardContent>
-            </Card>
-          )}
+            </Card>)}
 
-          {/* Authentication Status */}
-          {reputationData && (
-            <Card>
+          
+          {reputationData && (<Card>
               <CardHeader>
                 <CardTitle>Authentication & Security</CardTitle>
               </CardHeader>
@@ -847,45 +684,33 @@ export default function DomainPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-2">
-                      {reputationData.authentication.spf.verified ? (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                      )}
+                      {reputationData.authentication.spf.verified ? (<CheckCircle className="h-4 w-4 text-green-500"/>) : (<AlertTriangle className="h-4 w-4 text-yellow-500"/>)}
                       <span className="font-medium">SPF</span>
                     </div>
                     <Badge className={reputationData.authentication.spf.verified ?
-                      "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
+                "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
                       {reputationData.authentication.spf.verified ? "Verified" : "Pending"}
                     </Badge>
                   </div>
 
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-2">
-                      {reputationData.authentication.dkim.verified ? (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                      )}
+                      {reputationData.authentication.dkim.verified ? (<CheckCircle className="h-4 w-4 text-green-500"/>) : (<AlertTriangle className="h-4 w-4 text-yellow-500"/>)}
                       <span className="font-medium">DKIM</span>
                     </div>
                     <Badge className={reputationData.authentication.dkim.verified ?
-                      "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
+                "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
                       {reputationData.authentication.dkim.verified ? "Verified" : "Pending"}
                     </Badge>
                   </div>
 
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-2">
-                      {reputationData.authentication.dmarc.verified ? (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                      )}
+                      {reputationData.authentication.dmarc.verified ? (<CheckCircle className="h-4 w-4 text-green-500"/>) : (<AlertTriangle className="h-4 w-4 text-yellow-500"/>)}
                       <span className="font-medium">DMARC</span>
                     </div>
                     <Badge className={reputationData.authentication.dmarc.verified ?
-                      "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
+                "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
                       {reputationData.authentication.dmarc.verified ? "Verified" : "Recommended"}
                     </Badge>
                   </div>
@@ -901,9 +726,9 @@ export default function DomainPage() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>) /* Advanced Settings */}
+            </Card>)}
 
-          {/* Advanced Settings */}
+          
           <Card>
             <CardHeader>
               <CardTitle>Advanced Reputation Settings</CardTitle>
@@ -916,7 +741,7 @@ export default function DomainPage() {
                     Automatically remove bounced and complained addresses
                   </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked/>
               </div>
 
               <div className="flex items-center justify-between">
@@ -926,7 +751,7 @@ export default function DomainPage() {
                     Real-time monitoring of domain and IP reputation
                   </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked/>
               </div>
 
               <div className="flex items-center justify-between">
@@ -936,7 +761,7 @@ export default function DomainPage() {
                     Process ISP feedback loops automatically
                   </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked/>
               </div>
 
               <div className="flex items-center justify-between">
@@ -946,29 +771,26 @@ export default function DomainPage() {
                     Get notified when reputation scores drop
                   </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked/>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="monitoring" className="space-y-6">
-          {/* Real-time Metrics */}
-          {loadingReputation ? (
-            <div className="flex items-center justify-center h-32">
+          
+          {loadingReputation ? (<div className="flex items-center justify-center h-32">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
-          ) : reputationData ? (
-            <>
+            </div>) : reputationData ? (<>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Bounce Rate</CardTitle>
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    <TrendingUp className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
                     <div className={`text-2xl font-bold ${reputationData.metrics.bounceRate <= 3 ? 'text-green-600' :
-                        reputationData.metrics.bounceRate <= 5 ? 'text-yellow-600' : 'text-red-600'}`}>
+                reputationData.metrics.bounceRate <= 5 ? 'text-yellow-600' : 'text-red-600'}`}>
                       {reputationData.metrics.bounceRate}%
                     </div>
                     <p className="text-xs text-muted-foreground capitalize">
@@ -980,11 +802,11 @@ export default function DomainPage() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Complaint Rate</CardTitle>
-                    <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                    <AlertTriangle className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
                     <div className={`text-2xl font-bold ${reputationData.metrics.complaintRate <= 0.1 ? 'text-green-600' :
-                        reputationData.metrics.complaintRate <= 0.5 ? 'text-yellow-600' : 'text-red-600'}`}>
+                reputationData.metrics.complaintRate <= 0.5 ? 'text-yellow-600' : 'text-red-600'}`}>
                       {reputationData.metrics.complaintRate}%
                     </div>
                     <p className="text-xs text-muted-foreground capitalize">
@@ -996,7 +818,7 @@ export default function DomainPage() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Open Rate</CardTitle>
-                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <Eye className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{reputationData.metrics.openRate}%</div>
@@ -1009,7 +831,7 @@ export default function DomainPage() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Click Rate</CardTitle>
-                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <Mail className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{reputationData.metrics.clickRate}%</div>
@@ -1020,7 +842,7 @@ export default function DomainPage() {
                 </Card>
               </div>
 
-              {/* Blacklist Monitoring */}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>Blacklist Monitoring</CardTitle>
@@ -1030,44 +852,34 @@ export default function DomainPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {reputationData.blacklists.status.map((blacklist) => (
-                      <div key={blacklist.name} className="flex items-center justify-between p-3 border rounded-lg">
+                    {reputationData.blacklists.status.map((blacklist) => (<div key={blacklist.name} className="flex items-center justify-between p-3 border rounded-lg">
                         <span className="text-sm font-medium">{blacklist.name}</span>
                         <div className="flex items-center gap-2">
-                          {blacklist.listed ? (
-                            <AlertCircle className="h-4 w-4 text-red-500" />
-                          ) : (
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                          )}
+                          {blacklist.listed ? (<AlertCircle className="h-4 w-4 text-red-500"/>) : (<CheckCircle className="h-4 w-4 text-green-500"/>)}
                           <span className={`text-xs ${blacklist.listed ? 'text-red-600' : 'text-green-600'}`}>
                             {blacklist.listed ? 'Listed' : 'Clean'}
                           </span>
                         </div>
-                      </div>
-                    ))}
+                      </div>))}
                   </div>
 
                   <div className={`border rounded-lg p-4 ${reputationData.blacklists.listed === 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                     <div className="flex items-center gap-2 mb-2">
-                      {reputationData.blacklists.listed === 0 ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <AlertCircle className="h-4 w-4 text-red-600" />
-                      )}
+                      {reputationData.blacklists.listed === 0 ? (<CheckCircle className="h-4 w-4 text-green-600"/>) : (<AlertCircle className="h-4 w-4 text-red-600"/>)}
                       <span className={`font-medium ${reputationData.blacklists.listed === 0 ? 'text-green-900' : 'text-red-900'}`}>
                         {reputationData.blacklists.listed === 0 ? 'All Clear' : `${reputationData.blacklists.listed} Issues Found`}
                       </span>
                     </div>
                     <p className={`text-sm ${reputationData.blacklists.listed === 0 ? 'text-green-800' : 'text-red-800'}`}>
                       {reputationData.blacklists.listed === 0
-                        ? `Your domain and IP are not listed on any major blacklists. Last checked: ${new Date(reputationData.blacklists.lastChecked).toLocaleString()}`
-                        : `Your domain or IP is listed on ${reputationData.blacklists.listed} blacklist(s). Please review and take action.`}
+                ? `Your domain and IP are not listed on any major blacklists. Last checked: ${new Date(reputationData.blacklists.lastChecked).toLocaleString()}`
+                : `Your domain or IP is listed on ${reputationData.blacklists.listed} blacklist(s). Please review and take action.`}
                     </p>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* ISP Feedback Loops */}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>ISP Feedback Loops</CardTitle>
@@ -1077,23 +889,21 @@ export default function DomainPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {reputationData.ispFeedback.map((isp) => (
-                      <div key={isp.name} className="flex items-center justify-between p-3 border rounded-lg">
+                    {reputationData.ispFeedback.map((isp) => (<div key={isp.name} className="flex items-center justify-between p-3 border rounded-lg">
                         <div>
                           <span className="font-medium">{isp.name}</span>
                           <p className="text-xs text-gray-600">{isp.complaints} complaints this month</p>
                         </div>
                         <Badge className={isp.connected ?
-                          "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                    "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
                           {isp.connected ? "Connected" : "Not Connected"}
                         </Badge>
-                      </div>
-                    ))}
+                      </div>))}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Reputation Trends */}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>Reputation Trends</CardTitle>
@@ -1103,7 +913,7 @@ export default function DomainPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-8">
-                    <TrendingUp className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <TrendingUp className="w-12 h-12 mx-auto text-gray-400 mb-4"/>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
                       Reputation Charts Coming Soon
                     </h3>
@@ -1123,20 +933,17 @@ export default function DomainPage() {
                   </div>
                 </CardContent>
               </Card>
-            </>
-          ) : (
-            <Card>
+            </>) : (<Card>
               <CardContent className="text-center py-12">
-                <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4"/>
                 <h3 className="text-lg font-medium mb-2">No Monitoring Data</h3>
                 <p className="text-gray-600">Add and verify a domain to see monitoring metrics</p>
               </CardContent>
-            </Card>
-          )}
+            </Card>)}
         </TabsContent>
 
         <TabsContent value="deliverability" className="space-y-6">
-          {/* Best Practices Guide */}
+          
           <Card>
             <CardHeader>
               <CardTitle>Email Deliverability Best Practices</CardTitle>
@@ -1150,15 +957,15 @@ export default function DomainPage() {
                   <h4 className="font-medium">Authentication Setup</h4>
                   <ul className="space-y-2 text-sm text-gray-600">
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"/>
                       <span>Configure SPF records to authorize sending servers</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"/>
                       <span>Enable DKIM signing for message authentication</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"/>
                       <span>Set up DMARC policy for domain protection</span>
                     </li>
                   </ul>
@@ -1168,15 +975,15 @@ export default function DomainPage() {
                   <h4 className="font-medium">Content Guidelines</h4>
                   <ul className="space-y-2 text-sm text-gray-600">
                     <li className="flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0"/>
                       <span>Avoid spam trigger words and excessive punctuation</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0"/>
                       <span>Maintain proper text-to-image ratio</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0"/>
                       <span>Include clear unsubscribe links</span>
                     </li>
                   </ul>
@@ -1186,31 +993,16 @@ export default function DomainPage() {
               <div className="border-t pt-6">
                 <h4 className="font-medium mb-4">Useful Tools</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <a
-                    href="https://mxtoolbox.com/dkim.aspx"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                  >
-                    <ExternalLink className="w-4 h-4" />
+                  <a href="https://mxtoolbox.com/dkim.aspx" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                    <ExternalLink className="w-4 h-4"/>
                     DKIM Record Checker
                   </a>
-                  <a
-                    href="https://mxtoolbox.com/spf.aspx"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                  >
-                    <ExternalLink className="w-4 h-4" />
+                  <a href="https://mxtoolbox.com/spf.aspx" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                    <ExternalLink className="w-4 h-4"/>
                     SPF Record Checker
                   </a>
-                  <a
-                    href="https://dmarcian.com/dmarc-inspector/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                  >
-                    <ExternalLink className="w-4 h-4" />
+                  <a href="https://dmarcian.com/dmarc-inspector/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
+                    <ExternalLink className="w-4 h-4"/>
                     DMARC Inspector
                   </a>
                 </div>
@@ -1220,6 +1012,5 @@ export default function DomainPage() {
         </TabsContent>
 
       </Tabs>
-    </div>
-  );
+    </div>);
 }

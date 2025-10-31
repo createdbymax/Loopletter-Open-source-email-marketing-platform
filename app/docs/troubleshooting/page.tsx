@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, HelpCircle, Mail, Users, BarChart3, Settings, MessageCircle } from 'lucide-react';
-
 export default function TroubleshootingPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Troubleshooting Guide</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function TroubleshootingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Email Issues
             </CardTitle>
           </CardHeader>
@@ -31,7 +29,7 @@ export default function TroubleshootingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Audience Problems
             </CardTitle>
           </CardHeader>
@@ -45,7 +43,7 @@ export default function TroubleshootingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 className="h-4 w-4"/>
               Analytics Issues
             </CardTitle>
           </CardHeader>
@@ -59,7 +57,7 @@ export default function TroubleshootingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Settings className="h-4 w-4" />
+              <Settings className="h-4 w-4"/>
               Account & Settings
             </CardTitle>
           </CardHeader>
@@ -81,7 +79,7 @@ export default function TroubleshootingPage() {
         <CardContent className="space-y-6">
           <div>
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-orange-500" />
+              <AlertTriangle className="h-4 w-4 text-orange-500"/>
               Emails Going to Spam
             </h3>
             <div className="space-y-3">
@@ -111,7 +109,7 @@ export default function TroubleshootingPage() {
 
           <div>
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <AlertTriangle className="h-4 w-4 text-red-500"/>
               High Bounce Rate
             </h3>
             <div className="space-y-3">
@@ -139,7 +137,7 @@ export default function TroubleshootingPage() {
 
           <div>
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+              <AlertTriangle className="h-4 w-4 text-yellow-500"/>
               Low Open Rates
             </h3>
             <div className="space-y-3">
@@ -389,7 +387,7 @@ export default function TroubleshootingPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-4 w-4"/>
                   Contact Support
                 </CardTitle>
               </CardHeader>
@@ -406,7 +404,7 @@ export default function TroubleshootingPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <HelpCircle className="h-4 w-4" />
+                  <HelpCircle className="h-4 w-4"/>
                   Self-Help Resources
                 </CardTitle>
               </CardHeader>
@@ -424,12 +422,11 @@ export default function TroubleshootingPage() {
       </Card>
 
       <Alert>
-        <HelpCircle className="h-4 w-4" />
+        <HelpCircle className="h-4 w-4"/>
         <AlertDescription>
           <strong>Can't find a solution?</strong> Don't hesitate to reach out to our support team. 
           We're here to help you succeed with your email marketing.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

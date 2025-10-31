@@ -1,15 +1,12 @@
 import { Metadata } from "next";
 import Link from "next/link";
-
 export const metadata: Metadata = {
-  title: "Privacy Policy - Loopletter",
-  description: "Learn how Loopletter protects your privacy and handles your data.",
+    title: "Privacy Policy - Loopletter",
+    description: "Learn how Loopletter protects your privacy and handles your data.",
 };
-
 export default function PrivacyPage() {
-  return (
-    <div className="min-h-screen bg-white text-gray-900">
-      {/* Header */}
+    return (<div className="min-h-screen bg-white text-gray-900">
+      
       <header className="bg-gray-50 border-b">
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
@@ -21,7 +18,7 @@ export default function PrivacyPage() {
         </div>
       </header>
 
-      {/* Content */}
+      
       <main className="max-w-4xl mx-auto px-6 py-16">
         <div className="space-y-16">
           <section>
@@ -170,6 +167,5 @@ export default function PrivacyPage() {
           </section>
         </div>
       </main>
-    </div>
-  );
+    </div>);
 }

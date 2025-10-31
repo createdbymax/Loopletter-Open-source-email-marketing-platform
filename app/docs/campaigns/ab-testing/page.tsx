@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { TestTube, Target, BarChart3, Clock, Lightbulb, TrendingUp } from 'lucide-react';
-
 export default function ABTestingPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">A/B Testing</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function ABTestingPage() {
       <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TestTube className="h-5 w-5" />
+            <TestTube className="h-5 w-5"/>
             Why A/B Test Your Emails?
           </CardTitle>
         </CardHeader>
@@ -42,7 +40,7 @@ export default function ABTestingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Target className="h-4 w-4" />
+              <Target className="h-4 w-4"/>
               Subject Lines
             </CardTitle>
           </CardHeader>
@@ -56,7 +54,7 @@ export default function ABTestingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4"/>
               Send Times
             </CardTitle>
           </CardHeader>
@@ -70,7 +68,7 @@ export default function ABTestingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 className="h-4 w-4"/>
               Content
             </CardTitle>
           </CardHeader>
@@ -84,7 +82,7 @@ export default function ABTestingPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp className="h-4 w-4"/>
               Sender Name
             </CardTitle>
           </CardHeader>
@@ -428,12 +426,11 @@ export default function ABTestingPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Start with subject line testing for the biggest impact, then move to send time optimization. 
           Small improvements compound over time to significantly boost your email performance.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

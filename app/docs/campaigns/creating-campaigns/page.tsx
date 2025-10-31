@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, Mail, Users, BarChart3, Clock, Target } from 'lucide-react';
-
 export default function CreatingCampaignsPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Creating Email Campaigns</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function CreatingCampaignsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Newsletter
             </CardTitle>
           </CardHeader>
@@ -31,7 +29,7 @@ export default function CreatingCampaignsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Target className="h-4 w-4" />
+              <Target className="h-4 w-4"/>
               Announcement
             </CardTitle>
           </CardHeader>
@@ -45,7 +43,7 @@ export default function CreatingCampaignsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Welcome Series
             </CardTitle>
           </CardHeader>
@@ -59,7 +57,7 @@ export default function CreatingCampaignsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 className="h-4 w-4"/>
               Re-engagement
             </CardTitle>
           </CardHeader>
@@ -212,7 +210,7 @@ export default function CreatingCampaignsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <h3 className="font-medium mb-2 flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+                <Clock className="h-4 w-4"/>
                 Send Immediately
               </h3>
               <p className="text-sm text-muted-foreground">
@@ -222,7 +220,7 @@ export default function CreatingCampaignsPage() {
 
             <div>
               <h3 className="font-medium mb-2 flex items-center gap-2">
-                <Clock className="h-4 w-4" />
+                <Clock className="h-4 w-4"/>
                 Schedule for Later
               </h3>
               <p className="text-sm text-muted-foreground">
@@ -244,7 +242,7 @@ export default function CreatingCampaignsPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Industry Benchmarks:</strong> Average open rates for music/entertainment are 20-25%. Click rates typically range from 2-5%.
         </AlertDescription>
@@ -278,6 +276,5 @@ export default function CreatingCampaignsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

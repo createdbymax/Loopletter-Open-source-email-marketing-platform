@@ -3,41 +3,31 @@ import type { Campaign, Fan, Artist } from './types';
 import { logEmailSent } from './db';
 import { sesRateLimiter } from './ses-config';
 import { getUserSubscriptionPlan, canAccessFeature } from './subscription';
-// import { render } from '@react-email/render';
-
-// Initialize SES client
 const ses = new SESClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
+    region: process.env.AWS_REGION || 'us-east-1',
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
 });
-
 interface TeamInvitationEmailProps {
-  to: string;
-  artistName: string;
-  inviterName: string;
-  role: string;
-  invitationUrl: string;
+    to: string;
+    artistName: string;
+    inviterName: string;
+    role: string;
+    invitationUrl: string;
 }
-
 interface WaitlistConfirmationEmailProps {
-  to: string;
-  waitlistCount?: number;
+    to: string;
+    waitlistCount?: number;
 }
-
 interface EarlyAccessConfirmationEmailProps {
-  to: string;
-  name: string;
-  requestCount?: number;
+    to: string;
+    name: string;
+    requestCount?: number;
 }
-
-export async function sendWaitlistConfirmationEmail({
-  to,
-  waitlistCount
-}: WaitlistConfirmationEmailProps): Promise<void> {
-  const html = `
+export async function sendWaitlistConfirmationEmail({ to, waitlistCount }: WaitlistConfirmationEmailProps): Promise<void> {
+    const html = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -188,8 +178,7 @@ export async function sendWaitlistConfirmationEmail({
     </body>
     </html>
   `;
-
-  const text = `
+    const text = `
 🎉 Welcome to the Loopletter Waitlist!
 
 Thanks for joining the waitlist! You're now part of an exclusive group of artists who are ready to own their audience and transform their music careers.
@@ -212,43 +201,33 @@ The Loopletter Team
 
 loopletter.co
   `;
-
-  const params = {
-    Source: `Loopletter <hello@loopletter.co>`,
-    Destination: {
-      ToAddresses: [to],
-    },
-    Message: {
-      Subject: {
-        Data: `🎉 Welcome to the Loopletter Waitlist!`,
-        Charset: 'UTF-8',
-      },
-      Body: {
-        Html: {
-          Data: html,
-          Charset: 'UTF-8',
+    const params = {
+        Source: `Loopletter <hello@loopletter.co>`,
+        Destination: {
+            ToAddresses: [to],
         },
-        Text: {
-          Data: text,
-          Charset: 'UTF-8',
+        Message: {
+            Subject: {
+                Data: `🎉 Welcome to the Loopletter Waitlist!`,
+                Charset: 'UTF-8',
+            },
+            Body: {
+                Html: {
+                    Data: html,
+                    Charset: 'UTF-8',
+                },
+                Text: {
+                    Data: text,
+                    Charset: 'UTF-8',
+                },
+            },
         },
-      },
-    },
-  };
-
-  const command = new SendEmailCommand(params);
-  await ses.send(command);
+    };
+    const command = new SendEmailCommand(params);
+    await ses.send(command);
 }
-
-export async function sendTeamInvitationEmail({
-  to,
-  artistName,
-  inviterName,
-  role,
-  invitationUrl
-}: TeamInvitationEmailProps): Promise<void> {
-  // Simple HTML email template for team invitation
-  const html = `
+export async function sendTeamInvitationEmail({ to, artistName, inviterName, role, invitationUrl }: TeamInvitationEmailProps): Promise<void> {
+    const html = `
     <html>
       <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -266,8 +245,7 @@ export async function sendTeamInvitationEmail({
       </body>
     </html>
   `;
-
-  const text = `
+    const text = `
     You've been invited to join ${artistName}'s team on Loopletter
     
     ${inviterName} has invited you to collaborate as a ${role} on their Loopletter account.
@@ -281,186 +259,148 @@ export async function sendTeamInvitationEmail({
     
     If you have any questions, please contact ${inviterName}.
   `;
-
-  const params = {
-    Source: `Loopletter <noreply@loopletter.co>`,
-    Destination: {
-      ToAddresses: [to],
-    },
-    Message: {
-      Subject: {
-        Data: `You've been invited to join ${artistName}'s team on Loopletter`,
-        Charset: 'UTF-8',
-      },
-      Body: {
-        Html: {
-          Data: html,
-          Charset: 'UTF-8',
-        },
-        Text: {
-          Data: text,
-          Charset: 'UTF-8',
-        },
-      },
-    },
-  };
-
-  const command = new SendEmailCommand(params);
-  await ses.send(command);
-}
-
-interface EmailResult {
-  success: boolean;
-  messageId?: string;
-  error?: string;
-}
-
-export async function sendCampaignEmail(
-  campaign: Campaign,
-  fan: Fan,
-  artist: Artist
-): Promise<EmailResult> {
-  try {
-    // Check rate limits before sending
-    const rateLimitCheck = await sesRateLimiter.canSendEmail();
-    if (!rateLimitCheck.canSend) {
-      // If we need to wait, delay the execution
-      if (rateLimitCheck.waitTime) {
-        await new Promise(resolve => setTimeout(resolve, rateLimitCheck.waitTime));
-        // Check again after waiting
-        const secondCheck = await sesRateLimiter.canSendEmail();
-        if (!secondCheck.canSend) {
-          throw new Error(`Rate limit exceeded: ${secondCheck.reason}`);
-        }
-      } else {
-        throw new Error(`Quota exceeded: ${rateLimitCheck.reason}`);
-      }
-    }
-    // Personalize the email content
-    let personalizedMessage = campaign.message;
-    if (fan.name) {
-      personalizedMessage = personalizedMessage.replace(/\{name\}/g, fan.name);
-      personalizedMessage = personalizedMessage.replace(/\{first_name\}/g, fan.name.split(' ')[0]);
-    }
-
-    // Replace artist placeholders
-    personalizedMessage = personalizedMessage.replace(/\{artist_name\}/g, artist.name);
-
-    // Create unsubscribe and preferences links
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
-    const unsubscribeUrl = `${baseUrl}/unsubscribe?fan_id=${fan.id}&campaign_id=${campaign.id}`;
-    const preferencesUrl = `${baseUrl}/preferences?fan_id=${fan.id}`;
-
-    // Add tracking and unsubscribe functionality
-    personalizedMessage = await addEmailTracking(personalizedMessage, campaign, fan, artist, unsubscribeUrl, preferencesUrl);
-
-    // Determine sender email - use campaign's from_name if available
-    const fromName = campaign.from_name || artist.default_from_name || artist.name;
-    const emailPrefix = artist.default_from_email || "noreply";
-    const senderEmail = artist.ses_domain_verified && artist.ses_domain
-      ? `${fromName} <${emailPrefix}@${artist.ses_domain}>`
-      : `${fromName} via Loopletter <noreply@loopletter.co>`;
-
     const params = {
-      Source: senderEmail,
-      Destination: {
-        ToAddresses: [fan.email],
-      },
-      Message: {
-        Subject: {
-          Data: campaign.subject,
-          Charset: 'UTF-8',
+        Source: `Loopletter <noreply@loopletter.co>`,
+        Destination: {
+            ToAddresses: [to],
         },
-        Body: {
-          Html: {
-            Data: personalizedMessage, // Use the complete HTML as-is
-            Charset: 'UTF-8',
-          },
-          Text: {
-            Data: `${campaign.subject}\n\n${personalizedMessage.replace(/<[^>]*>/g, '')}\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`,
-            Charset: 'UTF-8',
-          },
+        Message: {
+            Subject: {
+                Data: `You've been invited to join ${artistName}'s team on Loopletter`,
+                Charset: 'UTF-8',
+            },
+            Body: {
+                Html: {
+                    Data: html,
+                    Charset: 'UTF-8',
+                },
+                Text: {
+                    Data: text,
+                    Charset: 'UTF-8',
+                },
+            },
         },
-      },
-      // Add tracking headers if enabled
-      ...(campaign.settings.track_opens && {
-        Tags: [
-          {
-            Name: 'campaign_id',
-            Value: campaign.id,
-          },
-          {
-            Name: 'fan_id',
-            Value: fan.id,
-          },
-        ],
-      }),
     };
-
-    // Generate a unique tracking ID for this email
-    const trackingId = `${campaign.id}-${fan.id}-${Date.now()}`;
-
-    // Replace messageId placeholder with tracking ID
-    if (params.Message.Body.Html?.Data) {
-      params.Message.Body.Html.Data = params.Message.Body.Html.Data.replace(/\{\{messageId\}\}/g, trackingId);
-    }
-
     const command = new SendEmailCommand(params);
-    const result = await ses.send(command);
-
-    // Record the email as sent for rate limiting
-    await sesRateLimiter.recordEmailSent();
-
-    // Log the sent email (handle RLS policy errors gracefully)
-    try {
-      await logEmailSent({
-        fan_id: fan.id,
-        campaign_id: campaign.id,
-        email_address: fan.email,
-        status: 'sent',
-        sent_at: new Date().toISOString(),
-        message_id: result.MessageId || trackingId, // Use SES MessageId if available, otherwise tracking ID
-      });
-    } catch (logError) {
-      // Don't fail the email send if logging fails due to RLS policies
-      console.warn('Failed to log email sent (RLS policy issue):', logError);
-    }
-
-    return {
-      success: true,
-      messageId: result.MessageId,
-    };
-  } catch (error) {
-    console.error('Error sending campaign email:', error);
-
-    // Log the failed email attempt (handle RLS policy errors gracefully)
-    try {
-      await logEmailSent({
-        fan_id: fan.id,
-        campaign_id: campaign.id,
-        email_address: fan.email,
-        status: 'sent', // Will be updated by webhook when we get bounce/complaint
-        sent_at: new Date().toISOString(),
-        error_message: error instanceof Error ? error.message : 'Unknown error',
-      });
-    } catch (logError) {
-      // Don't fail the email send if logging fails due to RLS policies
-      console.warn('Failed to log failed email (RLS policy issue):', logError);
-    }
-
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+    await ses.send(command);
 }
-
-export async function sendEarlyAccessConfirmationEmail({
-  to,
-  name,
-  requestCount
-}: EarlyAccessConfirmationEmailProps): Promise<void> {
-  const html = `
+interface EmailResult {
+    success: boolean;
+    messageId?: string;
+    error?: string;
+}
+export async function sendCampaignEmail(campaign: Campaign, fan: Fan, artist: Artist): Promise<EmailResult> {
+    try {
+        const rateLimitCheck = await sesRateLimiter.canSendEmail();
+        if (!rateLimitCheck.canSend) {
+            if (rateLimitCheck.waitTime) {
+                await new Promise(resolve => setTimeout(resolve, rateLimitCheck.waitTime));
+                const secondCheck = await sesRateLimiter.canSendEmail();
+                if (!secondCheck.canSend) {
+                    throw new Error(`Rate limit exceeded: ${secondCheck.reason}`);
+                }
+            }
+            else {
+                throw new Error(`Quota exceeded: ${rateLimitCheck.reason}`);
+            }
+        }
+        let personalizedMessage = campaign.message;
+        if (fan.name) {
+            personalizedMessage = personalizedMessage.replace(/\{name\}/g, fan.name);
+            personalizedMessage = personalizedMessage.replace(/\{first_name\}/g, fan.name.split(' ')[0]);
+        }
+        personalizedMessage = personalizedMessage.replace(/\{artist_name\}/g, artist.name);
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+        const unsubscribeUrl = `${baseUrl}/unsubscribe?fan_id=${fan.id}&campaign_id=${campaign.id}`;
+        const preferencesUrl = `${baseUrl}/preferences?fan_id=${fan.id}`;
+        personalizedMessage = await addEmailTracking(personalizedMessage, campaign, fan, artist, unsubscribeUrl, preferencesUrl);
+        const fromName = campaign.from_name || artist.default_from_name || artist.name;
+        const emailPrefix = artist.default_from_email || "noreply";
+        const senderEmail = artist.ses_domain_verified && artist.ses_domain
+            ? `${fromName} <${emailPrefix}@${artist.ses_domain}>`
+            : `${fromName} via Loopletter <noreply@loopletter.co>`;
+        const params = {
+            Source: senderEmail,
+            Destination: {
+                ToAddresses: [fan.email],
+            },
+            Message: {
+                Subject: {
+                    Data: campaign.subject,
+                    Charset: 'UTF-8',
+                },
+                Body: {
+                    Html: {
+                        Data: personalizedMessage,
+                        Charset: 'UTF-8',
+                    },
+                    Text: {
+                        Data: `${campaign.subject}\n\n${personalizedMessage.replace(/<[^>]*>/g, '')}\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`,
+                        Charset: 'UTF-8',
+                    },
+                },
+            },
+            ...(campaign.settings.track_opens && {
+                Tags: [
+                    {
+                        Name: 'campaign_id',
+                        Value: campaign.id,
+                    },
+                    {
+                        Name: 'fan_id',
+                        Value: fan.id,
+                    },
+                ],
+            }),
+        };
+        const trackingId = `${campaign.id}-${fan.id}-${Date.now()}`;
+        if (params.Message.Body.Html?.Data) {
+            params.Message.Body.Html.Data = params.Message.Body.Html.Data.replace(/\{\{messageId\}\}/g, trackingId);
+        }
+        const command = new SendEmailCommand(params);
+        const result = await ses.send(command);
+        await sesRateLimiter.recordEmailSent();
+        try {
+            await logEmailSent({
+                fan_id: fan.id,
+                campaign_id: campaign.id,
+                email_address: fan.email,
+                status: 'sent',
+                sent_at: new Date().toISOString(),
+                message_id: result.MessageId || trackingId,
+            });
+        }
+        catch (logError) {
+            console.warn('Failed to log email sent (RLS policy issue):', logError);
+        }
+        return {
+            success: true,
+            messageId: result.MessageId,
+        };
+    }
+    catch (error) {
+        console.error('Error sending campaign email:', error);
+        try {
+            await logEmailSent({
+                fan_id: fan.id,
+                campaign_id: campaign.id,
+                email_address: fan.email,
+                status: 'sent',
+                sent_at: new Date().toISOString(),
+                error_message: error instanceof Error ? error.message : 'Unknown error',
+            });
+        }
+        catch (logError) {
+            console.warn('Failed to log failed email (RLS policy issue):', logError);
+        }
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+}
+export async function sendEarlyAccessConfirmationEmail({ to, name, requestCount }: EarlyAccessConfirmationEmailProps): Promise<void> {
+    const html = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -602,8 +542,7 @@ export async function sendEarlyAccessConfirmationEmail({
     </body>
     </html>
   `;
-
-  const text = `
+    const text = `
 🎉 Early Access Request Received!
 
 Hi ${name},
@@ -626,73 +565,47 @@ Pro Tip: Follow us on social media for updates and tips while you wait!
 Loopletter - Email Marketing for Artists
 You're receiving this because you requested early access to our platform.
   `;
-
-  const params = {
-    Source: `Loopletter <noreply@loopletter.co>`,
-    Destination: {
-      ToAddresses: [to],
-    },
-    Message: {
-      Subject: {
-        Data: `🎉 Early Access Request Received - Welcome to Loopletter!`,
-        Charset: 'UTF-8',
-      },
-      Body: {
-        Html: {
-          Data: html,
-          Charset: 'UTF-8',
+    const params = {
+        Source: `Loopletter <noreply@loopletter.co>`,
+        Destination: {
+            ToAddresses: [to],
         },
-        Text: {
-          Data: text,
-          Charset: 'UTF-8',
+        Message: {
+            Subject: {
+                Data: `🎉 Early Access Request Received - Welcome to Loopletter!`,
+                Charset: 'UTF-8',
+            },
+            Body: {
+                Html: {
+                    Data: html,
+                    Charset: 'UTF-8',
+                },
+                Text: {
+                    Data: text,
+                    Charset: 'UTF-8',
+                },
+            },
         },
-      },
-    },
-  };
-
-  const command = new SendEmailCommand(params);
-  await ses.send(command);
+    };
+    const command = new SendEmailCommand(params);
+    await ses.send(command);
 }
-
-/**
- * Adds email tracking (open pixel, click tracking) and unsubscribe links to email content
- */
-async function addEmailTracking(
-  message: string,
-  campaign: Campaign,
-  fan: Fan,
-  artist: Artist,
-  unsubscribeUrl: string,
-  preferencesUrl: string
-): Promise<string> {
-  let processedMessage = message;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
-
-  // Check if this is HTML content (more comprehensive check using regex)
-  const isHtml = message.includes('<html>') || message.includes('<!DOCTYPE') || 
-                 /<p\b/.test(message) || /<div\b/.test(message) || 
-                 /<br\b/.test(message) || /<span\b/.test(message);
-
-  if (isHtml) {
-    // Add click tracking to all links if enabled
-    if (campaign.settings?.track_clicks) {
-      processedMessage = addClickTracking(processedMessage, campaign.id, fan.id);
-    }
-
-    // Add open tracking pixel if enabled
-    if (campaign.settings?.track_opens) {
-      const trackingPixel = `<img src="${baseUrl}/api/track/open?mid={{messageId}}&cid=${campaign.id}&fid=${fan.id}" width="1" height="1" style="display:none;" alt="" />`;
-
-      // Insert tracking pixel before closing body tag
-      processedMessage = processedMessage.replace(
-        /<\/body>/i,
-        `${trackingPixel}\n</body>`
-      );
-    }
-
-    // Wrap content in complete HTML structure if it's not already
-    if (!processedMessage.includes('<html>') && !processedMessage.includes('<!DOCTYPE')) {
-      processedMessage = `
+async function addEmailTracking(message: string, campaign: Campaign, fan: Fan, artist: Artist, unsubscribeUrl: string, preferencesUrl: string): Promise<string> {
+    let processedMessage = message;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const isHtml = message.includes('<html>') || message.includes('<!DOCTYPE') ||
+        /<p\b/.test(message) || /<div\b/.test(message) ||
+        /<br\b/.test(message) || /<span\b/.test(message);
+    if (isHtml) {
+        if (campaign.settings?.track_clicks) {
+            processedMessage = addClickTracking(processedMessage, campaign.id, fan.id);
+        }
+        if (campaign.settings?.track_opens) {
+            const trackingPixel = `<img src="${baseUrl}/api/track/open?mid={{messageId}}&cid=${campaign.id}&fid=${fan.id}" width="1" height="1" style="display:none;" alt="" />`;
+            processedMessage = processedMessage.replace(/<\/body>/i, `${trackingPixel}\n</body>`);
+        }
+        if (!processedMessage.includes('<html>') && !processedMessage.includes('<!DOCTYPE')) {
+            processedMessage = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -706,11 +619,9 @@ async function addEmailTracking(
   </div>
 </body>
 </html>`;
-    }
-
-    // Add unsubscribe footer if not already present
-    if (!processedMessage.includes('unsubscribe')) {
-      const unsubscribeFooter = `
+        }
+        if (!processedMessage.includes('unsubscribe')) {
+            const unsubscribeFooter = `
         <div style="font-size: 12px; color: #666; text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
           <p style="margin: 0 0 10px 0;">You're receiving this email because you subscribed to updates from ${artist.name}.</p>
           <p style="margin: 0;">
@@ -719,72 +630,45 @@ async function addEmailTracking(
           </p>
         </div>
       `;
-
-      // Check if user can remove Loopletter branding (paid plans)
-      const canRemoveBranding = canAccessFeature(artist, 'removeLoopLetterBranding');
-      
-      let footersToAdd = unsubscribeFooter;
-      
-      // Only add Loopletter footer for starter plan users
-      if (!canRemoveBranding) {
-        const loopletterFooter = `
+            const canRemoveBranding = canAccessFeature(artist, 'removeLoopLetterBranding');
+            let footersToAdd = unsubscribeFooter;
+            if (!canRemoveBranding) {
+                const loopletterFooter = `
         <div style="font-size: 12px; color: #666; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eaeaea;">
           <p style="margin: 0;">
             Sent with <a href="https://loopletter.co" style="color: #666; text-decoration: none;">Loopletter</a>
           </p>
         </div>
       `;
-        footersToAdd += loopletterFooter;
-      }
-
-      // Insert footers before closing container div and body
-      processedMessage = processedMessage.replace(
-        /<\/div>\s*<\/body>/,
-        footersToAdd + '\n  </div>\n</body>'
-      );
+                footersToAdd += loopletterFooter;
+            }
+            processedMessage = processedMessage.replace(/<\/div>\s*<\/body>/, footersToAdd + '\n  </div>\n</body>');
+        }
     }
-  } else {
-    // For plain text emails, add unsubscribe footer
-    if (!processedMessage.includes('unsubscribe')) {
-      let plainTextFooter = `\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`;
-      
-      // Add Loopletter branding for starter plan users
-      const canRemoveBranding = canAccessFeature(artist, 'removeLoopLetterBranding');
-      if (!canRemoveBranding) {
-        plainTextFooter += `\n\nSent with Loopletter - https://loopletter.co`;
-      }
-      
-      processedMessage += plainTextFooter;
+    else {
+        if (!processedMessage.includes('unsubscribe')) {
+            let plainTextFooter = `\n\n---\nYou're receiving this email because you subscribed to updates from ${artist.name}.\nUnsubscribe: ${unsubscribeUrl}\nUpdate preferences: ${preferencesUrl}`;
+            const canRemoveBranding = canAccessFeature(artist, 'removeLoopLetterBranding');
+            if (!canRemoveBranding) {
+                plainTextFooter += `\n\nSent with Loopletter - https://loopletter.co`;
+            }
+            processedMessage += plainTextFooter;
+        }
     }
-  }
-
-  return processedMessage;
+    return processedMessage;
 }
-
-/**
- * Adds click tracking to all links in HTML content
- */
 function addClickTracking(html: string, campaignId: string, fanId: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
-
-  // Regular expression to find all href attributes
-  const linkRegex = /href=["']([^"']+)["']/gi;
-
-  return html.replace(linkRegex, (match, url) => {
-    // Skip tracking for unsubscribe and preference links
-    if (url.includes('/unsubscribe') || url.includes('/f/') || url.includes('mailto:')) {
-      return match;
-    }
-
-    // Skip if already a tracking link
-    if (url.includes('/api/track/click')) {
-      return match;
-    }
-
-    // Create tracking URL
-    const encodedUrl = encodeURIComponent(url);
-    const trackingUrl = `${baseUrl}/api/track/click?mid={{messageId}}&cid=${campaignId}&fid=${fanId}&url=${encodedUrl}`;
-
-    return `href="${trackingUrl}"`;
-  });
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+    const linkRegex = /href=["']([^"']+)["']/gi;
+    return html.replace(linkRegex, (match, url) => {
+        if (url.includes('/unsubscribe') || url.includes('/f/') || url.includes('mailto:')) {
+            return match;
+        }
+        if (url.includes('/api/track/click')) {
+            return match;
+        }
+        const encodedUrl = encodeURIComponent(url);
+        const trackingUrl = `${baseUrl}/api/track/click?mid={{messageId}}&cid=${campaignId}&fid=${fanId}&url=${encodedUrl}`;
+        return `href="${trackingUrl}"`;
+    });
 }

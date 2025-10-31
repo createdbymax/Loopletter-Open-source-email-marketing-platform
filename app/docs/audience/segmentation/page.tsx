@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Target, MapPin, Activity, Heart, Clock, Lightbulb } from 'lucide-react';
-
 export default function SegmentationPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Audience Segmentation</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function SegmentationPage() {
       <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
+            <Target className="h-5 w-5"/>
             Why Segment Your Audience?
           </CardTitle>
         </CardHeader>
@@ -38,7 +36,7 @@ export default function SegmentationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <MapPin className="h-4 w-4" />
+              <MapPin className="h-4 w-4"/>
               Geographic
             </CardTitle>
           </CardHeader>
@@ -57,7 +55,7 @@ export default function SegmentationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Activity className="h-4 w-4" />
+              <Activity className="h-4 w-4"/>
               Engagement
             </CardTitle>
           </CardHeader>
@@ -76,7 +74,7 @@ export default function SegmentationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Heart className="h-4 w-4" />
+              <Heart className="h-4 w-4"/>
               Interest-Based
             </CardTitle>
           </CardHeader>
@@ -95,7 +93,7 @@ export default function SegmentationPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4"/>
               Behavioral
             </CardTitle>
           </CardHeader>
@@ -347,11 +345,10 @@ export default function SegmentationPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Start simple with 3-4 basic segments, then add complexity as you learn what works for your audience.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

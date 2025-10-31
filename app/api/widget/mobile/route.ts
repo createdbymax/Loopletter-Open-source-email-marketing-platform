@@ -1,32 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArtistBySlug } from '@/lib/db';
-
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const artistSlug = searchParams.get('artist');
-    const theme = searchParams.get('theme') || 'dark';
-
-    if (!artistSlug) {
-      return new NextResponse('Artist parameter is required', { status: 400 });
-    }
-
-    // Get artist data
-    const artist = await getArtistBySlug(artistSlug);
-    if (!artist) {
-      return new NextResponse('Artist not found', { status: 404 });
-    }
-
-    // Get customization settings
-    const settings = artist.settings?.subscription_page_settings || {};
-    const colors = (settings as any).colors || {
-      primary: '#2563eb',
-      secondary: '#0891b2',
-      accent: '#06b6d4'
-    };
-
-    // Generate the mobile widget HTML
-    const widgetHtml = `
+    try {
+        const { searchParams } = new URL(request.url);
+        const artistSlug = searchParams.get('artist');
+        const theme = searchParams.get('theme') || 'dark';
+        if (!artistSlug) {
+            return new NextResponse('Artist parameter is required', { status: 400 });
+        }
+        const artist = await getArtistBySlug(artistSlug);
+        if (!artist) {
+            return new NextResponse('Artist not found', { status: 404 });
+        }
+        const settings = artist.settings?.subscription_page_settings || {};
+        const colors = (settings as any).colors || {
+            primary: '#2563eb',
+            secondary: '#0891b2',
+            accent: '#06b6d4'
+        };
+        const widgetHtml = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -368,17 +360,16 @@ export async function GET(request: NextRequest) {
     </script>
 </body>
 </html>`;
-
-    return new NextResponse(widgetHtml, {
-      headers: {
-        'Content-Type': 'text/html',
-        'X-Frame-Options': 'ALLOWALL',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-
-  } catch (error) {
-    console.error('Mobile widget error:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
-  }
+        return new NextResponse(widgetHtml, {
+            headers: {
+                'Content-Type': 'text/html',
+                'X-Frame-Options': 'ALLOWALL',
+                'Access-Control-Allow-Origin': '*',
+            },
+        });
+    }
+    catch (error) {
+        console.error('Mobile widget error:', error);
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
 }

@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, TrendingUp, Eye, MousePointer } from 'lucide-react';
-
 export default function CampaignPerformancePage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Campaign Performance Analytics</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function CampaignPerformancePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Eye className="h-4 w-4" />
+              <Eye className="h-4 w-4"/>
               Open Rates
             </CardTitle>
           </CardHeader>
@@ -29,7 +27,7 @@ export default function CampaignPerformancePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <MousePointer className="h-4 w-4" />
+              <MousePointer className="h-4 w-4"/>
               Click Rates
             </CardTitle>
           </CardHeader>
@@ -42,7 +40,7 @@ export default function CampaignPerformancePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp className="h-4 w-4"/>
               Growth Rate
             </CardTitle>
           </CardHeader>
@@ -55,7 +53,7 @@ export default function CampaignPerformancePage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 className="h-4 w-4"/>
               Conversions
             </CardTitle>
           </CardHeader>
@@ -80,6 +78,5 @@ export default function CampaignPerformancePage() {
           </p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Mail, AlertTriangle, CheckCircle } from 'lucide-react';
-
 export default function DeliverabilityPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Email Deliverability Analytics</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function DeliverabilityPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Inbox Rate
             </CardTitle>
           </CardHeader>
@@ -29,7 +27,7 @@ export default function DeliverabilityPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               Reputation Score
             </CardTitle>
           </CardHeader>
@@ -42,7 +40,7 @@ export default function DeliverabilityPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <AlertTriangle className="h-4 w-4" />
+              <AlertTriangle className="h-4 w-4"/>
               Bounce Rate
             </CardTitle>
           </CardHeader>
@@ -55,7 +53,7 @@ export default function DeliverabilityPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="h-4 w-4"/>
               Authentication
             </CardTitle>
           </CardHeader>
@@ -80,6 +78,5 @@ export default function DeliverabilityPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

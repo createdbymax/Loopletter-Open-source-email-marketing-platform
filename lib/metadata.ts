@@ -1,13 +1,9 @@
 import { Metadata } from 'next';
 import { Artist } from './types';
-
-// Base metadata configuration
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 
-  (process.env.NODE_ENV === 'production' ? 'https://loopletter.vercel.app' : 'http://localhost:3000');
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.NODE_ENV === 'production' ? 'https://loopletter.vercel.app' : 'http://localhost:3000');
 const SITE_NAME = 'Loopletter';
 const SITE_DESCRIPTION = 'The email platform built for independent artists. Build direct relationships with your fans through email marketing that actually works.';
-
-// Default metadata for the application
 export const defaultMetadata: Metadata = {
     title: {
         template: `%s | ${SITE_NAME}`,
@@ -85,13 +81,10 @@ export const defaultMetadata: Metadata = {
         google: process.env.GOOGLE_SITE_VERIFICATION,
     },
 };
-
-// Generate metadata for artist subscription pages
 export function generateArtistSubscriptionMetadata(artist: Artist): Metadata {
     const title = `Subscribe to ${artist.name}`;
     const description = `Join ${artist.name}'s inner circle and get exclusive updates, early access to new music, and behind-the-scenes content. Subscribe now for VIP access.`;
     const url = `${BASE_URL}/f/${artist.slug}/subscribe`;
-
     return {
         title,
         description,
@@ -139,20 +132,14 @@ export function generateArtistSubscriptionMetadata(artist: Artist): Metadata {
         },
     };
 }
-
-// Generate metadata for dashboard pages
-export function generateDashboardMetadata(
-    pageTitle: string,
-    pageDescription?: string
-): Metadata {
+export function generateDashboardMetadata(pageTitle: string, pageDescription?: string): Metadata {
     const title = `${pageTitle} - Dashboard`;
     const description = pageDescription || `Manage your ${pageTitle.toLowerCase()} on ${SITE_NAME}. Professional email marketing tools for independent artists.`;
-
     return {
         title,
         description,
         robots: {
-            index: false, // Dashboard pages should not be indexed
+            index: false,
             follow: false,
         },
         openGraph: {
@@ -163,16 +150,8 @@ export function generateDashboardMetadata(
         },
     };
 }
-
-// Generate metadata for marketing pages
-export function generateMarketingMetadata(
-    pageTitle: string,
-    pageDescription: string,
-    pagePath: string,
-    keywords?: string[]
-): Metadata {
+export function generateMarketingMetadata(pageTitle: string, pageDescription: string, pagePath: string, keywords?: string[]): Metadata {
     const url = `${BASE_URL}${pagePath}`;
-
     return {
         title: pageTitle,
         description: pageDescription,
@@ -202,8 +181,6 @@ export function generateMarketingMetadata(
         },
     };
 }
-
-// Generate structured data for artist pages
 export function generateArtistStructuredData(artist: Artist) {
     return {
         '@context': 'https://schema.org',
@@ -223,8 +200,6 @@ export function generateArtistStructuredData(artist: Artist) {
         },
     };
 }
-
-// Generate structured data for the main site
 export function generateSiteStructuredData() {
     return {
         '@context': 'https://schema.org',

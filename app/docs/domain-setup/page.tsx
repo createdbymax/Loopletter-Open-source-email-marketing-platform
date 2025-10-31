@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Globe, Shield, CheckCircle, AlertTriangle, Lightbulb, Mail } from 'lucide-react';
-
 export default function DomainSetupPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Email Domain Setup</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function DomainSetupPage() {
       <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
+            <Globe className="h-5 w-5"/>
             Why Set Up Your Domain?
           </CardTitle>
         </CardHeader>
@@ -54,7 +52,7 @@ export default function DomainSetupPage() {
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium">Domain Ownership</h3>
                 <p className="text-sm text-muted-foreground">
@@ -64,7 +62,7 @@ export default function DomainSetupPage() {
             </div>
             
             <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium">DNS Access</h3>
                 <p className="text-sm text-muted-foreground">
@@ -74,7 +72,7 @@ export default function DomainSetupPage() {
             </div>
             
             <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5"/>
               <div>
                 <h3 className="font-medium">Basic DNS Knowledge</h3>
                 <p className="text-sm text-muted-foreground">
@@ -85,7 +83,7 @@ export default function DomainSetupPage() {
           </div>
 
           <Alert className="mt-4">
-            <Lightbulb className="h-4 w-4" />
+            <Lightbulb className="h-4 w-4"/>
             <AlertDescription>
               If you don't have a domain, you can purchase one from registrars like GoDaddy, Namecheap, or Google Domains.
             </AlertDescription>
@@ -165,7 +163,7 @@ export default function DomainSetupPage() {
         <CardContent className="space-y-6">
           <div>
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               SPF (Sender Policy Framework)
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
@@ -180,7 +178,7 @@ export default function DomainSetupPage() {
 
           <div>
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               DKIM (DomainKeys Identified Mail)
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
@@ -195,7 +193,7 @@ export default function DomainSetupPage() {
 
           <div>
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               DMARC (Domain-based Message Authentication)
             </h3>
             <p className="text-sm text-muted-foreground mb-3">
@@ -248,7 +246,7 @@ export default function DomainSetupPage() {
             </div>
             
             <Alert className="mt-3 border-orange-200 bg-orange-50">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
+              <AlertTriangle className="h-4 w-4 text-orange-600"/>
               <AlertDescription className="text-orange-800">
                 If you already have an SPF record, modify it to include <code>include:amazonses.com</code> rather than creating a duplicate.
               </AlertDescription>
@@ -311,19 +309,19 @@ export default function DomainSetupPage() {
             <p className="text-sm text-muted-foreground mb-3">Our system checks:</p>
             <div className="grid gap-2 md:grid-cols-2">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 <span className="text-sm">Domain ownership verification</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 <span className="text-sm">SPF record presence and format</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 <span className="text-sm">All 3 DKIM records</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 <span className="text-sm">DMARC record (recommended)</span>
               </div>
             </div>
@@ -389,11 +387,10 @@ export default function DomainSetupPage() {
       </Card>
 
       <Alert>
-        <Mail className="h-4 w-4" />
+        <Mail className="h-4 w-4"/>
         <AlertDescription>
           <strong>Success Tip:</strong> Proper domain setup can improve your deliverability by 20-40% and significantly increase fan trust in your emails.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

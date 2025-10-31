@@ -1,20 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, } from "@clerk/nextjs";
 import { generateMarketingMetadata } from "@/lib/metadata";
-
-export const metadata: Metadata = generateMarketingMetadata(
-  "Loopletter - Own Your Audience. Transform Your Career.",
-  "Stop chasing algorithms. Start building a fanbase that actually belongs to you. The email platform that turns streams into sold-out shows.",
-  "/",
-  [
+export const metadata: Metadata = generateMarketingMetadata("Loopletter - Own Your Audience. Transform Your Career.", "Stop chasing algorithms. Start building a fanbase that actually belongs to you. The email platform that turns streams into sold-out shows.", "/", [
     "music marketing",
     "artist fanbase",
     "email marketing for musicians",
@@ -22,35 +11,14 @@ export const metadata: Metadata = generateMarketingMetadata(
     "fan engagement",
     "music career growth",
     "artist audience building",
-  ]
-);
-
-import {
-  Mail,
-  Users,
-  ArrowRight,
-  Music,
-  Send,
-  CheckCircle,
-  Star,
-  BarChart3,
-  Zap,
-  Target,
-  Shield,
-  Sparkles,
-  Headphones,
-  Mic,
-  Eye,
-} from "lucide-react";
+]);
+import { Mail, Users, ArrowRight, Music, Send, CheckCircle, Star, BarChart3, Zap, Target, Shield, Sparkles, Headphones, Mic, Eye, } from "lucide-react";
 import { ThemeToggleSimple } from "@/components/ui/theme-toggle";
 import { HomePageWrapper } from "@/components/home-page-wrapper";
-
 export default function Home() {
-  return (
-    <HomePageWrapper>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
+    return (<HomePageWrapper>
+      <script dangerouslySetInnerHTML={{
+            __html: `
             // Prevent SSR execution
             if (typeof window === 'undefined') return;
             
@@ -311,28 +279,15 @@ export default function Home() {
               }, 1000); // Wait 1 second after page load for hydration
             });
           `,
-        }}
-      />
+        }}/>
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-        {/* Navigation */}
-        <div
-          id="navbar-container"
-          className="sticky top-4 z-50 px-6 lg:px-12 transition-all duration-700 ease-out"
-        >
-          <nav
-            id="navbar"
-            className="flex items-center justify-between px-6 py-4 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-md rounded-2xl shadow-lg dark:shadow-2xl dark:shadow-blue-500/10 max-w-6xl mx-auto transition-all duration-700 ease-out"
-          >
+        
+        <div id="navbar-container" className="sticky top-4 z-50 px-6 lg:px-12 transition-all duration-700 ease-out">
+          <nav id="navbar" className="flex items-center justify-between px-6 py-4 bg-white/90 dark:bg-neutral-900/80 backdrop-blur-md rounded-2xl shadow-lg dark:shadow-2xl dark:shadow-blue-500/10 max-w-6xl mx-auto transition-all duration-700 ease-out">
             <div className="flex items-center gap-8">
               <div className="relative group cursor-pointer">
-                <Image
-                  src="/newlogo.svg"
-                  alt="Loopletter"
-                  width={140}
-                  height={36}
-                  className="flex-shrink-0 dark:invert"
-                />
-                <Send className="absolute -bottom-1 -right-1 w-3 h-3 text-blue-500 opacity-70 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:translate-x-2 group-hover:-translate-y-2 group-hover:rotate-12 group-hover:scale-110" />
+                <Image src="/newlogo.svg" alt="Loopletter" width={140} height={36} className="flex-shrink-0 dark:invert"/>
+                <Send className="absolute -bottom-1 -right-1 w-3 h-3 text-blue-500 opacity-70 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:translate-x-2 group-hover:-translate-y-2 group-hover:rotate-12 group-hover:scale-110"/>
               </div>
             </div>
 
@@ -351,10 +306,7 @@ export default function Home() {
                 </SignUpButton>
               </SignedOut>
               <SignedIn>
-                <Link
-                  href="/dashboard"
-                  className="bg-black hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-all dark:shadow-lg dark:shadow-blue-500/25 hover:scale-105"
-                >
+                <Link href="/dashboard" className="bg-black hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-all dark:shadow-lg dark:shadow-blue-500/25 hover:scale-105">
                   Dashboard
                 </Link>
                 <UserButton />
@@ -363,30 +315,27 @@ export default function Home() {
           </nav>
         </div>
 
-        {/* Hero Section */}
+        
         <section className="px-6 lg:px-12 pt-20 pb-32 bg-neutral-50 dark:bg-gradient-to-br dark:from-neutral-950 dark:to-neutral-950 dark:to-blue-950 overflow-hidden relative">
-          {/* Subtle Background Pattern */}
+          
           <div className="absolute inset-0 dark:opacity-5 opacity-0">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `
+            <div className="absolute inset-0" style={{
+            backgroundImage: `
                 linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px)
               `,
-                backgroundSize: "80px 80px",
-              }}
-            ></div>
+            backgroundSize: "80px 80px",
+        }}></div>
           </div>
 
-          {/* Minimal Ambient Lighting */}
+          
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl dark:block hidden"></div>
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/3 rounded-full blur-3xl dark:block hidden"></div>
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div className="animate-fade-in-up">
                 <div className="inline-flex items-center gap-2 bg-neutral-100 dark:bg-gradient-to-r dark:from-neutral-950 dark:to-neutral-950 dark:border dark:border-blue-500/20 text-neutral-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-8 animate-fade-in-up animation-delay-200 dark:shadow-lg dark:shadow-blue-500/10">
-                  <Sparkles className="w-4 h-4 animate-pulse text-blue-500" />
+                  <Sparkles className="w-4 h-4 animate-pulse text-blue-500"/>
                   The moment everything changes
                 </div>
                 <h1 className="text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-blue-100 dark:to-purple-200 mb-8 leading-tight animate-fade-in-up animation-delay-300 holographic-text">
@@ -400,7 +349,7 @@ export default function Home() {
                   songs because they genuinely love what you create.
                 </p>
 
-                {/* Results Stats */}
+                
                 <div className="grid grid-cols-3 gap-6 mb-8 animate-fade-in-up animation-delay-500">
                   <div className="text-center group cursor-pointer terminal-stat">
                     <div className="text-2xl font-bold text-neutral-900 dark:text-green-500 group-hover:scale-110 transition-transform duration-200 font-mono">
@@ -420,10 +369,7 @@ export default function Home() {
                   </div>
                   <div className="text-center group cursor-pointer terminal-stat">
                     <div className="text-2xl font-bold text-neutral-900 dark:text-green-500 group-hover:scale-110 transition-transform duration-200 font-mono">
-                      <span
-                        className="typing-effect"
-                        style={{ animationDelay: "1s" }}
-                      >
+                      <span className="typing-effect" style={{ animationDelay: "1s" }}>
                         $0
                       </span>
                     </div>
@@ -438,55 +384,43 @@ export default function Home() {
                     <SignUpButton>
                       <button className="bg-black hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2 shadow-sm hover:shadow-md group dark:shadow-xl dark:shadow-blue-500/25 dark:border dark:border-blue-500/20">
                         Own Your Audience. Start Today.
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
                       </button>
                     </SignUpButton>
-                    <button
-                      data-waitlist-trigger
-                      className="bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2 shadow-sm hover:shadow-md group border border-neutral-200 dark:border-neutral-600"
-                    >
+                    <button data-waitlist-trigger className="bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2 shadow-sm hover:shadow-md group border border-neutral-200 dark:border-neutral-600">
                       Join Waitlist
-                      <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      <Mail className="w-5 h-5 group-hover:scale-110 transition-transform"/>
                     </button>
                   </SignedOut>
                   <SignedIn>
-                    <Link
-                      href="/dashboard"
-                      className="bg-black hover:bg-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-950 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2 shadow-sm hover:shadow-md group dark:shadow-xl dark:shadow-blue-500/25 dark:border dark:border-blue-500/20"
-                    >
+                    <Link href="/dashboard" className="bg-black hover:bg-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-950 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2 shadow-sm hover:shadow-md group dark:shadow-xl dark:shadow-blue-500/25 dark:border dark:border-blue-500/20">
                       Go to Dashboard
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
                     </Link>
                   </SignedIn>
                 </div>
               </div>
 
-              {/* Hero Visual - Success Story */}
-              {/* Hero Visual - Real Dashboard Mockup */}
+              
+              
               <div className="relative animate-slide-in-right animation-delay-800">
                 <div className="bg-white dark:bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-900 rounded-lg border dark:border-blue-500/20 shadow-xl dark:shadow-2xl dark:shadow-blue-500/10 overflow-hidden relative">
-                  {/* Tech glow effect */}
+                  
                   <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-blue-500/5 dark:to-purple-500/5 dark:opacity-50"></div>
-                  {/* Dashboard Header */}
+                  
                   <div className="flex items-center justify-between px-6 py-4 border-b dark:border-neutral-700 bg-white dark:bg-neutral-800">
                     <div className="flex items-center gap-3">
-                      <Image
-                        src="/loopletterlogo.svg"
-                        alt="Loopletter"
-                        width={100}
-                        height={24}
-                        className="flex-shrink-0 dark:invert"
-                      />
+                      <Image src="/loopletterlogo.svg" alt="Loopletter" width={100} height={24} className="flex-shrink-0 dark:invert"/>
                     </div>
                     <div className="flex items-center gap-2">
                       <button className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
-                        <Send className="w-4 h-4" />
+                        <Send className="w-4 h-4"/>
                         Send Campaign
                       </button>
                     </div>
                   </div>
 
-                  {/* Dashboard Content */}
+                  
                   <div className="p-6">
                     <div className="mb-6">
                       <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
@@ -498,11 +432,11 @@ export default function Home() {
                       </p>
                     </div>
 
-                    {/* Metrics Cards */}
+                    
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border dark:border-neutral-600">
                         <div className="flex items-center mb-2">
-                          <Mail className="w-4 h-4 text-blue-600 mr-2" />
+                          <Mail className="w-4 h-4 text-blue-600 mr-2"/>
                           <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                             Total Campaigns
                           </span>
@@ -516,7 +450,7 @@ export default function Home() {
                       </div>
                       <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border dark:border-neutral-600">
                         <div className="flex items-center mb-2">
-                          <Users className="w-4 h-4 text-green-600 mr-2" />
+                          <Users className="w-4 h-4 text-green-600 mr-2"/>
                           <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                             Total Fans
                           </span>
@@ -530,7 +464,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Recent Campaign */}
+                    
                     <div className="bg-white dark:bg-neutral-700 rounded-lg border dark:border-neutral-600">
                       <div className="p-4 border-b">
                         <h3 className="font-medium">Recent Campaigns</h3>
@@ -553,7 +487,7 @@ export default function Home() {
                               Sent
                             </span>
                             <button className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-600 rounded">
-                              <Eye className="w-4 h-4" />
+                              <Eye className="w-4 h-4"/>
                             </button>
                           </div>
                         </div>
@@ -562,11 +496,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Floating Analytics Card */}
+                
                 <div className="absolute -bottom-6 -right-6 bg-white dark:bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-900 rounded-lg border dark:border-blue-500/30 shadow-lg dark:shadow-xl dark:shadow-blue-500/20 p-4 max-w-xs animate-float animation-delay-1000 dark:backdrop-blur-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center animate-pulse-glow">
-                      <BarChart3 className="w-4 h-4 text-green-600" />
+                      <BarChart3 className="w-4 h-4 text-green-600"/>
                     </div>
                     <div>
                       <div className="font-semibold text-neutral-900 dark:text-neutral-100">
@@ -585,10 +519,7 @@ export default function Home() {
                       <span className="font-medium">67.2%</span>
                     </div>
                     <div className="w-full bg-neutral-200 dark:bg-neutral-600 rounded-full h-2">
-                      <div
-                        className="bg-green-500 h-2 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: "67%" }}
-                      ></div>
+                      <div className="bg-green-500 h-2 rounded-full transition-all duration-1000 ease-out" style={{ width: "67%" }}></div>
                     </div>
                   </div>
                 </div>
@@ -597,7 +528,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Problem Before Loopletter */}
+        
         <section className="px-6 lg:px-12 py-32 bg-white dark:bg-neutral-950">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-neutral-100 mb-8">
@@ -620,11 +551,11 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Pain Points Grid */}
+            
             <div className="grid md:grid-cols-3 gap-8 mb-16">
               <div className="bg-red-50 dark:bg-red-900/10 p-8 rounded-xl border border-red-200 dark:border-red-800/30">
                 <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <Target className="w-6 h-6 text-red-600 dark:text-red-400" />
+                  <Target className="w-6 h-6 text-red-600 dark:text-red-400"/>
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
                   Algorithm Roulette
@@ -638,7 +569,7 @@ export default function Home() {
 
               <div className="bg-orange-50 dark:bg-orange-900/10 p-8 rounded-xl border border-orange-200 dark:border-orange-800/30">
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <Shield className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                  <Shield className="w-6 h-6 text-orange-600 dark:text-orange-400"/>
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
                   Platform Dependency
@@ -651,7 +582,7 @@ export default function Home() {
 
               <div className="bg-yellow-50 dark:bg-yellow-900/10 p-8 rounded-xl border border-yellow-200 dark:border-yellow-800/30">
                 <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <Zap className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                  <Zap className="w-6 h-6 text-yellow-600 dark:text-yellow-400"/>
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
                   Scattered Attention
@@ -675,7 +606,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Transformation Section */}
+        
         <section className="px-6 lg:px-12 py-32 bg-neutral-50 dark:bg-gradient-to-br dark:from-neutral-950 dark:to-neutral-950">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -701,19 +632,19 @@ export default function Home() {
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       100% delivery rate to your audience
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       No algorithm deciding who sees your content
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       Direct line to your most engaged fans
                     </span>
@@ -825,19 +756,19 @@ export default function Home() {
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       Instant ticket sales from announcement
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       Pre-sell to your most dedicated fans
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       Build demand before going public
                     </span>
@@ -848,7 +779,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Results Artists Are Seeing */}
+        
         <section className="px-6 lg:px-12 py-32 bg-white dark:bg-neutral-950">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -907,62 +838,12 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Success Stories */}
-            {/* <div className="grid lg:grid-cols-2 gap-8">
-              <div className="bg-neutral-50 dark:bg-neutral-800 p-8 rounded-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <Headphones className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                      Marcus Chen
-                    </div>
-                    <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                      Electronic Producer
-                    </div>
-                  </div>
-                </div>
-                <blockquote className="text-lg text-neutral-700 dark:text-neutral-300 mb-4 italic">
-                  "My email list of 1,200 fans generates more revenue than my
-                  45k Instagram followers. It's not even close."
-                </blockquote>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-3 py-1 rounded-full">
-                    +340% revenue growth
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-neutral-50 dark:bg-neutral-800 p-8 rounded-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                    <Mic className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-neutral-900 dark:text-neutral-100">
-                      Sarah Williams
-                    </div>
-                    <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                      Singer-Songwriter
-                    </div>
-                  </div>
-                </div>
-                <blockquote className="text-lg text-neutral-700 dark:text-neutral-300 mb-4 italic">
-                  "I went from playing coffee shops to headlining festivals. My
-                  email list made the difference."
-                </blockquote>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full">
-                    Sold out 12-city tour
-                  </span>
-                </div>
-              </div>
-            </div> */}
+            
+            
           </div>
         </section>
 
-        {/* Why Loopletter is Different */}
+        
         <section className="px-6 lg:px-12 py-32 bg-white dark:bg-gradient-to-b dark:from-neutral-950 dark:to-neutral-950 relative">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-20">
@@ -989,7 +870,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Music className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                      <Music className="w-3 h-3 text-blue-600 dark:text-blue-400"/>
                     </div>
                     <div>
                       <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
@@ -1003,7 +884,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Users className="w-3 h-3 text-green-600 dark:text-green-400" />
+                      <Users className="w-3 h-3 text-green-600 dark:text-green-400"/>
                     </div>
                     <div>
                       <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
@@ -1017,7 +898,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Zap className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                      <Zap className="w-3 h-3 text-purple-600 dark:text-purple-400"/>
                     </div>
                     <div>
                       <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
@@ -1080,7 +961,7 @@ export default function Home() {
                   </blockquote>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-                      <Music className="w-5 h-5 text-white" />
+                      <Music className="w-5 h-5 text-white"/>
                     </div>
                     <div>
                       <div className="font-semibold text-neutral-900 dark:text-neutral-100">
@@ -1104,19 +985,19 @@ export default function Home() {
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       Free forever for up to 1,000 fans
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       No contracts or long-term commitments
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0"/>
                     <span className="text-neutral-700 dark:text-neutral-300">
                       Export your list anytime—it's yours
                     </span>
@@ -1126,11 +1007,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* Pricing Section */}
-        <section
-          id="pricing"
-          className="px-6 lg:px-12 py-28 bg-gradient-to-b from-white to-gray-50 dark:from-neutral-950 dark:to-neutral-950"
-        >
+        
+        <section id="pricing" className="px-6 lg:px-12 py-28 bg-gradient-to-b from-white to-gray-50 dark:from-neutral-950 dark:to-neutral-950">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-20">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-neutral-100 leading-tight">
@@ -1148,7 +1026,7 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {/* STARTER PLAN */}
+              
               <div className="rounded-2xl p-8 shadow-md border bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 hover:shadow-xl flex flex-col justify-between transition-all duration-300">
                 <div className="text-center mb-8">
                   <div className="text-4xl mb-4">🔓</div>
@@ -1164,39 +1042,39 @@ export default function Home() {
                 </div>
                 <ul className="space-y-3 text-sm mb-8 text-gray-700 dark:text-neutral-300">
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     1,000 fan limit
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     3,000 emails/month
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Manual campaigns
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Hosted signup page
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Welcome auto-responder
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Basic analytics
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Fan tagging
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Loopletter branding
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600"/>
                     Community support
                   </li>
                 </ul>
@@ -1209,17 +1087,14 @@ export default function Home() {
                     </SignUpButton>
                   </SignedOut>
                   <SignedIn>
-                    <Link
-                      href="/dashboard"
-                      className="block text-center py-3 rounded-lg bg-gray-900 dark:bg-white dark:text-black text-white font-medium hover:bg-black dark:hover:bg-neutral-200 transition"
-                    >
+                    <Link href="/dashboard" className="block text-center py-3 rounded-lg bg-gray-900 dark:bg-white dark:text-black text-white font-medium hover:bg-black dark:hover:bg-neutral-200 transition">
                       Go to Dashboard
                     </Link>
                   </SignedIn>
                 </div>
               </div>
 
-              {/* INDEPENDENT PLAN */}
+              
               <div className="rounded-2xl p-8 shadow-xl border text-white bg-gradient-to-br from-gray-900 to-black dark:from-neutral-950 dark:to-neutral-950 border-transparent scale-105 relative flex flex-col justify-between dark:shadow-2xl dark:shadow-blue-500/20 dark:border dark:border-blue-500/30">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="px-4 py-1 text-xs rounded-full font-medium shadow-sm bg-blue-600 dark:bg-blue-600 text-white dark:shadow-lg dark:shadow-blue-500/25">
@@ -1241,51 +1116,48 @@ export default function Home() {
                 </div>
                 <ul className="space-y-3 text-sm mb-8">
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     10,000 fan limit
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Email scheduling
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Advanced analytics
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Segmentation
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Unlimited automations
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Remove branding
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Custom signup domain
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Custom email design
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400"/>
                     Premium support
                   </li>
                 </ul>
-                <Link
-                  href="/dashboard"
-                  className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow hover:shadow-lg"
-                >
+                <Link href="/dashboard" className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow hover:shadow-lg">
                   Start 14-Day Free Trial
                 </Link>
               </div>
 
-              {/* LABEL/AGENCY PLAN */}
+              
               <div className="rounded-2xl p-8 shadow-md border bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 hover:shadow-xl flex flex-col justify-between transition-all duration-300">
                 <div className="text-center mb-8">
                   <div className="text-4xl mb-4">👥</div>
@@ -1302,38 +1174,35 @@ export default function Home() {
                 </div>
                 <ul className="space-y-3 text-sm mb-8 text-gray-700 dark:text-neutral-300">
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     50,000 fan limit
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     Manage multiple artists
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     Multi-user access
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     White-labeling
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     Priority support
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     Onboarding help
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600"/>
                     Monetization tools
                   </li>
                 </ul>
-                <a
-                  href="#contact"
-                  className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-                >
+                <a href="#contact" className="block text-center py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
                   Contact for Team Plan
                 </a>
               </div>
@@ -1345,29 +1214,24 @@ export default function Home() {
               </h4>
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 {[
-                  "Extra user seats & monetization tools",
-                  "SMS campaigns ($10/month)",
-                  "API/Zapier integrations",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="bg-white dark:bg-neutral-800 p-6 rounded-xl border border-gray-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition"
-                  >
-                    <CheckCircle className="w-5 h-5 text-blue-600 mb-2" />
+            "Extra user seats & monetization tools",
+            "SMS campaigns ($10/month)",
+            "API/Zapier integrations",
+        ].map((item) => (<div key={item} className="bg-white dark:bg-neutral-800 p-6 rounded-xl border border-gray-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition">
+                    <CheckCircle className="w-5 h-5 text-blue-600 mb-2"/>
                     <p className="text-gray-700 dark:text-neutral-300 text-sm text-center">
                       {item}
                     </p>
-                  </div>
-                ))}
+                  </div>))}
               </div>
               <button className="mt-8 px-6 py-3 bg-gray-900 dark:bg-white dark:text-black text-white rounded-lg font-medium hover:bg-black dark:hover:bg-neutral-200 transition inline-flex items-center gap-2">
-                Contact us for custom pricing <ArrowRight className="w-4 h-4" />
+                Contact us for custom pricing <ArrowRight className="w-4 h-4"/>
               </button>
             </div>
           </div>
         </section>
 
-        {/* Final CTA Section */}
+        
         <section className="px-6 py-32 bg-neutral-100 dark:bg-neutral-950 text-black dark:text-white">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-5xl lg:text-6xl font-bold mb-8 text-gray-900 dark:text-neutral-100">
@@ -1387,10 +1251,7 @@ export default function Home() {
                 </SignUpButton>
               </SignedOut>
               <SignedIn>
-                <Link
-                  href="/dashboard"
-                  className="bg-black dark:bg-gradient-to-r dark:from-neutral-600 dark:to-neutral-600 text-white hover:bg-gray-800 px-10 py-5 rounded-lg font-bold text-xl transition-all shadow-lg hover:shadow-xl inline-block dark:shadow-2xl dark:shadow-blue-500/25 dark:border dark:border-blue-500/20"
-                >
+                <Link href="/dashboard" className="bg-black dark:bg-gradient-to-r dark:from-neutral-600 dark:to-neutral-600 text-white hover:bg-gray-800 px-10 py-5 rounded-lg font-bold text-xl transition-all shadow-lg hover:shadow-xl inline-block dark:shadow-2xl dark:shadow-blue-500/25 dark:border dark:border-blue-500/20">
                   Go to Dashboard
                 </Link>
               </SignedIn>
@@ -1400,7 +1261,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Final Stats */}
+            
             <div className="grid md:grid-cols-4 gap-8 text-center">
               <div className="bg-white dark:bg-neutral-700 shadow-sm rounded-lg p-6 border border-gray-200 dark:border-neutral-600">
                 <div className="text-3xl font-bold mb-2 text-gray-900 dark:text-neutral-100">
@@ -1438,198 +1299,126 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
+        
         <footer className="bg-neutral-900 text-white">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
             <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
-              {/* Company Info */}
+              
               <div className="lg:col-span-2">
-                <Image
-                  src="/loopletterlogo.svg"
-                  alt="Loopletter"
-                  width={140}
-                  height={36}
-                  className="mb-4 invert"
-                />
+                <Image src="/loopletterlogo.svg" alt="Loopletter" width={140} height={36} className="mb-4 invert"/>
                 <p className="text-gray-400 mb-6 max-w-sm">
                   Email marketing built specifically for independent artists.
                   Own your fanbase, grow your career.
                 </p>
                 <div className="flex items-center gap-4">
-                  <a
-                    href="https://twitter.com/loopletter"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  <a href="https://twitter.com/loopletter" className="text-gray-400 hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
                   </a>
-                  <a
-                    href="https://instagram.com/loopletter"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.004 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.418-3.323c.875-.807 2.026-1.297 3.323-1.297s2.448.49 3.323 1.297c.928.875 1.418 2.026 1.418 3.323s-.49 2.448-1.418 3.244c-.875.807-2.026 1.297-3.323 1.297zm7.83-9.781c-.315 0-.612-.123-.833-.344-.221-.221-.344-.518-.344-.833 0-.315.123-.612.344-.833.221-.221.518-.344.833-.344s.612.123.833.344c.221.221.344.518.344.833 0 .315-.123.612-.344.833-.221.221-.518.344-.833.344z" />
+                  <a href="https://instagram.com/loopletter" className="text-gray-400 hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.004 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.418-3.323c.875-.807 2.026-1.297 3.323-1.297s2.448.49 3.323 1.297c.928.875 1.418 2.026 1.418 3.323s-.49 2.448-1.418 3.244c-.875.807-2.026 1.297-3.323 1.297zm7.83-9.781c-.315 0-.612-.123-.833-.344-.221-.221-.344-.518-.344-.833 0-.315.123-.612.344-.833.221-.221.518-.344.833-.344s.612.123.833.344c.221.221.344.518.344.833 0 .315-.123.612-.344.833-.221.221-.518.344-.833.344z"/>
                     </svg>
                   </a>
-                  <a
-                    href="https://youtube.com/@loopletter"
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  <a href="https://youtube.com/@loopletter" className="text-gray-400 hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                     </svg>
                   </a>
                 </div>
               </div>
 
-              {/* Product */}
+              
               <div>
                 <h3 className="font-semibold text-white mb-4">Product</h3>
                 <ul className="space-y-3 text-sm text-gray-400">
                   <li>
-                    <a
-                      href="#features"
-                      className="hover:text-white transition-colors"
-                    >
+                    <a href="#features" className="hover:text-white transition-colors">
                       Features
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="#pricing"
-                      className="hover:text-white transition-colors"
-                    >
+                    <a href="#pricing" className="hover:text-white transition-colors">
                       Pricing
                     </a>
                   </li>
                   <li>
-                    <Link
-                      href="/templates"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/templates" className="hover:text-white transition-colors">
                       Templates
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/integrations"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/integrations" className="hover:text-white transition-colors">
                       Integrations
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/api"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/api" className="hover:text-white transition-colors">
                       API
                     </Link>
                   </li>
                 </ul>
               </div>
 
-              {/* Resources */}
+              
               <div>
                 <h3 className="font-semibold text-white mb-4">Resources</h3>
                 <ul className="space-y-3 text-sm text-gray-400">
                   <li>
-                    <Link
-                      href="/help"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/help" className="hover:text-white transition-colors">
                       Help Center
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/blog"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/blog" className="hover:text-white transition-colors">
                       Blog
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/guides"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/guides" className="hover:text-white transition-colors">
                       Artist Guides
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/community"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/community" className="hover:text-white transition-colors">
                       Community
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/status"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/status" className="hover:text-white transition-colors">
                       Status
                     </Link>
                   </li>
                 </ul>
               </div>
 
-              {/* Company */}
+              
               <div>
                 <h3 className="font-semibold text-white mb-4">Company</h3>
                 <ul className="space-y-3 text-sm text-gray-400">
                   <li>
-                    <Link
-                      href="/about"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/about" className="hover:text-white transition-colors">
                       About
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/contact"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/contact" className="hover:text-white transition-colors">
                       Contact
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/careers"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/careers" className="hover:text-white transition-colors">
                       Careers
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/press"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/press" className="hover:text-white transition-colors">
                       Press Kit
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/partners"
-                      className="hover:text-white transition-colors"
-                    >
+                    <Link href="/partners" className="hover:text-white transition-colors">
                       Partners
                     </Link>
                   </li>
@@ -1637,44 +1426,26 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Bottom Section */}
+            
             <div className="border-t border-gray-800 mt-12 pt-8">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400">
-                  <Link
-                    href="/privacy"
-                    className="hover:text-white transition-colors"
-                  >
+                  <Link href="/privacy" className="hover:text-white transition-colors">
                     Privacy Policy
                   </Link>
-                  <Link
-                    href="/terms"
-                    className="hover:text-white transition-colors"
-                  >
+                  <Link href="/terms" className="hover:text-white transition-colors">
                     Terms of Service
                   </Link>
-                  <Link
-                    href="/cookies"
-                    className="hover:text-white transition-colors"
-                  >
+                  <Link href="/cookies" className="hover:text-white transition-colors">
                     Cookie Policy
                   </Link>
-                  <Link
-                    href="/gdpr"
-                    className="hover:text-white transition-colors"
-                  >
+                  <Link href="/gdpr" className="hover:text-white transition-colors">
                     GDPR
                   </Link>
-                  <Link
-                    href="/can-spam"
-                    className="hover:text-white transition-colors"
-                  >
+                  <Link href="/can-spam" className="hover:text-white transition-colors">
                     CAN-SPAM
                   </Link>
-                  <Link
-                    href="/security"
-                    className="hover:text-white transition-colors"
-                  >
+                  <Link href="/security" className="hover:text-white transition-colors">
                     Security
                   </Link>
                 </div>
@@ -1683,7 +1454,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Compliance Notice */}
+              
               <div className="mt-6 pt-6 border-t border-gray-800">
                 <p className="text-xs text-gray-500 text-center max-w-4xl mx-auto">
                   Loopletter is committed to protecting your privacy and
@@ -1697,6 +1468,5 @@ export default function Home() {
           </div>
         </footer>
       </div>
-    </HomePageWrapper>
-  );
+    </HomePageWrapper>);
 }

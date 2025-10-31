@@ -4,21 +4,18 @@ import { ProtectedAdminRoute } from '@/components/protected-admin-route';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, AlertTriangle, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
 export const metadata: Metadata = {
-  title: 'Contact Reviews - Admin Dashboard',
-  description: 'Review and manage flagged contacts for spam prevention and compliance',
+    title: 'Contact Reviews - Admin Dashboard',
+    description: 'Review and manage flagged contacts for spam prevention and compliance',
 };
-
 export default function AdminReviewsPage() {
-  return (
-    <ProtectedAdminRoute requiredPermission="view" fallbackPath="/dashboard">
+    return (<ProtectedAdminRoute requiredPermission="view" fallbackPath="/dashboard">
       <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Shield className="h-8 w-8 text-blue-600" />
+            <Shield className="h-8 w-8 text-blue-600"/>
             Contact Reviews
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -27,12 +24,12 @@ export default function AdminReviewsPage() {
         </div>
       </div>
 
-      {/* Information Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Info className="h-5 w-5 text-blue-500" />
+              <Info className="h-5 w-5 text-blue-500"/>
               Why Contacts Get Flagged
             </CardTitle>
           </CardHeader>
@@ -48,7 +45,7 @@ export default function AdminReviewsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              <AlertTriangle className="h-5 w-5 text-yellow-500"/>
               Review Guidelines
             </CardTitle>
           </CardHeader>
@@ -62,9 +59,9 @@ export default function AdminReviewsPage() {
         </Card>
       </div>
 
-      {/* Compliance Notice */}
+      
       <Alert>
-        <Shield className="h-4 w-4" />
+        <Shield className="h-4 w-4"/>
         <AlertDescription>
           <strong>Compliance Notice:</strong> Only approve contacts where you can verify legitimate consent. 
           Approving spam emails can result in AWS SES suspension and legal issues. All review decisions 
@@ -72,10 +69,10 @@ export default function AdminReviewsPage() {
         </AlertDescription>
       </Alert>
 
-      {/* Main Dashboard */}
+      
       <AdminReviewDashboard />
 
-      {/* Help Section */}
+      
       <Card>
         <CardHeader>
           <CardTitle>Need Help?</CardTitle>
@@ -119,6 +116,5 @@ export default function AdminReviewsPage() {
         </CardContent>
       </Card>
       </div>
-    </ProtectedAdminRoute>
-  );
+    </ProtectedAdminRoute>);
 }

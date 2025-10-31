@@ -1,17 +1,13 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Music, Heart, Users, Zap } from "lucide-react";
-
 export const metadata: Metadata = {
-  title: "About Us - Loopletter",
-  description:
-    "Learn about Loopletter's mission to help independent artists build lasting relationships with their fans.",
+    title: "About Us - Loopletter",
+    description: "Learn about Loopletter's mission to help independent artists build lasting relationships with their fans.",
 };
-
 export default function AboutPage() {
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
+    return (<div className="min-h-screen bg-white">
+      
       <section className="bg-gray-50 py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
@@ -26,7 +22,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission Section */}
+      
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -53,28 +49,28 @@ export default function AboutPage() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Music className="w-6 h-6 text-blue-600" />
+                    <Music className="w-6 h-6 text-blue-600"/>
                   </div>
                   <div className="text-2xl font-bold text-gray-900">5,000+</div>
                   <div className="text-sm text-gray-600">Artists Served</div>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Users className="w-6 h-6 text-green-600" />
+                    <Users className="w-6 h-6 text-green-600"/>
                   </div>
                   <div className="text-2xl font-bold text-gray-900">2M+</div>
                   <div className="text-sm text-gray-600">Fan Connections</div>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Heart className="w-6 h-6 text-purple-600" />
+                    <Heart className="w-6 h-6 text-purple-600"/>
                   </div>
                   <div className="text-2xl font-bold text-gray-900">65%</div>
                   <div className="text-sm text-gray-600">Avg Open Rate</div>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Zap className="w-6 h-6 text-orange-600" />
+                    <Zap className="w-6 h-6 text-orange-600"/>
                   </div>
                   <div className="text-2xl font-bold text-gray-900">98%</div>
                   <div className="text-sm text-gray-600">
@@ -87,7 +83,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Story Section */}
+      
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-gray-900 mb-8 text-center">
@@ -124,7 +120,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section */}
+      
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">
@@ -133,7 +129,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Music className="w-8 h-8 text-blue-600" />
+                <Music className="w-8 h-8 text-blue-600"/>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Artist-First
@@ -146,7 +142,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-green-600" />
+                <Heart className="w-8 h-8 text-green-600"/>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Authentic Connection
@@ -159,7 +155,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-purple-600" />
+                <Users className="w-8 h-8 text-purple-600"/>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Ownership
@@ -171,7 +167,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-8 h-8 text-orange-600" />
+                <Zap className="w-8 h-8 text-orange-600"/>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Simplicity
@@ -183,7 +179,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Heart className="w-8 h-8 text-red-600" />
+                <Heart className="w-8 h-8 text-red-600"/>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Transparency
@@ -195,7 +191,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-indigo-600" />
+                <Users className="w-8 h-8 text-indigo-600"/>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Community
@@ -210,7 +206,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section */}
+      
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-gray-900 mb-8 text-center">
@@ -237,7 +233,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Contact Section */}
+      
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-8">
@@ -265,6 +261,5 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>);
 }

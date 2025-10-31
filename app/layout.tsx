@@ -7,56 +7,36 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AnalyticsProvider } from "@/components/analytics-provider";
 import { Suspense } from "react";
-
-
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
 });
-
 export const metadata: Metadata = defaultMetadata;
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+export default function RootLayout({ children, }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  const structuredData = generateSiteStructuredData();
-
-  return (
-    <ClerkProvider>
+    const structuredData = generateSiteStructuredData();
+    return (<ClerkProvider>
       <html lang="en">
         <head>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(structuredData),
-            }}
-          />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+        }}/>
         </head>
-        <body
-         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <Suspense fallback={null}>
               <AnalyticsProvider>
-                <Toaster position="top-center" />
+                <Toaster position="top-center"/>
                 {children}
               </AnalyticsProvider>
             </Suspense>
           </ThemeProvider>
         </body>
       </html>
-    </ClerkProvider>
-  );
+    </ClerkProvider>);
 }

@@ -1,53 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processJobById, getQueueStats } from '@/lib/email-queue';
-
-// This endpoint processes queued email jobs
-// In a serverless environment, this would be called by a cron job or webhook
 export async function POST(request: NextRequest) {
-  try {
-    const { jobId } = await request.json();
-
-    if (!jobId) {
-      return NextResponse.json({ error: 'jobId is required' }, { status: 400 });
+    try {
+        const { jobId } = await request.json();
+        if (!jobId) {
+            return NextResponse.json({ error: 'jobId is required' }, { status: 400 });
+        }
+        const result = await processJobById(jobId);
+        if (!result.processed) {
+            return NextResponse.json({ error: 'Job not found or could not be processed' }, { status: 404 });
+        }
+        return NextResponse.json({
+            success: true,
+            jobId,
+            result: result.result,
+        });
     }
-
-    // Process the specific job
-    const result = await processJobById(jobId);
-
-    if (!result.processed) {
-      return NextResponse.json({ error: 'Job not found or could not be processed' }, { status: 404 });
+    catch (error) {
+        console.error('Error processing job:', error);
+        return NextResponse.json({ error: 'Failed to process job' }, { status: 500 });
     }
-
-    return NextResponse.json({
-      success: true,
-      jobId,
-      result: result.result,
-    });
-
-  } catch (error) {
-    console.error('Error processing job:', error);
-    return NextResponse.json(
-      { error: 'Failed to process job' },
-      { status: 500 }
-    );
-  }
 }
-
-// Get queue statistics
 export async function GET() {
-  try {
-    const stats = await getQueueStats();
-    
-    return NextResponse.json({
-      success: true,
-      stats,
-    });
-
-  } catch (error) {
-    console.error('Error getting queue stats:', error);
-    return NextResponse.json(
-      { error: 'Failed to get queue stats' },
-      { status: 500 }
-    );
-  }
+    try {
+        const stats = await getQueueStats();
+        return NextResponse.json({
+            success: true,
+            stats,
+        });
+    }
+    catch (error) {
+        console.error('Error getting queue stats:', error);
+        return NextResponse.json({ error: 'Failed to get queue stats' }, { status: 500 });
+    }
 }

@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Info, AlertTriangle, Lightbulb } from 'lucide-react';
-
 export default function ProfileSetupPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Setting Up Your Artist Profile</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -102,7 +100,7 @@ export default function ProfileSetupPage() {
               Required by email marketing laws (CAN-SPAM, GDPR). This appears in email footers.
             </p>
             <Alert>
-              <Info className="h-4 w-4" />
+              <Info className="h-4 w-4"/>
               <AlertDescription>
                 You can use a P.O. Box or business address. Personal addresses are not recommended for privacy reasons.
               </AlertDescription>
@@ -121,13 +119,11 @@ export default function ProfileSetupPage() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              'Instagram', 'Twitter/X', 'TikTok', 'YouTube',
-              'Spotify', 'Apple Music', 'SoundCloud', 'Bandcamp'
-            ].map((platform) => (
-              <Badge key={platform} variant="outline" className="justify-center py-2">
+            'Instagram', 'Twitter/X', 'TikTok', 'YouTube',
+            'Spotify', 'Apple Music', 'SoundCloud', 'Bandcamp'
+        ].map((platform) => (<Badge key={platform} variant="outline" className="justify-center py-2">
                 {platform}
-              </Badge>
-            ))}
+              </Badge>))}
           </div>
         </CardContent>
       </Card>
@@ -181,11 +177,10 @@ export default function ProfileSetupPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Tip:</strong> Complete profile setup improves email deliverability and helps fans recognize your emails in their inbox.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

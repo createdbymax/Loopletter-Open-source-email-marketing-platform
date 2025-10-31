@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Globe, AlertTriangle, CheckCircle, Copy } from 'lucide-react';
-
 export default function DNSConfigurationPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">DNS Configuration</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -116,7 +114,7 @@ export default function DNSConfigurationPage() {
             </div>
             
             <Alert className="mt-3 border-orange-200 bg-orange-50">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
+              <AlertTriangle className="h-4 w-4 text-orange-600"/>
               <AlertDescription className="text-orange-800">
                 <strong>Existing SPF Records:</strong> If you already have an SPF record, modify it to include 
                 <code className="mx-1">include:amazonses.com</code> instead of creating a new one.
@@ -237,7 +235,7 @@ export default function DNSConfigurationPage() {
             <h3 className="font-medium mb-3">Record Format Issues</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
+                <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5"/>
                 <div>
                   <h4 className="text-sm font-medium">Wrong Record Type</h4>
                   <p className="text-sm text-muted-foreground">
@@ -247,7 +245,7 @@ export default function DNSConfigurationPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
+                <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5"/>
                 <div>
                   <h4 className="text-sm font-medium">Incorrect Name Field</h4>
                   <p className="text-sm text-muted-foreground">
@@ -257,7 +255,7 @@ export default function DNSConfigurationPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
+                <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5"/>
                 <div>
                   <h4 className="text-sm font-medium">Typos in Values</h4>
                   <p className="text-sm text-muted-foreground">
@@ -272,7 +270,7 @@ export default function DNSConfigurationPage() {
             <h3 className="font-medium mb-3">Propagation Issues</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5"/>
                 <div>
                   <h4 className="text-sm font-medium">Wait for Propagation</h4>
                   <p className="text-sm text-muted-foreground">
@@ -282,7 +280,7 @@ export default function DNSConfigurationPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5"/>
                 <div>
                   <h4 className="text-sm font-medium">Clear DNS Cache</h4>
                   <p className="text-sm text-muted-foreground">
@@ -292,7 +290,7 @@ export default function DNSConfigurationPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5"/>
                 <div>
                   <h4 className="text-sm font-medium">Check Multiple Locations</h4>
                   <p className="text-sm text-muted-foreground">
@@ -338,12 +336,11 @@ export default function DNSConfigurationPage() {
       </Card>
 
       <Alert>
-        <Settings className="h-4 w-4" />
+        <Settings className="h-4 w-4"/>
         <AlertDescription>
           <strong>Pro Tip:</strong> Always test your DNS configuration with multiple tools and from different locations 
           to ensure proper propagation before going live with email campaigns.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

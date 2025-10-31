@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Users, UserCheck, UserX, Filter, Search, Lightbulb, AlertTriangle } from 'lucide-react';
-
 export default function AudienceManagementPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Audience Management</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function AudienceManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Fan Profiles
             </CardTitle>
           </CardHeader>
@@ -31,7 +29,7 @@ export default function AudienceManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Filter className="h-4 w-4" />
+              <Filter className="h-4 w-4"/>
               List Filtering
             </CardTitle>
           </CardHeader>
@@ -45,7 +43,7 @@ export default function AudienceManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserCheck className="h-4 w-4" />
+              <UserCheck className="h-4 w-4"/>
               Status Management
             </CardTitle>
           </CardHeader>
@@ -59,7 +57,7 @@ export default function AudienceManagementPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Search className="h-4 w-4" />
+              <Search className="h-4 w-4"/>
               Search & Export
             </CardTitle>
           </CardHeader>
@@ -222,7 +220,7 @@ export default function AudienceManagementPage() {
       </Card>
 
       <Alert className="border-orange-200 bg-orange-50">
-        <AlertTriangle className="h-4 w-4 text-orange-600" />
+        <AlertTriangle className="h-4 w-4 text-orange-600"/>
         <AlertDescription className="text-orange-800">
           <strong>Important:</strong> Never re-add unsubscribed contacts to your list. This violates email marketing laws and can damage your sender reputation.
         </AlertDescription>
@@ -371,11 +369,10 @@ export default function AudienceManagementPage() {
       </Card>
 
       <Alert>
-        <Lightbulb className="h-4 w-4" />
+        <Lightbulb className="h-4 w-4"/>
         <AlertDescription>
           <strong>Best Practice:</strong> Regularly review and clean your audience list to maintain high engagement rates and good sender reputation.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>);
 }

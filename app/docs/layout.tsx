@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import { RootProvider } from 'fumadocs-ui/provider';
 import { Sidebar } from "@/components/docs/sidebar";
 import { Header } from "@/components/docs/header";
-
-export default function RootDocsLayout({ children }: { children: ReactNode }) {
-  return (
-    <RootProvider>
+export default function RootDocsLayout({ children }: {
+    children: ReactNode;
+}) {
+    return (<RootProvider>
       <div className="min-h-screen bg-background">
         <Header />
         <div className="flex">
@@ -15,6 +15,5 @@ export default function RootDocsLayout({ children }: { children: ReactNode }) {
           </main>
         </div>
       </div>
-    </RootProvider>
-  );
+    </RootProvider>);
 }

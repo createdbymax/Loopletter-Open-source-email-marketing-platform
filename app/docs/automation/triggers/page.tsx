@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Zap, UserPlus, MousePointer, Calendar } from 'lucide-react';
-
 export default function TriggersPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Automation Triggers</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function TriggersPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="h-4 w-4"/>
               New Subscriber
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function TriggersPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <MousePointer className="h-4 w-4" />
+              <MousePointer className="h-4 w-4"/>
               Link Clicked
             </CardTitle>
           </CardHeader>
@@ -44,7 +42,7 @@ export default function TriggersPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="h-4 w-4"/>
               Date-Based
             </CardTitle>
           </CardHeader>
@@ -58,7 +56,7 @@ export default function TriggersPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4"/>
               Behavioral
             </CardTitle>
           </CardHeader>
@@ -84,6 +82,5 @@ export default function TriggersPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

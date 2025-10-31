@@ -1,42 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getArtistBySlug } from '@/lib/db';
-
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const artistSlug = searchParams.get('artist');
-    const theme = searchParams.get('theme') || 'light';
-    const size = searchParams.get('size') || 'medium';
-
-    if (!artistSlug) {
-      return new NextResponse('Artist parameter is required', { status: 400 });
-    }
-
-    // Get artist data
-    const artist = await getArtistBySlug(artistSlug);
-    if (!artist) {
-      return new NextResponse('Artist not found', { status: 404 });
-    }
-
-    // Get customization settings
-    const settings = artist.settings?.subscription_page_settings || {};
-    const colors = (settings as any).colors || {
-      primary: '#2563eb',
-      secondary: '#0891b2',
-      accent: '#06b6d4'
-    };
-
-    // Size configurations
-    const sizeConfig = {
-      small: { width: '300px', height: '350px', padding: '16px', fontSize: '14px' },
-      medium: { width: '400px', height: '450px', padding: '24px', fontSize: '16px' },
-      large: { width: '500px', height: '550px', padding: '32px', fontSize: '18px' }
-    };
-
-    const config = sizeConfig[size as keyof typeof sizeConfig] || sizeConfig.medium;
-
-    // Generate the widget HTML
-    const widgetHtml = `
+    try {
+        const { searchParams } = new URL(request.url);
+        const artistSlug = searchParams.get('artist');
+        const theme = searchParams.get('theme') || 'light';
+        const size = searchParams.get('size') || 'medium';
+        if (!artistSlug) {
+            return new NextResponse('Artist parameter is required', { status: 400 });
+        }
+        const artist = await getArtistBySlug(artistSlug);
+        if (!artist) {
+            return new NextResponse('Artist not found', { status: 404 });
+        }
+        const settings = artist.settings?.subscription_page_settings || {};
+        const colors = (settings as any).colors || {
+            primary: '#2563eb',
+            secondary: '#0891b2',
+            accent: '#06b6d4'
+        };
+        const sizeConfig = {
+            small: { width: '300px', height: '350px', padding: '16px', fontSize: '14px' },
+            medium: { width: '400px', height: '450px', padding: '24px', fontSize: '16px' },
+            large: { width: '500px', height: '550px', padding: '32px', fontSize: '18px' }
+        };
+        const config = sizeConfig[size as keyof typeof sizeConfig] || sizeConfig.medium;
+        const widgetHtml = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -403,17 +392,16 @@ export async function GET(request: NextRequest) {
     </script>
 </body>
 </html>`;
-
-    return new NextResponse(widgetHtml, {
-      headers: {
-        'Content-Type': 'text/html',
-        'X-Frame-Options': 'ALLOWALL',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-
-  } catch (error) {
-    console.error('Widget error:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
-  }
+        return new NextResponse(widgetHtml, {
+            headers: {
+                'Content-Type': 'text/html',
+                'X-Frame-Options': 'ALLOWALL',
+                'Access-Control-Allow-Origin': '*',
+            },
+        });
+    }
+    catch (error) {
+        console.error('Widget error:', error);
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
 }

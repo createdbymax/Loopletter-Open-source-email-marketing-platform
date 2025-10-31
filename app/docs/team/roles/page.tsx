@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Shield, Edit, Eye } from 'lucide-react';
-
 export default function RolesPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Roles & Permissions</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function RolesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Crown className="h-4 w-4" />
+              <Crown className="h-4 w-4"/>
               Owner
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function RolesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               Admin
             </CardTitle>
           </CardHeader>
@@ -44,7 +42,7 @@ export default function RolesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Edit className="h-4 w-4" />
+              <Edit className="h-4 w-4"/>
               Editor
             </CardTitle>
           </CardHeader>
@@ -58,7 +56,7 @@ export default function RolesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Eye className="h-4 w-4" />
+              <Eye className="h-4 w-4"/>
               Viewer
             </CardTitle>
           </CardHeader>
@@ -84,6 +82,5 @@ export default function RolesPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

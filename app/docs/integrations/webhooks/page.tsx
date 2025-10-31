@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Webhook, Zap, Shield, Clock } from 'lucide-react';
-
 export default function WebhooksPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Webhooks</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function WebhooksPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Webhook className="h-4 w-4" />
+              <Webhook className="h-4 w-4"/>
               Real-time Events
             </CardTitle>
           </CardHeader>
@@ -30,7 +28,7 @@ export default function WebhooksPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4"/>
               Event Types
             </CardTitle>
           </CardHeader>
@@ -44,7 +42,7 @@ export default function WebhooksPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Shield className="h-4 w-4" />
+              <Shield className="h-4 w-4"/>
               Secure Delivery
             </CardTitle>
           </CardHeader>
@@ -58,7 +56,7 @@ export default function WebhooksPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4"/>
               Retry Logic
             </CardTitle>
           </CardHeader>
@@ -98,6 +96,5 @@ export default function WebhooksPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

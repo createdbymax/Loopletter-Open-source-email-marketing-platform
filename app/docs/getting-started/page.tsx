@@ -2,10 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle, Users, Mail, BarChart3, Settings } from 'lucide-react';
-
 export default function GettingStartedPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Getting Started with Loopletter</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -17,7 +15,7 @@ export default function GettingStartedPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+              <Mail className="h-5 w-5"/>
               What is Loopletter?
             </CardTitle>
           </CardHeader>
@@ -32,26 +30,26 @@ export default function GettingStartedPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
+              <BarChart3 className="h-5 w-5"/>
               Key Features
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Campaign Management
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Audience Segmentation
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Analytics Dashboard
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-green-500"/>
                 Team Collaboration
               </li>
             </ul>
@@ -85,11 +83,8 @@ export default function GettingStartedPage() {
                 <p className="text-sm text-muted-foreground">
                   Add your artist name, bio, and branding to personalize your emails.
                 </p>
-                <Link 
-                  href="/docs/getting-started/profile-setup" 
-                  className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1"
-                >
-                  Learn more <ArrowRight className="h-3 w-3" />
+                <Link href="/docs/getting-started/profile-setup" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  Learn more <ArrowRight className="h-3 w-3"/>
                 </Link>
               </div>
             </div>
@@ -101,11 +96,8 @@ export default function GettingStartedPage() {
                 <p className="text-sm text-muted-foreground">
                   Upload a CSV file or manually add email addresses to start building your audience.
                 </p>
-                <Link 
-                  href="/docs/audience/importing-fans" 
-                  className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1"
-                >
-                  Import guide <ArrowRight className="h-3 w-3" />
+                <Link href="/docs/audience/importing-fans" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  Import guide <ArrowRight className="h-3 w-3"/>
                 </Link>
               </div>
             </div>
@@ -117,11 +109,8 @@ export default function GettingStartedPage() {
                 <p className="text-sm text-muted-foreground">
                   Set up email authentication to improve deliverability and build trust.
                 </p>
-                <Link 
-                  href="/docs/domain-setup" 
-                  className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1"
-                >
-                  Domain setup <ArrowRight className="h-3 w-3" />
+                <Link href="/docs/domain-setup" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  Domain setup <ArrowRight className="h-3 w-3"/>
                 </Link>
               </div>
             </div>
@@ -133,11 +122,8 @@ export default function GettingStartedPage() {
                 <p className="text-sm text-muted-foreground">
                   Create and send your first email to welcome your fans.
                 </p>
-                <Link 
-                  href="/docs/campaigns/creating-campaigns" 
-                  className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1"
-                >
-                  Create campaign <ArrowRight className="h-3 w-3" />
+                <Link href="/docs/campaigns/creating-campaigns" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  Create campaign <ArrowRight className="h-3 w-3"/>
                 </Link>
               </div>
             </div>
@@ -149,7 +135,7 @@ export default function GettingStartedPage() {
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+              <Users className="h-5 w-5"/>
               Audience
             </CardTitle>
           </CardHeader>
@@ -157,11 +143,8 @@ export default function GettingStartedPage() {
             <p className="text-sm text-muted-foreground mb-3">
               Learn how to import, segment, and manage your fan base effectively.
             </p>
-            <Link 
-              href="/docs/audience/importing-fans" 
-              className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Get started <ArrowRight className="h-3 w-3" />
+            <Link href="/docs/audience/importing-fans" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              Get started <ArrowRight className="h-3 w-3"/>
             </Link>
           </CardContent>
         </Card>
@@ -169,7 +152,7 @@ export default function GettingStartedPage() {
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+              <Mail className="h-5 w-5"/>
               Campaigns
             </CardTitle>
           </CardHeader>
@@ -177,11 +160,8 @@ export default function GettingStartedPage() {
             <p className="text-sm text-muted-foreground mb-3">
               Create beautiful email campaigns that engage your fans and drive results.
             </p>
-            <Link 
-              href="/docs/campaigns/creating-campaigns" 
-              className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Learn more <ArrowRight className="h-3 w-3" />
+            <Link href="/docs/campaigns/creating-campaigns" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              Learn more <ArrowRight className="h-3 w-3"/>
             </Link>
           </CardContent>
         </Card>
@@ -189,7 +169,7 @@ export default function GettingStartedPage() {
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
+              <Settings className="h-5 w-5"/>
               Setup
             </CardTitle>
           </CardHeader>
@@ -197,11 +177,8 @@ export default function GettingStartedPage() {
             <p className="text-sm text-muted-foreground mb-3">
               Configure your domain and settings for optimal email deliverability.
             </p>
-            <Link 
-              href="/docs/domain-setup" 
-              className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Setup guide <ArrowRight className="h-3 w-3" />
+            <Link href="/docs/domain-setup" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              Setup guide <ArrowRight className="h-3 w-3"/>
             </Link>
           </CardContent>
         </Card>
@@ -213,27 +190,17 @@ export default function GettingStartedPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link 
-              href="/docs/troubleshooting" 
-              className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Troubleshooting Guide <ArrowRight className="h-3 w-3" />
+            <Link href="/docs/troubleshooting" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              Troubleshooting Guide <ArrowRight className="h-3 w-3"/>
             </Link>
-            <Link 
-              href="/docs/troubleshooting/faq" 
-              className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-            >
-              FAQ <ArrowRight className="h-3 w-3" />
+            <Link href="/docs/troubleshooting/faq" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              FAQ <ArrowRight className="h-3 w-3"/>
             </Link>
-            <Link 
-              href="mailto:support@loopletter.co" 
-              className="text-sm text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Contact Support <ArrowRight className="h-3 w-3" />
+            <Link href="mailto:support@loopletter.co" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              Contact Support <ArrowRight className="h-3 w-3"/>
             </Link>
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }

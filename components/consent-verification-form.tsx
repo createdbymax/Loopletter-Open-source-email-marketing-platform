@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,67 +8,54 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { AlertTriangle, Shield, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
 interface ConsentVerificationFormProps {
-  onConsentVerified: (verification: ConsentVerification) => void;
-  source: 'signup_form' | 'manual_entry' | 'import' | 'api';
-  emailCount?: number;
+    onConsentVerified: (verification: ConsentVerification) => void;
+    source: 'signup_form' | 'manual_entry' | 'import' | 'api';
+    emailCount?: number;
 }
-
 export interface ConsentVerification {
-  source: 'signup_form' | 'manual_entry' | 'import' | 'api';
-  timestamp: string;
-  double_opt_in: boolean;
-  consent_text?: string;
-  verification_method: 'email_confirmation' | 'checkbox' | 'verbal' | 'written';
+    source: 'signup_form' | 'manual_entry' | 'import' | 'api';
+    timestamp: string;
+    double_opt_in: boolean;
+    consent_text?: string;
+    verification_method: 'email_confirmation' | 'checkbox' | 'verbal' | 'written';
 }
-
-export function ConsentVerificationForm({ 
-  onConsentVerified, 
-  source, 
-  emailCount = 1 
-}: ConsentVerificationFormProps) {
-  const [verificationMethod, setVerificationMethod] = useState<string>('');
-  const [doubleOptIn, setDoubleOptIn] = useState(false);
-  const [consentText, setConsentText] = useState('');
-  const [acknowledged, setAcknowledged] = useState(false);
-
-  const handleSubmit = () => {
-    if (!verificationMethod || !acknowledged) return;
-
-    const verification: ConsentVerification = {
-      source,
-      timestamp: new Date().toISOString(),
-      double_opt_in: doubleOptIn,
-      consent_text: consentText.trim() || undefined,
-      verification_method: verificationMethod as ConsentVerification['verification_method']
+export function ConsentVerificationForm({ onConsentVerified, source, emailCount = 1 }: ConsentVerificationFormProps) {
+    const [verificationMethod, setVerificationMethod] = useState<string>('');
+    const [doubleOptIn, setDoubleOptIn] = useState(false);
+    const [consentText, setConsentText] = useState('');
+    const [acknowledged, setAcknowledged] = useState(false);
+    const handleSubmit = () => {
+        if (!verificationMethod || !acknowledged)
+            return;
+        const verification: ConsentVerification = {
+            source,
+            timestamp: new Date().toISOString(),
+            double_opt_in: doubleOptIn,
+            consent_text: consentText.trim() || undefined,
+            verification_method: verificationMethod as ConsentVerification['verification_method']
+        };
+        onConsentVerified(verification);
     };
-
-    onConsentVerified(verification);
-  };
-
-  const getSourceDescription = () => {
-    switch (source) {
-      case 'signup_form':
-        return 'Subscribers who signed up through your website form';
-      case 'manual_entry':
-        return 'Manually entered email addresses';
-      case 'import':
-        return 'Imported from an external source (CSV, etc.)';
-      case 'api':
-        return 'Added via API integration';
-      default:
-        return 'Email addresses to be added';
-    }
-  };
-
-  const isHighRisk = source === 'import' || source === 'api';
-
-  return (
-    <Card className="w-full max-w-2xl">
+    const getSourceDescription = () => {
+        switch (source) {
+            case 'signup_form':
+                return 'Subscribers who signed up through your website form';
+            case 'manual_entry':
+                return 'Manually entered email addresses';
+            case 'import':
+                return 'Imported from an external source (CSV, etc.)';
+            case 'api':
+                return 'Added via API integration';
+            default:
+                return 'Email addresses to be added';
+        }
+    };
+    const isHighRisk = source === 'import' || source === 'api';
+    return (<Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
+          <Shield className="h-5 w-5"/>
           Consent Verification Required
         </CardTitle>
         <CardDescription>
@@ -78,46 +64,40 @@ export function ConsentVerificationForm({
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {isHighRisk && (
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
+        {isHighRisk && (<Alert>
+            <AlertTriangle className="h-4 w-4"/>
             <AlertDescription>
               <strong>High-risk source detected.</strong> AWS SES requires documented consent 
               for all email addresses. Failure to comply may result in account suspension.
             </AlertDescription>
-          </Alert>
-        )}
+          </Alert>)}
 
         <div className="space-y-4">
           <div>
             <Label className="text-base font-medium">
               How was consent obtained from these subscribers?
             </Label>
-            <RadioGroup 
-              value={verificationMethod} 
-              onValueChange={setVerificationMethod}
-              className="mt-2"
-            >
+            <RadioGroup value={verificationMethod} onValueChange={setVerificationMethod} className="mt-2">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="email_confirmation" id="email_confirmation" />
+                <RadioGroupItem value="email_confirmation" id="email_confirmation"/>
                 <Label htmlFor="email_confirmation">
                   Email confirmation (double opt-in)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="checkbox" id="checkbox" />
+                <RadioGroupItem value="checkbox" id="checkbox"/>
                 <Label htmlFor="checkbox">
                   Checkbox on signup form
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="written" id="written" />
+                <RadioGroupItem value="written" id="written"/>
                 <Label htmlFor="written">
                   Written consent (contracts, forms)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="verbal" id="verbal" />
+                <RadioGroupItem value="verbal" id="verbal"/>
                 <Label htmlFor="verbal">
                   Verbal consent (recorded/documented)
                 </Label>
@@ -126,11 +106,7 @@ export function ConsentVerificationForm({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="double_opt_in" 
-              checked={doubleOptIn}
-              onCheckedChange={(checked) => setDoubleOptIn(checked as boolean)}
-            />
+            <Checkbox id="double_opt_in" checked={doubleOptIn} onCheckedChange={(checked) => setDoubleOptIn(checked as boolean)}/>
             <Label htmlFor="double_opt_in">
               Require double opt-in confirmation for these subscribers
             </Label>
@@ -140,13 +116,7 @@ export function ConsentVerificationForm({
             <Label htmlFor="consent_text">
               Consent text or description (optional)
             </Label>
-            <Textarea
-              id="consent_text"
-              placeholder="Describe how consent was obtained, include any relevant details..."
-              value={consentText}
-              onChange={(e) => setConsentText(e.target.value)}
-              className="mt-1"
-            />
+            <Textarea id="consent_text" placeholder="Describe how consent was obtained, include any relevant details..." value={consentText} onChange={(e) => setConsentText(e.target.value)} className="mt-1"/>
           </div>
         </div>
 
@@ -162,11 +132,7 @@ export function ConsentVerificationForm({
         </div>
 
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="acknowledge" 
-            checked={acknowledged}
-            onCheckedChange={(checked) => setAcknowledged(checked as boolean)}
-          />
+          <Checkbox id="acknowledge" checked={acknowledged} onCheckedChange={(checked) => setAcknowledged(checked as boolean)}/>
           <Label htmlFor="acknowledge" className="text-sm">
             I acknowledge that I have obtained proper consent from all subscribers 
             and understand the compliance requirements for email marketing.
@@ -174,16 +140,11 @@ export function ConsentVerificationForm({
         </div>
 
         <div className="flex gap-3">
-          <Button 
-            onClick={handleSubmit}
-            disabled={!verificationMethod || !acknowledged}
-            className="flex items-center gap-2"
-          >
-            <CheckCircle className="h-4 w-4" />
+          <Button onClick={handleSubmit} disabled={!verificationMethod || !acknowledged} className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4"/>
             Verify Consent & Continue
           </Button>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>);
 }

@@ -1,10 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Mail, Clock, Users } from 'lucide-react';
-
 export default function WelcomeSeriesPage() {
-  return (
-    <div className="space-y-8">
+    return (<div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Welcome Series Automation</h1>
         <p className="text-xl text-muted-foreground mt-4">
@@ -16,7 +14,7 @@ export default function WelcomeSeriesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4"/>
               Welcome Email
             </CardTitle>
           </CardHeader>
@@ -31,7 +29,7 @@ export default function WelcomeSeriesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Heart className="h-4 w-4" />
+              <Heart className="h-4 w-4"/>
               Your Story
             </CardTitle>
           </CardHeader>
@@ -46,7 +44,7 @@ export default function WelcomeSeriesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Clock className="h-4 w-4" />
+              <Clock className="h-4 w-4"/>
               Best Music
             </CardTitle>
           </CardHeader>
@@ -61,7 +59,7 @@ export default function WelcomeSeriesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" />
+              <Users className="h-4 w-4"/>
               Community
             </CardTitle>
           </CardHeader>
@@ -88,6 +86,5 @@ export default function WelcomeSeriesPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 }
