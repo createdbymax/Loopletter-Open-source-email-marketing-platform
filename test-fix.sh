@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CRON_SECRET="JZt2EW0lpuC84PDJppr1pCN3pq3W3aPR4ty25qCLmmY="
-VERCEL_URL="https://loopletter.co"
+CRON_SECRET="your-cron-secret-here"
+VERCEL_URL="https://your-app.vercel.app"
 
 echo "🚀 Testing the middleware fix..."
 

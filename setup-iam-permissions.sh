@@ -4,7 +4,7 @@
 # Run this script to create the necessary IAM policy and attach it to your user
 
 POLICY_NAME="LoopletterEventBridgePolicy"
-USER_NAME="maxbook_pro"  # Replace with your actual IAM username
+USER_NAME="your-iam-username"  # Replace with your actual IAM username
 
 echo "🔐 Setting up IAM permissions for Loopletter EventBridge..."
 

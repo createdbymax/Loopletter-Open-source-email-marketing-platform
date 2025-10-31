@@ -3,8 +3,8 @@
 # Simple AWS EventBridge Setup for Loopletter
 # This uses a Lambda function to call your HTTP endpoint
 
-VERCEL_URL="https://loopletter-losthillsllc.vercel.app"  # Replace with your actual Vercel URL
-CRON_SECRET="JZt2EW0lpuC84PDJppr1pCN3pq3W3aPR4ty25qCLmmY="       # Replace with your generated CRON_SECRET
+VERCEL_URL="https://your-app.vercel.app"  # Replace with your actual Vercel URL
+CRON_SECRET="your-cron-secret-here"       # Replace with your generated CRON_SECRET
 AWS_REGION="us-east-1"
 FUNCTION_NAME="loopletter-queue-processor"
 

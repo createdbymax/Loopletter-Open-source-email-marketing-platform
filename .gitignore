@@ -41,8 +41,13 @@ yarn-error.log*
 next-env.d.ts
 
 # documentation and setup files
-*.md
+# Allow markdown files in docs/ and root-level docs
+!docs/**/*.md
 !README.md
+!CONTRIBUTING.md
+!CODE_OF_CONDUCT.md
+
+# Ignore database dumps and CSV exports
 *.sql
 *.csv
 

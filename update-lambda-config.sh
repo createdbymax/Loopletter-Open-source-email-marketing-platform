@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Update Lambda function with your actual configuration
-VERCEL_URL="https://loopletter.co"  # Your production domain
-CRON_SECRET="JZt2EW0lpuC84PDJppr1pCN3pq3W3aPR4ty25qCLmmY="     # Replace with your generated CRON_SECRET
+VERCEL_URL="https://your-app.vercel.app"  # Replace with your production domain
+CRON_SECRET="your-cron-secret-here"       # Replace with your generated CRON_SECRET
 FUNCTION_NAME="loopletter-queue-processor"
 
 echo "🔧 Updating Lambda function configuration..."

@@ -33,8 +33,8 @@ export const ROLE_PERMISSIONS = {
 export type ReviewPermission = typeof REVIEW_PERMISSIONS[keyof typeof REVIEW_PERMISSIONS];
 export type UserRole = keyof typeof ROLE_PERMISSIONS;
 
-// Super admin email - only this user can access admin features
-const SUPER_ADMIN_EMAIL = 'maxjasper@icloud.com';
+// Super admin email - configure via environment variable when using review tools
+const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL ?? null;
 
 /**
  * Check if user is the super admin using Clerk metadata
@@ -53,7 +53,7 @@ export async function isSuperAdmin(clerkUserId: string): Promise<boolean> {
     
     // Fallback to email check for initial setup
     const userEmail = user.primaryEmailAddress?.emailAddress;
-    if (userEmail === SUPER_ADMIN_EMAIL) {
+    if (SUPER_ADMIN_EMAIL && userEmail === SUPER_ADMIN_EMAIL) {
       // Auto-promote the super admin user
       await client.users.updateUserMetadata(clerkUserId, {
         publicMetadata: { role: 'super_admin' }
@@ -73,7 +73,7 @@ export async function isSuperAdmin(clerkUserId: string): Promise<boolean> {
         .eq('clerk_user_id', clerkUserId)
         .single();
 
-      if (dbError || !artist) {
+      if (!SUPER_ADMIN_EMAIL || dbError || !artist) {
         return false;
       }
 
@@ -118,54 +118,6 @@ export async function getUserRoleAndPermissions(clerkUserId: string, artistId?: 
       canAccessReviews: false,
       isSuperAdmin: false
     };
-
-    // Original logic commented out - only super admin can access now
-    /*
-    // First check if user is the artist owner
-    const { data: artist, error: artistError } = await supabase
-      .from('artists')
-      .select('id, clerk_user_id')
-      .eq('clerk_user_id', clerkUserId)
-      .single();
-
-    if (!artistError && artist) {
-      // User is the artist owner
-      return {
-        role: 'owner',
-        permissions: ROLE_PERMISSIONS.owner,
-        isOwner: true,
-        canAccessReviews: true,
-        isSuperAdmin: false
-      };
-    }
-    */
-
-    // Original team member logic commented out - only super admin can access now
-    /*
-    // If artistId is provided, check team membership
-    if (artistId) {
-      const { data: teamMember, error: teamError } = await supabase
-        .from('team_members')
-        .select('role, permissions, status')
-        .eq('artist_id', artistId)
-        .eq('email', clerkUserId) // This might need to be adjusted based on how team members are linked
-        .eq('status', 'active')
-        .single();
-
-      if (!teamError && teamMember) {
-        const role = teamMember.role as UserRole;
-        const permissions = ROLE_PERMISSIONS[role] || [];
-        
-        return {
-          role,
-          permissions,
-          isOwner: false,
-          canAccessReviews: permissions.includes(REVIEW_PERMISSIONS.VIEW_REVIEWS),
-          isSuperAdmin: false
-        };
-      }
-    }
-    */
 
   } catch (error) {
     console.error('Error checking user permissions:', error);
