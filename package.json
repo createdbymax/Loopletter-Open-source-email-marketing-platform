@@ -5,11 +5,11 @@
   "description": "A comprehensive email marketing platform built for artists and creators",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/loopletter.git"
+    "url": "https://github.com/Loopletter/loopletter.git"
   },
-  "homepage": "https://github.com/yourusername/loopletter",
+  "homepage": "https://github.com/Loopletter/loopletter",
   "bugs": {
-    "url": "https://github.com/yourusername/loopletter/issues"
+    "url": "https://github.com/Loopletter/loopletter/issues"
   },
   "license": "MIT",
   "keywords": [
@@ -20,7 +20,7 @@
     "creators",
     "newsletter"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Loopletter Team <opensource@loopletter.co>",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

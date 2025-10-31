@@ -51,7 +51,8 @@ The subscription system consists of the following components:
 Follow these steps to set up the subscription system:
 
 1. **Database Setup**
-   - Run the SQL commands in `database-schema-updates.sql` to create the necessary tables and fields
+   - Import the baseline schema from `docs/database/schema.sql` using the Supabase CLI or SQL editor
+   - Apply any additional SQL migrations you create to `supabase/migrations/` so they can be version controlled
 
 2. **Stripe Setup**
    - Create a Stripe account
@@ -60,8 +61,12 @@ Follow these steps to set up the subscription system:
    - Configure environment variables with Stripe API keys and price IDs
 
 3. **Environment Variables**
-   - Add Stripe API keys and price IDs to your `.env` file
-   - See `SUBSCRIPTION_SETUP.md` for detailed instructions
+   - Add the following keys to `.env.local` (see `.env.example` for the full list)
+     - `STRIPE_SECRET_KEY`
+     - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+     - `STRIPE_PRICE_ID_STARTER`, `STRIPE_PRICE_ID_INDEPENDENT`, `STRIPE_PRICE_ID_LABEL`
+     - `STRIPE_WEBHOOK_SECRET`
+   - Redeploy the queue worker and Supabase Edge functions whenever secrets change
 
 ## Usage
 

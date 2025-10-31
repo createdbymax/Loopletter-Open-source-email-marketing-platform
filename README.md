@@ -6,6 +6,8 @@
 
 Loopletter helps artists own their audience, automate campaigns, and understand performance without relying on walled-garden social platforms. This repo contains the full web application, infrastructure scripts, and documentation needed to self-host or extend the product.
 
+> **Quick links:** [Docs](docs/README.md) · [Self-hosting guide](docs/SERVICES.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [Contributing](CONTRIBUTING.md)
+
 ---
 
 ## Highlights
@@ -59,8 +61,8 @@ Supporting docs live under `docs/` and `content/docs/` for the in-app docs porta
 ### 2. Install
 
 ```bash
-git clone https://github.com/YOUR_ORG/YOUR_REPO.git
-cd YOUR_REPO
+git clone https://github.com/Loopletter/loopletter.git
+cd loopletter
 npm install
 ```
 
@@ -74,7 +76,7 @@ Copy `.env.example` to `.env.local` and fill the required values:
 - `SUPER_ADMIN_EMAIL` for review moderation access
 - Optional service configs (Stripe, Redis, PostHog, Sentry, etc.)
 
-Refer to [docs/SERVICES.md](docs/SERVICES.md) for provider-specific setup notes.
+Refer to [docs/SERVICES.md](docs/SERVICES.md) for provider-specific setup notes and service specific environment variables.
 
 ### 4. Apply Database Migrations
 
@@ -85,7 +87,7 @@ npx supabase link --project-ref YOUR_PROJECT_REF
 npx supabase push
 ```
 
-Alternatively, run the SQL files in `supabase/migrations/` manually via the Supabase SQL editor.
+If you prefer a manual workflow, run the SQL files in `supabase/migrations/` (or import the schema dump in `docs/database/`) via the Supabase SQL editor.
 
 ### 5. Run the App
 
@@ -104,7 +106,7 @@ Visit `http://localhost:3000` to access the dashboard and marketing site.
 - **Redis/Upstash** for BullMQ queues powering campaign sends.
 - **AWS SES + S3** for deliverability and asset storage.
 
-Scripts under `scripts/` (`setup-aws-eventbridge.sh`, `simple-eventbridge-setup.sh`, `update-lambda-config.sh`, etc.) help automate queue processing infrastructure. Replace placeholder values before running them in production.
+Shell helpers in the project root (`setup-aws-eventbridge.sh`, `simple-eventbridge-setup.sh`, `update-lambda-config.sh`, etc.) help automate queue processing infrastructure. Replace placeholder values before running them in production.
 
 ---
 
@@ -140,7 +142,7 @@ Loopletter handles sensitive subscriber data. When self-hosting:
 - Configure AWS IAM with the minimum required permissions (see `aws-iam-policy.json`).
 - Regularly monitor SES bounce/complaint metrics to protect sender reputation.
 
-For security disclosures, please email `security@loopletter.co` or use your organization’s preferred contact channel.
+For security disclosures, please email `security@loopletter.co` or use your organization’s preferred contact channel. Additional security practices are outlined in [docs/troubleshooting/index.mdx](docs/troubleshooting/index.mdx#deliverability--security-checklist).
 
 ---
 

@@ -52,11 +52,13 @@ Supabase provides a PostgreSQL database with real-time capabilities.
 
 Option 1: Using Supabase Dashboard
 1. Go to the **SQL Editor** in your Supabase dashboard
-2. Run the migration scripts in `supabase/migrations/` in numerical order
+2. Run the schema helper at `docs/database/schema.sql`
+3. Apply any additional SQL migrations stored in `supabase/migrations/`
 
 Option 2: Using Supabase CLI
 ```bash
 npx supabase link --project-ref your-project-ref
+npx supabase db execute --file docs/database/schema.sql
 npx supabase push
 ```
 

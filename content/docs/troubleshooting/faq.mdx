@@ -1,0 +1,26 @@
+---
+title: Frequently Asked Questions
+description: Quick answers about Loopletter deployments
+---
+
+# Frequently Asked Questions
+
+## Can Loopletter run without AWS?
+
+Yes, but you need to adjust the abstractions in `lib/email-sender.ts` and update the queue worker accordingly. SES is supported out of the box.
+
+## Where can I find the database schema?
+
+A baseline schema export lives in `docs/database/schema.sql`. Apply it with the Supabase CLI or SQL editor, and store future changes in `supabase/migrations/`.
+
+## What background jobs are required?
+
+- `npm run queue-worker` processes campaign sends
+- Supabase Edge function `process-email-queue` coordinates send batches
+- Optional: AWS EventBridge integration ingests bounce/complaint events
+
+## How do I contribute fixes or docs?
+
+Follow the steps in [CONTRIBUTING.md](../../../CONTRIBUTING.md). For documentation-only changes, you can submit PRs without running the full test suite but include screenshots when updating UI docs.
+
+Still stuck? Reach out via GitHub discussions or email support@loopletter.co.

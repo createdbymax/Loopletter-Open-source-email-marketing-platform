@@ -15,6 +15,13 @@
       "pages": [
         "campaigns/creating-campaigns"
       ]
+    },
+    {
+      "title": "Troubleshooting",
+      "pages": [
+        "troubleshooting/index",
+        "troubleshooting/faq"
+      ]
     }
   ]
 }

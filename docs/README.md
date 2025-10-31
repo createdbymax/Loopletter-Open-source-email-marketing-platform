@@ -43,3 +43,9 @@ New to Loopletter? Start here:
 ---
 
 Ready to grow your fanbase? [Get started with your first campaign →](/docs/first-campaign)
+
+## Additional Resources
+
+- [Self-hosting & infrastructure guide](./SERVICES.md)
+- [Troubleshooting & deliverability checklist](./troubleshooting/index.mdx)
+- [Subscription & billing overview](../SUBSCRIPTION_README.md)

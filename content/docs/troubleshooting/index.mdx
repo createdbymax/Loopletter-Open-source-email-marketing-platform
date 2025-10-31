@@ -1,0 +1,36 @@
+---
+title: Troubleshooting Guide
+description: Resolve common Loopletter issues
+---
+
+# Troubleshooting Guide
+
+Use this guide to diagnose configuration or deliverability issues in your Loopletter deployment.
+
+## Environment Checks
+
+- Ensure `.env.local` is populated with every key from the setup guides
+- Confirm Supabase credentials (URL, anon key, service role) are correct
+- Match Clerk redirect URLs to the domain you are testing from
+
+## Database Connectivity
+
+If you see Supabase authentication errors:
+
+1. Re-run migrations or import the schema dump from `docs/database/schema.sql`
+2. Check that Row Level Security policies exist for the `artist`, `campaign`, and `subscription` tables
+3. Redeploy any Supabase edge functions after updating environment variables
+
+## Email Deliverability
+
+- Request SES production access and verify sending domains
+- Monitor bounce/complaint metrics inside Loopletter analytics
+- Enable EventBridge (see root scripts) to sync SES feedback automatically
+
+## Queue Worker Health
+
+- Run `npm run queue-worker` locally to drain jobs
+- Verify Redis credentials using the helper scripts in the repository root
+- Inspect Supabase Edge function logs for processing errors
+
+Need more help? Visit the FAQ or open a GitHub discussion so maintainers can assist.

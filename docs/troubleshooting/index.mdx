@@ -1,0 +1,71 @@
+---
+title: Troubleshooting Guide
+description: Common issues and fixes when self-hosting Loopletter
+---
+
+# Troubleshooting Guide
+
+This guide covers the most common issues reported by self-hosted deployments and how to resolve them quickly.
+
+## Environment & Configuration
+
+### Missing Environment Variables
+
+Loopletter relies on a number of third-party services. If the application fails to boot or API routes return 500 errors, double-check:
+
+- `.env.local` exists and contains every key documented in [docs/SERVICES.md](../SERVICES.md)
+- Environment variables injected by your hosting provider match the keys expected in `source.config.ts`
+- Secrets that contain special characters are wrapped in quotes when required by your platform
+
+### Supabase Connection Errors
+
+If you receive `Failed to load Supabase client` or `Unauthorized` responses:
+
+1. Confirm that the Supabase project URL and service role key are valid and not revoked
+2. Ensure Row Level Security policies are applied when copying SQL manually
+3. Verify the database schema matches the definitions in `supabase/functions/_shared` helpers and any SQL dumps under `docs/database/`
+
+### Clerk Sign-in Redirect Loops
+
+A redirect loop typically indicates mismatched redirect URLs or missing publishable keys.
+
+- Confirm the redirect URLs configured in the Clerk dashboard include your local and production domains
+- Restart the dev server after editing `.env.local`
+- Clear cookies or use an incognito window after switching between local and production environments
+
+## Deliverability & Email Sending
+
+### Staying Out of the SES Sandbox
+
+AWS SES starts every account in sandbox mode. Until production access is granted you can only send to verified addresses.
+
+1. Request production access through the SES console
+2. Verify your sending domains and add the SPF/DKIM DNS records
+3. Update `AWS_REGION` to match the region that has production access
+
+### Bounces or Complaints Spiking
+
+High bounce rates can place your SES account back in the sandbox. Monitor the metrics dashboard provided in Loopletter and:
+
+- Remove invalid addresses using the bounce suppression tools in the Audience section
+- Warm up new sending domains with low volume campaigns
+- Enable the optional [EventBridge integration](../../setup-aws-eventbridge.sh) to ingest real-time feedback loops
+
+## Queue Processing
+
+### Emails Stuck in "Queued" Status
+
+If campaigns remain in a queued state:
+
+1. Confirm a queue worker is running (`npm run queue-worker` in development or your hosted worker in production)
+2. Verify Redis credentials; use `test-queue.ts` to validate connectivity
+3. Inspect logs from the Supabase Edge function `process-email-queue`
+
+### Deliverability & Security Checklist
+
+- Enforce HTTPS for every domain that serves the Loopletter dashboard or public pages
+- Rotate AWS, Clerk, and Supabase credentials regularly
+- Limit IAM users to the SES/S3 permissions listed in `aws-iam-policy.json`
+- Configure DMARC monitoring for long term deliverability health
+
+Need more help? Open a discussion or issue on GitHub with logs and environment details so maintainers can assist.
